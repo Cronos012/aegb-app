@@ -5,7 +5,7 @@ import { EmptyState, ErrorNote, PageLoader } from '../../components/Feedback'
 import { downloadCsv } from '../../lib/csv'
 import { dateTime, dayHeading, sameDay } from '../../lib/format'
 import { useIsDesktop } from '../../lib/media'
-import { useActivity, type ActivityEntry } from '../../lib/queries'
+import { BUREAU, useActivity, type ActivityEntry } from '../../lib/queries'
 import { ActivityRow, CATEGORIES, motif } from './activity'
 import { BureauPage, Card, Chips } from './BureauPage'
 
@@ -22,7 +22,10 @@ export default function Journal() {
 
   const actors = useMemo(() => {
     const map = new Map<string, string>()
-    for (const e of log.data ?? []) if (e.actor_id) map.set(e.actor_id, e.actor_name)
+    for (const e of log.data ?? []) {
+      if (e.actor_id) map.set(e.actor_id, e.actor_name)
+      else if (e.discreet || e.actor_name === BUREAU) map.set('bureau', e.discreet ? `${BUREAU} (ton poste)` : BUREAU)
+    }
     return [...map.entries()].sort((a, b) => a[1].localeCompare(b[1]))
   }, [log.data])
 
@@ -37,7 +40,8 @@ export default function Journal() {
     downloadCsv(
       `journal-aegb-${new Date().toISOString().slice(0, 10)}.csv`,
       ['Date', 'Qui', 'Action', 'Motif', 'Catégorie'],
-      entries.map((e) => [dateTime(e.created_at), e.actor_id ? e.actor_name : 'AEGB, automatique', e.summary, motif(e), CATEGORIES[e.category]?.label ?? e.category]),
+      // Le fichier peut circuler : il garde « Le bureau » là où les autres le voient.
+      entries.map((e) => [dateTime(e.created_at), e.discreet ? BUREAU : e.actor_name, e.summary, motif(e), CATEGORIES[e.category]?.label ?? e.category]),
     )
   }
 

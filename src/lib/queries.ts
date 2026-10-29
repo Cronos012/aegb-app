@@ -9,7 +9,8 @@ export type Contact = Tables<'member_contacts'>
 export type Role = Omit<Tables<'bureau_roles'>, 'locked' | 'assigned_by'>
 export type Screen = Tables<'bureau_screens'>
 export type Permission = Tables<'role_permissions'>
-export type ActivityEntry = Tables<'activity_log'>
+/** discreet : la ligne est signée « Le bureau » pour les autres. Seul le titulaire du poste d'admin numérique en voit l'auteur. */
+export type ActivityEntry = Tables<'activity_log'> & { discreet?: boolean }
 export type Warning = Tables<'member_warnings'>
 export type AccessLevel = Enums<'access_level'>
 export type ScreenCode =
@@ -26,6 +27,20 @@ export type Me = {
 }
 
 const ROLE_COLUMNS = 'code, label, description, sort_order, holder_id, assigned_at'
+
+/** La signature des actions du titulaire du poste d'admin numérique, telle que les autres la voient. */
+export const BUREAU = 'Le bureau'
+const AUTO = 'AEGB, automatique'
+
+/** Pour le titulaire du poste d'admin numérique : remet le vrai nom derrière « Le bureau ». */
+async function revealAuthors(entries: ActivityEntry[], guarantor: boolean): Promise<ActivityEntry[]> {
+  const ids = entries.filter((e) => !e.actor_id && e.actor_name === BUREAU).map((e) => e.id)
+  if (!guarantor || !ids.length) return entries
+  const { data, error } = await supabase.rpc('discreet_authors', { p_ids: ids })
+  if (error) throw error
+  const names = new Map(data.map((d) => [d.log_id, d.actor_name]))
+  return entries.map((e) => (names.has(e.id) ? { ...e, actor_name: names.get(e.id)!, discreet: true } : e))
+}
 
 /** Mon profil, mes coordonnées, mon poste et ce qu'il m'ouvre. L'affichage seulement : la base revérifie tout. */
 export function useMe() {
@@ -154,13 +169,14 @@ export function useMember(id: string | undefined) {
 }
 
 export function useMemberHistory(id: string | undefined) {
+  const guarantor = useMe().data?.guarantor ?? false
   return useQuery({
-    queryKey: ['bureau', 'historique', id],
+    queryKey: ['bureau', 'historique', id, guarantor],
     enabled: !!id,
     queryFn: async () => {
       const { data, error } = await supabase.rpc('member_history', { p_member: id! })
       if (error) throw error
-      return data as ActivityEntry[]
+      return revealAuthors(data, guarantor)
     },
   })
 }
@@ -226,19 +242,22 @@ export function useActiveMembers(enabled = true) {
   })
 }
 
+/** actor : l'identifiant d'une personne, « auto » pour les actions automatiques, « bureau » pour celles signées « Le bureau ». */
 export function useActivity(limit: number, category: string | null, actor: string | null, enabled = true) {
+  const guarantor = useMe().data?.guarantor ?? false
   return useQuery({
-    queryKey: ['bureau', 'journal', limit, category, actor],
+    queryKey: ['bureau', 'journal', limit, category, actor, guarantor],
     enabled,
     placeholderData: (previous) => previous,
     queryFn: async () => {
       let q = supabase.from('activity_log').select('*').order('created_at', { ascending: false }).limit(limit)
       if (category) q = q.eq('category', category)
-      if (actor === 'auto') q = q.is('actor_id', null)
+      if (actor === 'auto') q = q.is('actor_id', null).eq('actor_name', AUTO)
+      else if (actor === 'bureau') q = q.is('actor_id', null).eq('actor_name', BUREAU)
       else if (actor) q = q.eq('actor_id', actor)
       const { data, error } = await q
       if (error) throw error
-      return data
+      return revealAuthors(data, guarantor)
     },
   })
 }

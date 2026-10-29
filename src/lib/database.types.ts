@@ -383,6 +383,13 @@ export type Database = {
         Returns: boolean
       }
       clear_role: { Args: { p_role: string }; Returns: undefined }
+      discreet_authors: {
+        Args: { p_ids: number[] }
+        Returns: {
+          actor_name: string
+          log_id: number
+        }[]
+      }
       is_active_member: { Args: never; Returns: boolean }
       is_bureau: { Args: never; Returns: boolean }
       mark_welcomed: { Args: never; Returns: undefined }

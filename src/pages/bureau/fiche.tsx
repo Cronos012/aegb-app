@@ -10,7 +10,7 @@ import { Pill } from '../../components/Pill'
 import { useToast } from '../../components/Toast'
 import { errorMessage } from '../../lib/errors'
 import { fullName, longDate, monthYear, shortDate, STATUS_LABELS, TYPE_LABELS, type MemberType } from '../../lib/format'
-import { can, useAction, useMe, useMember, useMemberHistory, useRoles, useWarnings, type ActivityEntry, type MemberRow, type RoleWithHolder } from '../../lib/queries'
+import { BUREAU, can, useAction, useMe, useMember, useMemberHistory, useRoles, useWarnings, type ActivityEntry, type MemberRow, type RoleWithHolder } from '../../lib/queries'
 import { supabase } from '../../lib/supabase'
 import { motif } from './activity'
 
@@ -22,7 +22,7 @@ export function statusTone(status: MemberRow['status']) {
 
 /** L'historique vu depuis la fiche du membre : « Compte validé par … ». */
 function historyLine(e: ActivityEntry, roles: RoleWithHolder[]): string {
-  const by = e.actor_id ? e.actor_name : 'AEGB'
+  const by = e.actor_id || e.discreet ? e.actor_name : e.actor_name === BUREAU ? 'le bureau' : 'AEGB'
   const d = (e.details ?? {}) as { poste?: string; avant?: string; apres?: string }
   const poste = roles.find((r) => r.code === d.poste)?.label ?? d.poste
   switch (e.action) {
@@ -223,7 +223,7 @@ export function FichePanel({ id, onClose, drawer = false }: { id: string; onClos
             <li key={w.id} className="rounded-xl bg-warn-soft px-3.5 py-2.5 text-[14px]">
               <p className="m-0">{w.reason}</p>
               <p className="m-0 mt-1 text-[12px] text-muted">
-                {longDate(w.created_at)}, par {w.given_by_name}
+                {longDate(w.created_at)}, par {!w.given_by && w.given_by_name === BUREAU ? 'le bureau' : w.given_by_name}
               </p>
             </li>
           ))}

@@ -16,6 +16,7 @@ declare
   n integer;
   m integer;
   ok boolean;
+  log_ids bigint[];
   failures text[] := '{}';
 
 begin
@@ -280,6 +281,34 @@ begin
   if not ok then failures := failures || 'transmission : poste non transmis'; end if;
   select count(*) into n from public.activity_log where action = 'attribution_poste' and subject_id = e;
   if n <> 1 then failures := failures || 'transmission : absente du journal'; end if;
+
+  -- 15. Ce que fait le titulaire du poste d'admin est signé « Le bureau »
+  select count(*) into n from public.activity_log where actor_id = a and subject_id is distinct from a;
+  if n <> 0 then failures := failures || format('discrétion : %s lignes du journal au nom de l''admin', n); end if;
+  select array_agg(log_id) into log_ids from private.discreet_actors where actor_id = a;
+  if coalesce(cardinality(log_ids), 0) = 0 then failures := failures || 'discrétion : vrai auteur perdu'; end if;
+  select validated_by is null into ok from public.profiles where id = b;
+  if not ok then failures := failures || 'discrétion : « validé par » au nom de l''admin'; end if;
+  select actor_name = 'Le bureau' into ok from public.activity_log where action = 'attribution_poste' and subject_id = e;
+  if not ok then failures := failures || 'discrétion : transmission au nom de l''admin'; end if;
+  perform set_config('request.jwt.claims', json_build_object('sub', b, 'role', 'authenticated')::text, true);
+  set local role authenticated;
+  select count(*) into n from public.activity_log where actor_name = 'Le bureau';
+  if n = 0 then failures := failures || 'discrétion : le secrétariat ne voit pas « Le bureau »'; end if;
+  begin
+    perform public.discreet_authors(log_ids);
+    failures := failures || 'discrétion : le secrétariat lit les vrais auteurs';
+  exception when insufficient_privilege then null;
+  end;
+  reset role;
+  perform set_config('request.jwt.claims', json_build_object('sub', e, 'role', 'authenticated')::text, true);
+  set local role authenticated;
+  select count(*) into n from public.discreet_authors(log_ids) where actor_name = 'Awa';
+  if n <> cardinality(log_ids) then failures := failures || 'discrétion : le successeur ne lit pas les vrais auteurs'; end if;
+  perform public.warn_member(b, 'Test de discrétion');
+  reset role;
+  select given_by is null and given_by_name = 'Le bureau' into ok from public.member_warnings where member_id = b;
+  if not ok then failures := failures || 'discrétion : avertissement au nom de l''admin'; end if;
 
   if cardinality(failures) = 0 then
     raise exception 'TESTS OK : toutes les vérifications passent (base remise dans son état initial)';
