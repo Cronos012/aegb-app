@@ -43,7 +43,7 @@ Toute la sécurité est dans la base : chaque table a des règles d'accès (RLS)
 - Ce que fait le titulaire de ce poste pour le bureau est signé « Le bureau » dans le journal, l'historique des fiches et les avertissements. Le vrai auteur est noté dans `private.discreet_actors`, que seul le titulaire relit (fonction `discreet_authors`).
 - Le titulaire de ce poste le transmet lui-même à son successeur (« Transmettre » dans « Postes et droits », fonction `transfer_guarantor`). Le successeur garde son propre compte et reçoit tout de suite les mêmes droits.
 - Tout le monde doit donner un prénom et un nom, sauf le titulaire de ce poste, qui peut n'avoir qu'un prénom.
-- Le journal d'activité ne peut être ni modifié ni effacé, même par l'admin.
+- Le journal d'activité ne peut pas être modifié. Pendant les essais, le titulaire du poste d'admin numérique peut le vider (« Vider le journal », fonction `clear_journal`). Au lancement officiel, il le rend ineffaçable (« Rendre ineffaçable », fonction `lock_journal`) : ce verrou est définitif.
 
 Pour vérifier les règles d'accès, colle `supabase/tests/socle_test.sql` dans l'éditeur SQL de Supabase. Le script se termine toujours par une erreur volontaire qui annule tout : le message doit commencer par « TESTS OK ».
 
