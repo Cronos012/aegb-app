@@ -419,6 +419,298 @@ export type Database = {
           },
         ]
       }
+      dues_coverage: {
+        Row: {
+          amount_cents: number
+          member_id: string
+          month: string
+          payment_id: string
+        }
+        Insert: {
+          amount_cents: number
+          member_id: string
+          month: string
+          payment_id: string
+        }
+        Update: {
+          amount_cents?: number
+          member_id?: string
+          month?: string
+          payment_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dues_coverage_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dues_coverage_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "dues_payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dues_payments: {
+        Row: {
+          amount_cents: number
+          cancelled_at: string | null
+          checkout_intent_id: number | null
+          confirmed_at: string | null
+          created_at: string
+          id: string
+          ledger_id: number | null
+          member_id: string | null
+          member_name: string
+          method: Database["public"]["Enums"]["pay_method"]
+          monthly_cents: number
+          months: string[]
+          note: string | null
+          paid_on: string | null
+          receipt_number: string | null
+          reference: string | null
+          status: Database["public"]["Enums"]["payment_status"]
+        }
+        Insert: {
+          amount_cents: number
+          cancelled_at?: string | null
+          checkout_intent_id?: number | null
+          confirmed_at?: string | null
+          created_at?: string
+          id?: string
+          ledger_id?: number | null
+          member_id?: string | null
+          member_name: string
+          method: Database["public"]["Enums"]["pay_method"]
+          monthly_cents: number
+          months: string[]
+          note?: string | null
+          paid_on?: string | null
+          receipt_number?: string | null
+          reference?: string | null
+          status?: Database["public"]["Enums"]["payment_status"]
+        }
+        Update: {
+          amount_cents?: number
+          cancelled_at?: string | null
+          checkout_intent_id?: number | null
+          confirmed_at?: string | null
+          created_at?: string
+          id?: string
+          ledger_id?: number | null
+          member_id?: string | null
+          member_name?: string
+          method?: Database["public"]["Enums"]["pay_method"]
+          monthly_cents?: number
+          months?: string[]
+          note?: string | null
+          paid_on?: string | null
+          receipt_number?: string | null
+          reference?: string | null
+          status?: Database["public"]["Enums"]["payment_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dues_payments_ledger_fkey"
+            columns: ["ledger_id"]
+            isOneToOne: false
+            referencedRelation: "ledger_entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dues_payments_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dues_receipts: {
+        Row: {
+          amount_cents: number
+          cancelled_at: string | null
+          issued_at: string
+          member_id: string | null
+          member_name: string
+          member_type: Database["public"]["Enums"]["member_type"]
+          method: Database["public"]["Enums"]["pay_method"]
+          monthly_cents: number
+          months: string[]
+          number: string
+          paid_on: string
+          payment_id: string
+          reference: string | null
+        }
+        Insert: {
+          amount_cents: number
+          cancelled_at?: string | null
+          issued_at?: string
+          member_id?: string | null
+          member_name: string
+          member_type: Database["public"]["Enums"]["member_type"]
+          method: Database["public"]["Enums"]["pay_method"]
+          monthly_cents: number
+          months: string[]
+          number: string
+          paid_on: string
+          payment_id: string
+          reference?: string | null
+        }
+        Update: {
+          amount_cents?: number
+          cancelled_at?: string | null
+          issued_at?: string
+          member_id?: string | null
+          member_name?: string
+          member_type?: Database["public"]["Enums"]["member_type"]
+          method?: Database["public"]["Enums"]["pay_method"]
+          monthly_cents?: number
+          months?: string[]
+          number?: string
+          paid_on?: string
+          payment_id?: string
+          reference?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dues_receipts_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dues_receipts_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: true
+            referencedRelation: "dues_payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dues_settings: {
+        Row: {
+          id: boolean
+          monthly_cents: number
+          org_address: string | null
+          org_rna: string | null
+          paying_types: Database["public"]["Enums"]["member_type"][]
+          reminders: boolean
+          solidarity_months: number
+          start_month: string
+          updated_at: string | null
+          updated_by_name: string | null
+        }
+        Insert: {
+          id?: boolean
+          monthly_cents?: number
+          org_address?: string | null
+          org_rna?: string | null
+          paying_types?: Database["public"]["Enums"]["member_type"][]
+          reminders?: boolean
+          solidarity_months?: number
+          start_month?: string
+          updated_at?: string | null
+          updated_by_name?: string | null
+        }
+        Update: {
+          id?: boolean
+          monthly_cents?: number
+          org_address?: string | null
+          org_rna?: string | null
+          paying_types?: Database["public"]["Enums"]["member_type"][]
+          reminders?: boolean
+          solidarity_months?: number
+          start_month?: string
+          updated_at?: string | null
+          updated_by_name?: string | null
+        }
+        Relationships: []
+      }
+      ledger_entries: {
+        Row: {
+          amount_cents: number
+          category: string
+          created_at: string
+          created_by: string | null
+          created_by_name: string
+          entry_date: string
+          id: number
+          label: string
+          member_id: string | null
+          member_name: string | null
+          method: string
+          note: string | null
+          number: number
+          payment_id: string | null
+          reason: string | null
+          reverses: number | null
+        }
+        Insert: {
+          amount_cents: number
+          category: string
+          created_at?: string
+          created_by?: string | null
+          created_by_name: string
+          entry_date: string
+          id?: never
+          label: string
+          member_id?: string | null
+          member_name?: string | null
+          method: string
+          note?: string | null
+          number: number
+          payment_id?: string | null
+          reason?: string | null
+          reverses?: number | null
+        }
+        Update: {
+          amount_cents?: number
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          created_by_name?: string
+          entry_date?: string
+          id?: never
+          label?: string
+          member_id?: string | null
+          member_name?: string | null
+          method?: string
+          note?: string | null
+          number?: number
+          payment_id?: string | null
+          reason?: string | null
+          reverses?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ledger_entries_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ledger_entries_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "dues_payments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ledger_entries_reverses_fkey"
+            columns: ["reverses"]
+            isOneToOne: true
+            referencedRelation: "ledger_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       member_contacts: {
         Row: {
           email: string
@@ -1165,6 +1457,18 @@ export type Database = {
         Args: { p_conversation: string; p_members: string[] }
         Returns: undefined
       }
+      add_ledger_entry: {
+        Args: {
+          p_amount_cents: number
+          p_category: string
+          p_date: string
+          p_label: string
+          p_member?: string
+          p_method: string
+          p_note?: string
+        }
+        Returns: number
+      }
       aegb_inbox: {
         Args: never
         Returns: {
@@ -1230,6 +1534,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      clear_finances: { Args: never; Returns: number }
       clear_journal: { Args: never; Returns: number }
       clear_role: { Args: { p_role: string }; Returns: undefined }
       conversation_info: { Args: { p_conversation: string }; Returns: Json }
@@ -1276,6 +1581,35 @@ export type Database = {
           log_id: number
         }[]
       }
+      discreet_ledger_authors: {
+        Args: { p_ids: number[] }
+        Returns: {
+          actor_name: string
+          ledger_id: number
+        }[]
+      }
+      dues_matrix: {
+        Args: never
+        Returns: {
+          avatar_path: string
+          dues: Json
+          first_name: string
+          last_name: string
+          member_id: string
+          member_type: Database["public"]["Enums"]["member_type"]
+          status: Database["public"]["Enums"]["member_status"]
+        }[]
+      }
+      helloasso_attach: {
+        Args: { p_intent: number; p_payment: string }
+        Returns: undefined
+      }
+      helloasso_confirm: {
+        Args: { p_paid_on: string; p_payment: string; p_reference: string }
+        Returns: Json
+      }
+      helloasso_fail: { Args: { p_payment: string }; Returns: undefined }
+      helloasso_payment: { Args: { p_payment: string }; Returns: Json }
       is_active_member: { Args: never; Returns: boolean }
       is_bureau: { Args: never; Returns: boolean }
       journal_locked: { Args: never; Returns: boolean }
@@ -1284,6 +1618,7 @@ export type Database = {
       mark_read: { Args: { p_conversation: string }; Returns: undefined }
       mark_seen: { Args: { p_ids: string[] }; Returns: undefined }
       mark_welcomed: { Args: never; Returns: undefined }
+      member_dues: { Args: { p_member: string }; Returns: Json }
       member_history: {
         Args: { p_member: string }
         Returns: {
@@ -1399,6 +1734,7 @@ export type Database = {
           unread: number
         }[]
       }
+      my_dues: { Args: never; Returns: Json }
       open_private: { Args: { p_member: string }; Returns: string }
       public_bureau: {
         Args: never
@@ -1438,6 +1774,17 @@ export type Database = {
         Returns: undefined
       }
       reactivate_member: { Args: { p_member: string }; Returns: undefined }
+      record_payment: {
+        Args: {
+          p_member: string
+          p_method: Database["public"]["Enums"]["pay_method"]
+          p_note?: string
+          p_paid_on?: string
+          p_send?: boolean
+          p_until: string
+        }
+        Returns: Json
+      }
       refuse_member: {
         Args: { p_member: string; p_reason: string }
         Returns: undefined
@@ -1460,6 +1807,27 @@ export type Database = {
           p_reason: Database["public"]["Enums"]["report_reason"]
         }
         Returns: boolean
+      }
+      reverse_ledger_entry: {
+        Args: {
+          p_entry: number
+          p_note?: string
+          p_notify?: boolean
+          p_reason: string
+        }
+        Returns: number
+      }
+      save_dues_settings: {
+        Args: {
+          p_monthly_cents: number
+          p_org_address?: string
+          p_org_rna?: string
+          p_paying: Database["public"]["Enums"]["member_type"][]
+          p_reminders: boolean
+          p_solidarity_months: number
+          p_start_month: string
+        }
+        Returns: undefined
       }
       save_welcome: {
         Args: { p_actions: string[]; p_announce: boolean; p_text: string }
@@ -1496,6 +1864,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      start_card_payment: { Args: { p_until: string }; Returns: Json }
       storage_used: { Args: never; Returns: number }
       suspend_member: {
         Args: { p_member: string; p_reason: string }
@@ -1528,6 +1897,8 @@ export type Database = {
       member_status: "en_attente" | "actif" | "refuse" | "suspendu"
       member_type: "etudiant" | "alumni" | "sympathisant" | "honneur"
       moderation_decision: "garder" | "masquer" | "masquer_avertir"
+      pay_method: "carte" | "especes" | "virement" | "cheque"
+      payment_status: "en_attente" | "confirme" | "echec" | "annule"
       post_audience: "tous" | "etudiants" | "alumni" | "bureau"
       reaction_kind:
         | "jaime"
