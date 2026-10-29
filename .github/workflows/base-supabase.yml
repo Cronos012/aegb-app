@@ -1,9 +1,13 @@
-# Met la base Supabase en ligne à jour avec les fichiers de supabase/migrations.
-# Se lance tout seul quand une migration change sur main ou sur une branche de lot.
+# Met la base Supabase en ligne à jour avec les fichiers de supabase/migrations,
+# et publie les fonctions serveur de supabase/functions.
+# Se lance tout seul quand l'un d'eux change sur main ou sur une branche de lot.
 # Il lui faut deux secrets GitHub (Settings → Secrets and variables → Actions) :
 #   SUPABASE_ACCESS_TOKEN : un jeton d'accès Supabase (Account → Access Tokens)
 #   SUPABASE_DB_PASSWORD  : le mot de passe de la base du projet
 # Sans eux, il ne fait rien et le dit.
+# Pour le paiement par carte, il pose aussi les identifiants HelloAsso s'ils
+# sont dans les secrets : HELLOASSO_CLIENT_ID, HELLOASSO_CLIENT_SECRET,
+# HELLOASSO_ORG et, pour les vrais paiements, HELLOASSO_ENV = production.
 name: Base Supabase
 
 on:
@@ -11,6 +15,7 @@ on:
     branches: [main, 'lot-*']
     paths:
       - 'supabase/migrations/**'
+      - 'supabase/functions/**'
       - 'supabase/config.toml'
       - '.github/workflows/base-supabase.yml'
   workflow_dispatch:
@@ -33,12 +38,22 @@ jobs:
     steps:
       - name: Vérifier les secrets
         id: secrets
+        env:
+          HELLOASSO_CLIENT_ID: ${{ secrets.HELLOASSO_CLIENT_ID }}
+          HELLOASSO_CLIENT_SECRET: ${{ secrets.HELLOASSO_CLIENT_SECRET }}
+          HELLOASSO_ORG: ${{ secrets.HELLOASSO_ORG }}
         run: |
           if [ -z "$SUPABASE_ACCESS_TOKEN" ] || [ -z "$SUPABASE_DB_PASSWORD" ]; then
             echo "::warning::Secrets SUPABASE_ACCESS_TOKEN ou SUPABASE_DB_PASSWORD absents : base non mise à jour."
             echo "pret=non" >> "$GITHUB_OUTPUT"
           else
             echo "pret=oui" >> "$GITHUB_OUTPUT"
+          fi
+          if [ -n "$HELLOASSO_CLIENT_ID" ] && [ -n "$HELLOASSO_CLIENT_SECRET" ] && [ -n "$HELLOASSO_ORG" ]; then
+            echo "helloasso=oui" >> "$GITHUB_OUTPUT"
+          else
+            echo "Identifiants HelloAsso absents : le paiement par carte reste débranché."
+            echo "helloasso=non" >> "$GITHUB_OUTPUT"
           fi
 
       - uses: actions/checkout@v4
@@ -64,3 +79,25 @@ jobs:
       - name: Vérifier que la base et les fichiers sont alignés
         if: steps.secrets.outputs.pret == 'oui'
         run: supabase migration list --linked
+
+      - name: Brancher HelloAsso
+        if: steps.secrets.outputs.pret == 'oui' && steps.secrets.outputs.helloasso == 'oui'
+        env:
+          HELLOASSO_CLIENT_ID: ${{ secrets.HELLOASSO_CLIENT_ID }}
+          HELLOASSO_CLIENT_SECRET: ${{ secrets.HELLOASSO_CLIENT_SECRET }}
+          HELLOASSO_ORG: ${{ secrets.HELLOASSO_ORG }}
+          HELLOASSO_ENV: ${{ secrets.HELLOASSO_ENV }}
+        run: |
+          fichier="$(mktemp)"
+          {
+            echo "HELLOASSO_CLIENT_ID=$HELLOASSO_CLIENT_ID"
+            echo "HELLOASSO_CLIENT_SECRET=$HELLOASSO_CLIENT_SECRET"
+            echo "HELLOASSO_ORG=$HELLOASSO_ORG"
+            echo "HELLOASSO_ENV=${HELLOASSO_ENV:-sandbox}"
+          } > "$fichier"
+          supabase secrets set --project-ref "$PROJECT_REF" --env-file "$fichier"
+          rm -f "$fichier"
+
+      - name: Publier les fonctions serveur
+        if: steps.secrets.outputs.pret == 'oui'
+        run: supabase functions deploy --project-ref "$PROJECT_REF"
