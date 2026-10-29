@@ -38,10 +38,6 @@ function parisToday(): string {
   return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date())
 }
 
-function exerciseStart(day: string): string {
-  const [y, m] = day.split('-').map(Number)
-  return `${m >= 9 ? y : y - 1}-09-01`
-}
 
 function normalize(s: string) {
   return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
@@ -397,7 +393,8 @@ export default function JournalFinancier() {
 
   const entries = useMemo(() => ledger.data ?? [], [ledger.data])
   const today = parisToday()
-  const start = exerciseStart(today)
+  // L'exercice comptable va du 1er janvier au 31 décembre (article 27 des statuts).
+  const year = today.slice(0, 4)
   const month = today.slice(0, 7)
   const reversedBy = useMemo(() => new Map(entries.filter((e) => e.reverses).map((e) => [e.reverses!, e])), [entries])
   const byId = useMemo(() => new Map(entries.map((e) => [e.id, e])), [entries])
@@ -413,19 +410,20 @@ export default function JournalFinancier() {
   const outBy = new Map<string, number>()
   for (const e of outMonth) outBy.set(e.category, (outBy.get(e.category) ?? 0) - e.amount_cents)
   const topOut = [...outBy.entries()].sort((a, b) => b[1] - a[1])[0]
-  const thisYear = entries.filter((e) => e.entry_date >= start)
+  const thisYear = entries.filter((e) => e.entry_date.startsWith(year))
   const monthLabel = monthYearLabel(`${month}-01`).split(' ')[0]
 
   const periods = useMemo(() => {
     const set = new Set(entries.map((e) => e.entry_date.slice(0, 7)))
     return [...set].sort().reverse()
   }, [entries])
+  const pastYears = useMemo(() => [...new Set(entries.map((e) => e.entry_date.slice(0, 4)))].filter((y) => y < year).sort().reverse(), [entries, year])
 
   const q = normalize(query.trim())
   const shown = entries
     .filter((e) => (kind === 'entrees' ? e.amount_cents > 0 && e.category !== 'correction' : kind === 'sorties' ? e.amount_cents < 0 && e.category !== 'correction' : kind === 'corrections' ? e.category === 'correction' || reversedBy.has(e.id) : true))
     .filter((e) => !category || e.category === category)
-    .filter((e) => (period === 'exercice' ? e.entry_date >= start : period === 'tout' ? true : e.entry_date.startsWith(period)))
+    .filter((e) => (period === 'exercice' ? e.entry_date.startsWith(year) : period === 'tout' ? true : e.entry_date.startsWith(period)))
     .filter((e) => !q || normalize([e.label, e.member_name, e.note, num(e.number)].filter(Boolean).join(' ')).includes(q))
 
   function exportCsv() {
@@ -499,7 +497,12 @@ export default function JournalFinancier() {
               ))}
             </select>
             <select value={period} onChange={(e) => setPeriod(e.target.value)} aria-label="Période" className={`${selectClass(onDark)} flex-1 lg:flex-none`}>
-              <option value="exercice">Depuis septembre</option>
+              <option value="exercice">Exercice {year}</option>
+              {pastYears.map((y) => (
+                <option key={y} value={y}>
+                  Exercice {y}
+                </option>
+              ))}
               {periods.map((p) => (
                 <option key={p} value={p}>
                   {monthYearLabel(`${p}-01`).replace(/^./, (c) => c.toUpperCase())}
@@ -520,7 +523,7 @@ export default function JournalFinancier() {
           <Tile label="Solde de la caisse" value={eurosExact(balance)} detail={`Dont ${eurosExact(cash)} en espèces`} />
           <Tile label={`Entrées en ${monthLabel}`} value={eurosExact(inTotal)} detail={`Dont ${eurosExact(duesIn)} de cotisations`} tone="text-ok" />
           <Tile label={`Sorties en ${monthLabel}`} value={eurosExact(outTotal)} detail={topOut ? `Dont ${eurosExact(topOut[1])} : ${(LEDGER_CATEGORIES[topOut[0]] ?? topOut[0]).toLowerCase()}` : 'Aucune sortie'} tone={outTotal ? 'text-danger' : ''} />
-          <Tile label="Écritures cette année" value={String(thisYear.length)} detail={entries[0] ? `Dernière : n° ${num(entries[0].number)}, le ${shortDay(entries[0].entry_date)}` : 'Aucune pour l’instant'} />
+          <Tile label={`Écritures de l'exercice ${year}`} value={String(thisYear.length)} detail={entries[0] ? `Dernière : n° ${num(entries[0].number)}, le ${shortDay(entries[0].entry_date)}` : 'Aucune pour l’instant'} />
         </div>
       ) : null}
 

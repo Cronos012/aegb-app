@@ -5,7 +5,7 @@ import { Banknote, BellRing, CalendarDays, ChevronRight, Download, Settings, Wal
 import { Avatar } from '../../components/Avatar'
 import { Button, ButtonLink } from '../../components/Button'
 import { MonthCell, MonthLegend, MonthStrip } from '../../components/dues/MonthGrid'
-import { EmptyState, ErrorNote, PageLoader } from '../../components/Feedback'
+import { EmptyState, ErrorNote, Note, PageLoader } from '../../components/Feedback'
 import { SearchField } from '../../components/Field'
 import { Pill } from '../../components/Pill'
 import { downloadCsv } from '../../lib/csv'
@@ -85,6 +85,7 @@ export default function Cotisations() {
   const current = sample?.current_month
   const paying = rows.filter((r) => r.dues.paying && r.dues.status !== 'pas_encore')
   const late = rows.filter((r) => r.dues.status === 'retard')
+  const radiable = rows.filter((r) => r.dues.radiation_possible).length
   const upToDate = rows.filter((r) => r.dues.status === 'a_jour')
   const exempt = rows.filter((r) => r.dues.status === 'pas_due' || r.dues.status === 'pas_encore')
   const monthly = settings?.monthly_cents ?? sample?.monthly_cents ?? 0
@@ -168,6 +169,12 @@ export default function Cotisations() {
         )
       ) : null}
 
+      {radiable ? (
+        <Note tone="danger">
+          {radiable > 1 ? `${radiable} membres ont` : '1 membre a'} trois mois de retard ou plus malgré le rappel : le bureau peut prononcer la radiation (article 32 des statuts).
+        </Note>
+      ) : null}
+
       {matrix.data && !shown.length ? (
         <Card>
           <EmptyState title="Personne ici" icon={<Wallet className="size-6" />}>
@@ -206,6 +213,7 @@ export default function Cotisations() {
                       <span className="min-w-0">
                         <span className="block font-bold whitespace-nowrap">{fullName(r)}</span>
                         <span className="block text-[12px] text-muted">{r.status === 'suspendu' ? 'Suspendu' : TYPE_LABELS[r.member_type]}</span>
+                        {r.dues.radiation_possible ? <span className="block text-[12px] font-bold text-danger">Radiation possible</span> : null}
                       </span>
                     </span>
                   </td>
@@ -244,6 +252,7 @@ export default function Cotisations() {
                   <Avatar person={{ id: r.member_id, first_name: r.first_name, last_name: r.last_name, avatar_path: r.avatar_path }} size={40} />
                   <span className="flex min-w-0 flex-1 flex-col gap-1.5">
                     <span className="truncate text-[15px] font-bold">{fullName(r)}</span>
+                    {r.dues.radiation_possible ? <span className="text-[12px] font-bold text-danger">Radiation possible</span> : null}
                     <MonthStrip months={r.dues.months} label={`${fullName(r)} : ${st.label}`} />
                   </span>
                   <Pill tone={st.tone}>{st.label}</Pill>

@@ -75,7 +75,7 @@ begin
 
   -- Les réglages proposés pour les essais
   update public.dues_settings
-  set monthly_cents = 500, start_month = '2026-09-01', paying_types = '{etudiant}', solidarity_months = 2, reminders = true;
+  set monthly_cents = 500, start_month = '2026-09-01', paying_types = '{etudiant}', reminders = true;
   select last into n0 from private.ledger_counter;
   select coalesce((select last from private.receipt_counters where year = 2026), 0) into r0;
 
@@ -105,7 +105,8 @@ begin
   if j ->> 'status' is distinct from 'retard'
      or j -> 'late' is distinct from '["2026-09-01", "2026-10-01"]'::jsonb
      or (j ->> 'late_cents')::integer is distinct from 1000
-     or not (j ->> 'solidarity_suspended')::boolean
+     or not (j ->> 'vote_suspended')::boolean
+     or (j ->> 'radiation_possible')::boolean
      or j ->> 'first_unpaid' is distinct from '2026-09-01'
      or j ->> 'paid_until' is not null
      or jsonb_array_length(j -> 'months') <> 12
@@ -116,12 +117,12 @@ begin
   end if;
   j := private.dues_state(b);
   if j ->> 'status' is distinct from 'a_jour' or j ->> 'dues_from' is distinct from '2026-11-01'
-     or j -> 'months' -> 1 ->> 'state' is distinct from 'pas_du' or (j ->> 'solidarity_suspended')::boolean then
+     or j -> 'months' -> 1 ->> 'state' is distinct from 'pas_du' or (j ->> 'vote_suspended')::boolean then
     failures := failures || ('état : arrivée en novembre mal calculée : ' || j::text);
   end if;
   j := private.dues_state(c);
-  if j ->> 'status' is distinct from 'pas_due' or (j ->> 'paying')::boolean then
-    failures := failures || text 'état : un alumni doit payer';
+  if j ->> 'status' is distinct from 'pas_due' or (j ->> 'paying')::boolean or (j ->> 'votes')::boolean or (j ->> 'vote_suspended')::boolean then
+    failures := failures || text 'état : un alumni doit payer ou vote';
   end if;
   perform set_config('aegb.today', '2026-08-15', true);
   j := private.dues_state(d);
@@ -456,7 +457,8 @@ begin
   perform private.send_dues_reminders();
   select count(*) into n from public.messages m join public.conversations x on x.id = m.conversation_id
   where x.kind = 'aegb' and x.member_id = b and m.kind = 'cotisation' and m.meta ->> 'type' = 'relance'
-    and m.body = 'Bonjour Bakary, ta cotisation de novembre 2026 n''est pas encore réglée, soit 5 €.';
+    and m.body = 'Bonjour Bakary, ta cotisation de novembre 2026 n''est pas encore réglée, soit 5 €.'
+      || ' Tant qu''elle ne l''est pas, ton droit de vote et ton éligibilité au bureau sont suspendus (article 32 des statuts).';
   if n <> 1 then
     select m.body into t from public.messages m join public.conversations x on x.id = m.conversation_id
     where x.kind = 'aegb' and x.member_id = b and m.kind = 'cotisation' and m.meta ->> 'type' = 'relance' limit 1;
@@ -469,6 +471,19 @@ begin
   select count(*) into n from public.messages m join public.conversations x on x.id = m.conversation_id
   where x.kind = 'aegb' and x.member_id = b and m.kind = 'cotisation' and m.meta ->> 'type' = 'relance';
   if n <> 1 then failures := failures || text 'relance : envoyée deux fois le même mois'; end if;
+  -- Article 32 : radiation possible après trois mois de retard et un rappel resté sans effet.
+  perform set_config('aegb.today', '2027-01-15', true);
+  if (private.dues_state(b) ->> 'radiation_possible')::boolean then
+    failures := failures || text 'radiation : possible dès deux mois de retard';
+  end if;
+  perform set_config('aegb.today', '2027-02-15', true);
+  j := private.dues_state(b);
+  if not (j ->> 'radiation_possible')::boolean or jsonb_array_length(j -> 'late') <> 3 then
+    failures := failures || ('radiation : pas possible après trois mois et un rappel : ' || j::text);
+  end if;
+  if (private.dues_state(a) ->> 'radiation_possible')::boolean then
+    failures := failures || text 'radiation : possible sans rappel';
+  end if;
   update public.dues_settings set reminders = false;
   perform set_config('aegb.today', '2027-01-01', true);
   if private.send_dues_reminders() <> 0 then failures := failures || text 'relance : envoyée alors qu''elle est coupée'; end if;
@@ -479,7 +494,7 @@ begin
   perform set_config('request.jwt.claims', json_build_object('sub', sec, 'role', 'authenticated')::text, true);
   set local role authenticated;
   begin
-    perform public.save_dues_settings(1000, '2026-09-01', '{etudiant}', 3, true);
+    perform public.save_dues_settings(1000, '2026-09-01', '{etudiant}', true);
     failures := failures || text 'réglages : changés par le secrétariat';
   exception when insufficient_privilege then null;
   end;
@@ -487,19 +502,19 @@ begin
   perform set_config('request.jwt.claims', json_build_object('sub', tr, 'role', 'authenticated')::text, true);
   set local role authenticated;
   begin
-    perform public.save_dues_settings(1000, '2026-09-15', '{etudiant}', 3, true);
+    perform public.save_dues_settings(1000, '2026-09-15', '{etudiant}', true);
     failures := failures || text 'réglages : début en milieu de mois accepté';
   exception when invalid_parameter_value then null;
   end;
   begin
-    perform public.save_dues_settings(50, '2026-09-01', '{etudiant}', 3, true);
+    perform public.save_dues_settings(50, '2026-09-01', '{etudiant}', true);
     failures := failures || text 'réglages : montant trop petit accepté';
   exception when invalid_parameter_value then null;
   end;
-  perform public.save_dues_settings(1000, '2026-09-01', '{etudiant}', 3, true, '  12 rue de Siam, Brest ', 'W291000000');
+  perform public.save_dues_settings(1000, '2026-09-01', '{etudiant}', true, '  12 rue de Siam, Brest ', 'W291000000');
   reset role;
   select count(*) into n from public.dues_settings
-  where monthly_cents = 1000 and solidarity_months = 3 and org_address = '12 rue de Siam, Brest' and updated_by_name = 'Lansana Touré';
+  where monthly_cents = 1000 and org_address = '12 rue de Siam, Brest' and updated_by_name = 'Lansana Touré';
   if n <> 1 then failures := failures || text 'réglages : mal enregistrés'; end if;
   j := private.dues_state(a);
   if (j ->> 'monthly_cents')::integer <> 1000 or (j -> 'months' -> 0 ->> 'amount_cents')::integer <> 500 then
@@ -507,7 +522,7 @@ begin
   end if;
   select count(*) into n from public.activity_log
   where category = 'argent' and action = 'reglages_cotisation' and actor_id = tr
-    and summary = 'a changé les réglages de la cotisation (10 € par mois, solidarité à 3 mois)';
+    and summary = 'a changé les réglages de la cotisation (10 € par mois)';
   if n <> 1 then failures := failures || text 'réglages : absents du journal d''activité'; end if;
 
   -- 13. En juillet, on peut payer l'année suivante ----------------------------------------

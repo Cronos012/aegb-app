@@ -1,6 +1,5 @@
 import { useState, type ReactNode } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { Minus, Plus } from 'lucide-react'
 import { Button } from '../../components/Button'
 import { ErrorNote, Note, PageLoader } from '../../components/Feedback'
 import { inputClass } from '../../components/Field'
@@ -19,7 +18,6 @@ type Form = {
   amount: string
   start: string
   paying: MemberType[]
-  solidarity: number
   reminders: boolean
   address: string
   rna: string
@@ -30,7 +28,6 @@ function fromSettings(s: DuesSettings): Form {
     amount: (s.monthly_cents / 100).toFixed(2).replace('.', ','),
     start: s.start_month.slice(0, 7),
     paying: s.paying_types,
-    solidarity: s.solidarity_months,
     reminders: s.reminders,
     address: s.org_address ?? '',
     rna: s.org_rna ?? '',
@@ -84,7 +81,8 @@ function Editor({ settings, readOnly }: { settings: DuesSettings; readOnly: bool
 
   const counts = new Map<MemberType, number>()
   for (const m of members) counts.set(m.member_type, (counts.get(m.member_type) ?? 0) + 1)
-  const concerned = matrix.filter((r) => r.dues.paying && r.dues.late.length >= form.solidarity).length
+  const noVote = matrix.filter((r) => r.dues.vote_suspended).length
+  const radiable = matrix.filter((r) => r.dues.radiation_possible).length
   const exercise = matrix[0]?.dues.exercise_start
   const year = matrix[0]?.dues.today.slice(0, 4)
 
@@ -96,7 +94,6 @@ function Editor({ settings, readOnly }: { settings: DuesSettings; readOnly: bool
       p_monthly_cents: cents,
       p_start_month: `${form.start}-01`,
       p_paying: form.paying,
-      p_solidarity_months: form.solidarity,
       p_reminders: form.reminders,
       p_org_address: form.address.trim() || undefined,
       p_org_rna: form.rna.trim() || undefined,
@@ -172,32 +169,28 @@ function Editor({ settings, readOnly }: { settings: DuesSettings; readOnly: bool
             </p>
           </Section>
 
-          <Section title="Droit de solidarité" detail="Article 8 des statuts">
-            <div className="flex items-center gap-3">
-              <span className="text-sm">Suspendu à partir de</span>
-              <span className="ml-auto flex items-center gap-2">
-                <button type="button" aria-label="Un mois de moins" disabled={readOnly || form.solidarity <= 1} onClick={() => set('solidarity', form.solidarity - 1)} className="grid size-10 place-items-center rounded-xl border-[1.5px] border-line disabled:opacity-40">
-                  <Minus className="size-4" />
-                </button>
-                <span className="w-16 text-center text-[15px] font-extrabold">{form.solidarity} mois</span>
-                <button type="button" aria-label="Un mois de plus" disabled={readOnly || form.solidarity >= 12} onClick={() => set('solidarity', form.solidarity + 1)} className="grid size-10 place-items-center rounded-xl border-[1.5px] border-line disabled:opacity-40">
-                  <Plus className="size-4" />
-                </button>
-              </span>
-            </div>
+          <Section title="Retard et droit de vote" detail="Article 32 des statuts">
+            <p className="m-0 text-sm leading-[1.5]">
+              Dès qu'un mois passé n'est pas payé, le droit de vote et l'éligibilité au bureau d'un étudiant sont suspendus. Ils reviennent tout seuls quand le retard est réglé.
+            </p>
+            <p className="m-0 text-sm leading-[1.5]">Après trois mois de retard et un rappel resté sans effet, le bureau peut prononcer la radiation.</p>
+            <Line label="Sans droit de vote aujourd'hui" value={`${noVote} membre${noVote > 1 ? 's' : ''}`} />
+            <Line label="Radiation possible" value={`${radiable} membre${radiable > 1 ? 's' : ''}`} />
             <p className="m-0 text-[13px] leading-[1.45] text-muted">
-              de retard. Le droit revient tout seul dès que le retard est réglé. Aujourd'hui, {concerned} membre{concerned > 1 ? 's' : ''} {concerned > 1 ? 'seraient concernés' : 'serait concerné'}.
+              La solidarité (article 30) reste une aide ponctuelle décidée par le bureau : elle ne dépend pas de la cotisation.
             </p>
           </Section>
         </div>
 
         <div className="flex flex-col gap-4">
           <Section title="Relance automatique" detail="Le 1er du mois à 9 h, par le compte AEGB">
-            <Toggle checked={form.reminders} disabled={readOnly} onChange={(v) => set('reminders', v)} title={form.reminders ? 'Relance activée' : 'Relance coupée'} detail="Seuls les membres en retard la reçoivent, une fois par mois." />
+            <Toggle checked={form.reminders} disabled={readOnly} onChange={(v) => set('reminders', v)} title={form.reminders ? 'Relance activée' : 'Relance coupée'} detail="Seuls les membres en retard la reçoivent, une fois par mois. C'est le rappel écrit de l'article 32." />
             <div className="flex flex-col gap-1.5 rounded-[16px] bg-surface-2 p-3.5">
               <span className="text-[11px] font-bold tracking-wide text-muted uppercase">Ce que reçoit le membre</span>
               <span className="text-sm font-bold">Rappel de cotisation</span>
-              <span className="text-sm leading-[1.45]">Bonjour {'{prénom}'}, ta cotisation de {'{mois}'} n'est pas encore réglée, soit {'{montant}'}.</span>
+              <span className="text-sm leading-[1.45]">
+                Bonjour {'{prénom}'}, ta cotisation de {'{mois}'} n'est pas encore réglée, soit {'{montant}'}. Tant qu'elle ne l'est pas, ton droit de vote et ton éligibilité au bureau sont suspendus (article 32 des statuts).
+              </span>
               <span className="mt-1 inline-flex h-9 w-fit items-center rounded-xl border-[1.5px] border-primary px-3 text-sm font-bold">Payer {'{montant}'}</span>
             </div>
           </Section>

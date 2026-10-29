@@ -31,12 +31,16 @@ export type DuesState = {
   start_month: string
   dues_from: string | null
   monthly_cents: number
-  solidarity_months: number
   late: string[]
   late_cents: number
   first_unpaid: string | null
   paid_until: string | null
-  solidarity_suspended: boolean
+  /** Membre actif (étudiant) : il vote à l'assemblée générale (article 7 des statuts). */
+  votes: boolean
+  /** Article 32 : le retard suspend le droit de vote et l'éligibilité. */
+  vote_suspended: boolean
+  /** Article 32 : trois mois de retard et un rappel resté sans effet, le bureau peut radier. */
+  radiation_possible: boolean
   months: DuesMonth[]
 }
 
@@ -437,10 +441,8 @@ export function duesSummary(s: DuesState): Summary {
   return { tone: 'ok', title: 'À jour', detail: `${month.charAt(0).toUpperCase()}${month.slice(1)} à régler avant le ${frenchDay(endOfMonth(s.current_month))}` }
 }
 
-/** Ce que dit le droit de solidarité, selon le retard. */
-export function solidarityLine(s: DuesState): string {
-  if (!s.paying) return 'Tu gardes tous tes droits'
-  if (s.solidarity_suspended) return `Suspendu : ${s.late.length} mois de retard`
-  if (s.late.length) return `Actif, suspendu à ${s.solidarity_months} mois de retard`
+/** Le droit de vote d'un membre actif, selon le retard (article 32 des statuts). */
+export function voteLine(s: DuesState): string {
+  if (s.vote_suspended) return 'Suspendu jusqu’au paiement du retard'
   return 'Actif, car tu es à jour'
 }
