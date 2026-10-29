@@ -1,13 +1,45 @@
 import { Link } from 'react-router'
-import { Briefcase, ChevronRight, Star, UserCheck, UserPlus, Users } from 'lucide-react'
+import { Briefcase, ChevronRight, HardDrive, ShieldAlert, Star, UserCheck, UserPlus, Users } from 'lucide-react'
 import { ErrorNote, PageLoader } from '../../components/Feedback'
 import { Pill } from '../../components/Pill'
+import { useModerationPending, useStorageUsed } from '../../lib/feed'
 import { useIsDesktop } from '../../lib/media'
 import { can, useAccounts, useActivity, useBureauCounts, useMe, useRoles } from '../../lib/queries'
 import { ActivityLine } from './activity'
 import { BureauPage, Card } from './BureauPage'
 
-const COMING = ['Trésorerie', 'Élections', 'Annonces', 'Événements', 'Modération', 'Documents']
+const COMING = ['Trésorerie', 'Élections', 'Événements', 'Documents', 'Messages']
+
+/** L'offre gratuite de Supabase : 1 Go pour les photos et les vidéos. */
+const STORAGE_LIMIT = 1024 ** 3
+
+function megabytes(bytes: number) {
+  const mb = bytes / 1024 ** 2
+  return mb < 10 ? mb.toFixed(1).replace('.', ',') : Math.round(mb).toString()
+}
+
+function StorageCard({ used }: { used: number }) {
+  const percent = Math.min(100, (used / STORAGE_LIMIT) * 100)
+  return (
+    <Card className="p-4 lg:p-5">
+      <div className="flex items-center gap-3">
+        <span className="grid size-10 place-items-center rounded-xl bg-select text-ink">
+          <HardDrive className="size-5" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <h2 className="m-0 text-[15px] font-bold">Photos et vidéos</h2>
+          <p className="m-0 text-[13px] text-muted">
+            {megabytes(used)} Mo utilisés sur 1 Go{percent >= 80 ? ' : il faudra bientôt faire de la place' : ''}
+          </p>
+        </div>
+        <span className="titre text-[18px]">{percent < 1 ? '< 1' : Math.round(percent)} %</span>
+      </div>
+      <div className="mt-3 h-2 overflow-hidden rounded-full bg-line-soft">
+        <div className={`h-full rounded-full ${percent >= 80 ? 'bg-danger' : 'bg-primary'}`} style={{ width: `${Math.max(percent, 1)}%` }} />
+      </div>
+    </Card>
+  )
+}
 
 function today() {
   const s = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Paris' }).format(new Date())
@@ -39,6 +71,9 @@ export default function Dashboard() {
   const seesAccounts = can(me, 'comptes', 'lecture')
   const seesJournal = can(me, 'journal', 'lecture')
   const seesRoles = can(me, 'postes', 'lecture')
+  const seesReports = can(me, 'moderation', 'lecture')
+  const reports = useModerationPending(seesReports).data ?? 0
+  const storage = useStorageUsed()
   const counts = useBureauCounts()
   const pending = useAccounts('en_attente', seesAccounts)
   const roles = useRoles()
@@ -78,6 +113,20 @@ export default function Dashboard() {
               {c.pending ? <span className="grid size-8 place-items-center rounded-full bg-safran text-sm font-extrabold text-nuit">{c.pending}</span> : <ChevronRight className="size-5 text-muted" />}
             </Link>
           ) : null}
+          {!desktop && seesReports && reports ? (
+            <Link to="/bureau/moderation" className="flex items-center gap-3.5 rounded-[22px] bg-surface p-4 text-ink no-underline">
+              <span className="grid size-12 place-items-center rounded-2xl bg-danger-soft text-danger">
+                <ShieldAlert className="size-6" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-[16px] font-bold">Signalements</span>
+                <span className="block text-[13px] text-muted">
+                  {reports} contenu{reports > 1 ? 's' : ''} à examiner
+                </span>
+              </span>
+              <span className="grid size-8 place-items-center rounded-full bg-safran text-sm font-extrabold text-nuit">{reports}</span>
+            </Link>
+          ) : null}
 
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
             <Kpi icon={<Users className="size-5" />} value={c.active} label="Membres actifs" detail={desktop ? `${c.new_this_month} nouveau${c.new_this_month > 1 ? 'x' : ''} ce mois-ci` : undefined} to={can(me, 'membres', 'lecture') ? '/bureau/membres' : undefined} />
@@ -99,7 +148,7 @@ export default function Dashboard() {
           </div>
 
           <div className="flex flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-start lg:gap-4">
-            {desktop && (seesAccounts || seesRoles) ? (
+            {desktop && (seesAccounts || seesRoles || seesReports) ? (
               <Card className="p-5">
                 <div className="flex items-center justify-between">
                   <h2 className="titre m-0 text-[20px]">À traiter</h2>
@@ -116,6 +165,21 @@ export default function Dashboard() {
                           <span className="block truncate text-[13px] text-muted">{pendingNames || 'Personne pour le moment'}</span>
                         </span>
                         <span className="titre text-[20px]">{c.pending ?? 0}</span>
+                        <ChevronRight className="size-5 text-muted" />
+                      </Link>
+                    </li>
+                  ) : null}
+                  {seesReports ? (
+                    <li>
+                      <Link to="/bureau/moderation" className="flex items-center gap-3.5 rounded-2xl border border-line-soft px-4 py-3 text-ink no-underline hover:bg-surface-2">
+                        <span className="grid size-10 place-items-center rounded-xl bg-danger-soft text-danger">
+                          <ShieldAlert className="size-5" />
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-[15px] font-bold">Signalements à examiner</span>
+                          <span className="block truncate text-[13px] text-muted">{reports ? 'Publications et commentaires signalés par les membres' : 'Rien à examiner'}</span>
+                        </span>
+                        <span className="titre text-[20px]">{reports}</span>
                         <ChevronRight className="size-5 text-muted" />
                       </Link>
                     </li>
@@ -159,6 +223,8 @@ export default function Dashboard() {
               </Card>
             ) : null}
           </div>
+
+          {storage.data != null ? <StorageCard used={storage.data} /> : null}
 
           <div className="mt-2">
             <p className="m-0 mb-2.5 px-1 text-[11px] font-bold tracking-[0.08em] text-muted uppercase">Dans les prochaines mises à jour</p>

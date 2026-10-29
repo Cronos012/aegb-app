@@ -91,13 +91,15 @@ export function sameDay(a: string | Date, b: string | Date): boolean {
   return dayKey(a) === dayKey(b)
 }
 
-/** « il y a 5 min », « hier », « 27 oct. » */
+/** « il y a 5 min », « hier », « il y a 3 jours », « 27 oct. » */
 export function relative(date: string | Date, now: Date = new Date()): string {
   const minutes = Math.round((now.getTime() - new Date(date).getTime()) / 60_000)
   if (minutes < 1) return "à l'instant"
   if (minutes < 60) return `il y a ${minutes} min`
   if (sameDay(date, now)) return `il y a ${Math.round(minutes / 60)} h`
-  if (sameDay(date, new Date(now.getTime() - 86_400_000))) return 'hier'
+  for (let days = 1; days < 7; days++) {
+    if (sameDay(date, new Date(now.getTime() - days * 86_400_000))) return days === 1 ? 'hier' : `il y a ${days} jours`
+  }
   return shortDate(date)
 }
 

@@ -1,15 +1,18 @@
 import { Logo } from '../../components/Logo'
 
 const PLAN = [
-  { title: "Fil d'actu", detail: 'Photos, vidéos, réactions', when: 'Prochaine mise à jour', next: true },
-  { title: 'Messages', detail: 'Privé et grand groupe AEGB', when: 'Ensuite' },
+  { title: 'Messages', detail: 'Privé et grand groupe AEGB', when: 'Prochaine mise à jour', next: true },
   { title: 'Cotisation', detail: 'Paiement par carte, HelloAsso', when: 'Ensuite' },
+  { title: 'Votes', detail: 'Élections du bureau dans l’appli', when: 'Ensuite' },
+  { title: 'Événements et documents', detail: 'Soirées, ateliers, statuts', when: 'Ensuite' },
 ]
 
 const PAGES = {
-  fil: { title: "Fil d'actu", heading: 'Le fil arrive bientôt', text: 'Tu pourras publier des photos et des vidéos, réagir et commenter.' },
   messages: { title: 'Messages', heading: 'Les messages arrivent bientôt', text: 'Tu pourras écrire aux membres en privé et discuter dans le grand groupe AEGB.' },
-  cotisation: { title: 'Cotisation', heading: 'La cotisation arrive bientôt', text: "Tu pourras payer ta cotisation par carte avec HelloAsso et suivre tes paiements." },
+  cotisation: { title: 'Cotisation', heading: 'La cotisation arrive bientôt', text: 'Tu pourras payer ta cotisation par carte avec HelloAsso et suivre tes paiements.' },
+  votes: { title: 'Votes', heading: 'Les votes arrivent bientôt', text: "Tu pourras t'inscrire sur la liste électorale et voter pour le bureau, dans l'appli." },
+  evenements: { title: 'Événements', heading: 'Les événements arrivent bientôt', text: "Tu verras les soirées et les ateliers de l'AEGB, et tu pourras dire que tu participes." },
+  documents: { title: 'Documents', heading: 'Les documents arrivent bientôt', text: "Tu trouveras ici les statuts, le règlement et les guides de l'association." },
 }
 
 /** Onglets visibles mais pas encore ouverts : ils arrivent aux lots suivants. */
@@ -39,7 +42,7 @@ export function Bientot({ page }: { page: keyof typeof PAGES }) {
           </div>
         </div>
         <h2 className="titre mt-10 mb-0 text-[26px]">{heading}</h2>
-        <p className="mt-2 mb-0 text-[16px] leading-[1.5] text-muted">{text} En attendant, complète ton profil.</p>
+        <p className="mt-2 mb-0 text-[16px] leading-[1.5] text-muted">{text} En attendant, le fil d'actu est ouvert.</p>
         <ul className="m-0 mt-7 flex list-none flex-col rounded-2xl border border-line-soft p-0">
           {PLAN.map((item, i) => (
             <li key={item.title} className={`flex items-center gap-3 px-4 py-3.5 ${i ? 'border-t border-line-soft' : ''}`}>

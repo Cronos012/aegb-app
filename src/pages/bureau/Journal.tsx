@@ -14,7 +14,7 @@ import { ActivityRow, CATEGORIES, motif } from './activity'
 import { BureauPage, Card, Chips } from './BureauPage'
 
 const PAGE = 100
-type Category = 'tout' | 'comptes' | 'membres' | 'postes'
+type Category = 'tout' | 'comptes' | 'membres' | 'postes' | 'annonces' | 'moderation'
 
 /** Réservé au titulaire du poste d'admin numérique, tant que le journal n'est pas verrouillé. */
 function JournalEssais() {
@@ -129,7 +129,7 @@ export default function Journal() {
     )
   }
 
-  const categories = (['tout', 'comptes', 'membres', 'postes'] as Category[]).map((c) => ({ value: c, label: c === 'tout' ? 'Tout' : CATEGORIES[c].label }))
+  const categories = (['tout', 'comptes', 'membres', 'postes', 'annonces', 'moderation'] as Category[]).map((c) => ({ value: c, label: c === 'tout' ? 'Tout' : CATEGORIES[c].label }))
 
   return (
     <BureauPage
