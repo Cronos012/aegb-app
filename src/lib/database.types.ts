@@ -55,6 +55,39 @@ export type Database = {
         }
         Relationships: []
       }
+      aegb_replies: {
+        Row: {
+          message_id: string
+          written_by: string | null
+          written_by_name: string
+        }
+        Insert: {
+          message_id: string
+          written_by?: string | null
+          written_by_name: string
+        }
+        Update: {
+          message_id?: string
+          written_by?: string | null
+          written_by_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aegb_replies_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: true
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aegb_replies_written_by_fkey"
+            columns: ["written_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       aegb_settings: {
         Row: {
           announce_arrival: boolean
@@ -70,7 +103,7 @@ export type Database = {
           updated_at?: string | null
           updated_by_name?: string | null
           welcome_actions?: string[]
-          welcome_text?: string
+          welcome_text: string
         }
         Update: {
           announce_arrival?: boolean
@@ -122,8 +155,8 @@ export type Database = {
           created_at: string
         }
         Insert: {
-          blocked_id?: string
-          blocker_id?: string
+          blocked_id: string
+          blocker_id: string
           created_at?: string
         }
         Update: {
@@ -131,7 +164,22 @@ export type Database = {
           blocker_id?: string
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "blocks_blocked_id_fkey"
+            columns: ["blocked_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "blocks_blocker_id_fkey"
+            columns: ["blocker_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       bureau_roles: {
         Row: {
@@ -287,11 +335,11 @@ export type Database = {
           member_id: string
         }
         Insert: {
-          conversation_id?: string
+          conversation_id: string
           is_manager?: boolean
           joined_at?: string
           last_read_at?: string
-          member_id?: string
+          member_id: string
         }
         Update: {
           conversation_id?: string
@@ -300,7 +348,22 @@ export type Database = {
           last_read_at?: string
           member_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "conversation_members_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversation_members_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       conversations: {
         Row: {
@@ -320,7 +383,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           id?: string
-          kind?: Database["public"]["Enums"]["conversation_kind"]
+          kind: Database["public"]["Enums"]["conversation_kind"]
           last_message_at?: string | null
           member_id?: string | null
           pair_key?: string | null
@@ -339,7 +402,22 @@ export type Database = {
           photo_path?: string | null
           title?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "conversations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       member_contacts: {
         Row: {
@@ -409,6 +487,218 @@ export type Database = {
           },
         ]
       }
+      message_files: {
+        Row: {
+          duration: number | null
+          height: number | null
+          kind: string
+          message_id: string
+          mime: string | null
+          name: string | null
+          path: string
+          position: number
+          size: number | null
+          width: number | null
+        }
+        Insert: {
+          duration?: number | null
+          height?: number | null
+          kind: string
+          message_id: string
+          mime?: string | null
+          name?: string | null
+          path: string
+          position: number
+          size?: number | null
+          width?: number | null
+        }
+        Update: {
+          duration?: number | null
+          height?: number | null
+          kind?: string
+          message_id?: string
+          mime?: string | null
+          name?: string | null
+          path?: string
+          position?: number
+          size?: number | null
+          width?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_files_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      message_reactions: {
+        Row: {
+          created_at: string
+          kind: Database["public"]["Enums"]["reaction_kind"]
+          member_id: string
+          message_id: string
+        }
+        Insert: {
+          created_at?: string
+          kind: Database["public"]["Enums"]["reaction_kind"]
+          member_id: string
+          message_id: string
+        }
+        Update: {
+          created_at?: string
+          kind?: Database["public"]["Enums"]["reaction_kind"]
+          member_id?: string
+          message_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_reactions_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_reactions_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      message_reports: {
+        Row: {
+          created_at: string
+          id: number
+          message_id: string
+          reason: Database["public"]["Enums"]["report_reason"]
+          reporter_id: string
+          resolved_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: never
+          message_id: string
+          reason: Database["public"]["Enums"]["report_reason"]
+          reporter_id: string
+          resolved_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: never
+          message_id?: string
+          reason?: Database["public"]["Enums"]["report_reason"]
+          reporter_id?: string
+          resolved_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_reports_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          as_aegb: boolean
+          blocked_for: string | null
+          body: string | null
+          conversation_id: string
+          created_at: string
+          deleted_at: string | null
+          hidden_at: string | null
+          hidden_reason: string | null
+          id: string
+          kind: string
+          meta: Json
+          post_id: string | null
+          reply_to: string | null
+          sender_id: string | null
+        }
+        Insert: {
+          as_aegb?: boolean
+          blocked_for?: string | null
+          body?: string | null
+          conversation_id: string
+          created_at?: string
+          deleted_at?: string | null
+          hidden_at?: string | null
+          hidden_reason?: string | null
+          id?: string
+          kind?: string
+          meta?: Json
+          post_id?: string | null
+          reply_to?: string | null
+          sender_id?: string | null
+        }
+        Update: {
+          as_aegb?: boolean
+          blocked_for?: string | null
+          body?: string | null
+          conversation_id?: string
+          created_at?: string
+          deleted_at?: string | null
+          hidden_at?: string | null
+          hidden_reason?: string | null
+          id?: string
+          kind?: string
+          meta?: Json
+          post_id?: string | null
+          reply_to?: string | null
+          sender_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_blocked_for_fkey"
+            columns: ["blocked_for"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_reply_to_fkey"
+            columns: ["reply_to"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       moderation_decisions: {
         Row: {
           author_id: string | null
@@ -435,6 +725,7 @@ export type Database = {
           decision: Database["public"]["Enums"]["moderation_decision"]
           excerpt: string
           id?: never
+          message_id?: string | null
           post_id?: string | null
           reason?: Database["public"]["Enums"]["report_reason"] | null
           reports?: number
@@ -449,6 +740,7 @@ export type Database = {
           decision?: Database["public"]["Enums"]["moderation_decision"]
           excerpt?: string
           id?: never
+          message_id?: string | null
           post_id?: string | null
           reason?: Database["public"]["Enums"]["report_reason"] | null
           reports?: number
@@ -473,6 +765,13 @@ export type Database = {
             columns: ["decided_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "moderation_decisions_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
             referencedColumns: ["id"]
           },
           {
@@ -862,11 +1161,15 @@ export type Database = {
         Args: { p_body: string; p_parent?: string; p_post: string }
         Returns: string
       }
-      add_group_members: { Args: { p_conversation: string; p_members: string[] }; Returns: undefined }
+      add_group_members: {
+        Args: { p_conversation: string; p_members: string[] }
+        Returns: undefined
+      }
       aegb_inbox: {
         Args: never
         Returns: {
           avatar_path: string
+          city: string
           first_name: string
           id: string
           last_at: string
@@ -875,7 +1178,6 @@ export type Database = {
           last_preview: string
           member_id: string
           member_type: Database["public"]["Enums"]["member_type"]
-          city: string
           replied_by_name: string
           validated_at: string
         }[]
@@ -955,7 +1257,10 @@ export type Database = {
           written_by_name: string
         }[]
       }
-      create_group: { Args: { p_members: string[]; p_title: string }; Returns: string }
+      create_group: {
+        Args: { p_members: string[]; p_title: string }
+        Returns: string
+      }
       create_post: {
         Args: { p_body: string; p_id: string; p_media?: Json }
         Returns: undefined
