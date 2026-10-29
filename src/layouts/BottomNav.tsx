@@ -1,20 +1,22 @@
 import { NavLink } from 'react-router'
 import { Briefcase, CreditCard, House, MessageSquare, User, type LucideIcon } from 'lucide-react'
+import { useMyDues } from '../lib/dues'
 import { useBureauBadge } from '../lib/feed'
 import { useUnreadConversations } from '../lib/messages'
 import { isBureau, useMe } from '../lib/queries'
 
-type Item = { to: string; label: string; icon: LucideIcon; badge?: number | null }
+type Item = { to: string; label: string; icon: LucideIcon; badge?: number | null; alert?: string | null }
 
 export function BottomNav() {
   const me = useMe().data
   const bureau = isBureau(me)
   const badge = useBureauBadge()
   const unread = useUnreadConversations()
+  const late = useMyDues(me?.profile.status === 'actif').data?.status === 'retard'
   const items: Item[] = [
     { to: '/app/fil', label: 'Fil', icon: House },
     { to: '/app/messages', label: 'Messages', icon: MessageSquare, badge: unread },
-    { to: '/app/cotisation', label: 'Cotisation', icon: CreditCard },
+    { to: '/app/cotisation', label: 'Cotisation', icon: CreditCard, alert: late ? 'en retard' : null },
     { to: '/app/profil', label: 'Profil', icon: User },
   ]
   if (bureau) items.push({ to: '/bureau', label: 'Bureau', icon: Briefcase, badge })
@@ -25,7 +27,7 @@ export function BottomNav() {
       className="fixed inset-x-0 bottom-0 z-40 border-t border-line-soft bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
     >
       <ul className="m-0 grid list-none p-0" style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}>
-        {items.map(({ to, label, icon: Icon, badge }) => (
+        {items.map(({ to, label, icon: Icon, badge, alert }) => (
           <li key={to}>
             <NavLink
               to={to}
@@ -42,8 +44,10 @@ export function BottomNav() {
                         {badge}
                       </span>
                     ) : null}
+                    {alert ? <span className="absolute -top-0.5 -right-1 size-2.5 rounded-full bg-danger ring-2 ring-surface" aria-hidden="true" /> : null}
                   </span>
                   {label}
+                  {alert ? <span className="sr-only">, {alert}</span> : null}
                   <span className={`size-1 rounded-full ${isActive ? 'bg-safran' : 'bg-transparent'}`} aria-hidden="true" />
                 </>
               )}
