@@ -160,12 +160,6 @@ create index message_reports_reporter_idx on public.message_reports (reporter_id
 
 alter table public.moderation_decisions add column message_id uuid references public.messages (id) on delete set null;
 
--- L'écran du bureau devient « Compte officiel AEGB » : répondre aux membres
--- et régler la bienvenue. Les postes qui l'ont déjà gardent leurs droits.
-update public.bureau_screens
-set label = 'Compte officiel AEGB', description = 'Répondre au nom d''AEGB, régler la bienvenue'
-where code = 'bienvenue';
-
 -- ---------------------------------------------------------------------------
 -- Qui voit une conversation
 -- ---------------------------------------------------------------------------
@@ -1578,16 +1572,6 @@ create policy "Bienvenue visible par le compte officiel"
   on public.aegb_settings for select
   to authenticated
   using ((select public.can('bienvenue', 'lecture')));
-
--- En direct : l'appli écoute ses conversations (nouveau message, « Vu ») et
--- recharge ce qui a changé par les fonctions de lecture.
-do $$
-begin
-  if exists (select 1 from pg_publication where pubname = 'supabase_realtime') then
-    alter publication supabase_realtime add table public.conversations, public.conversation_members;
-  end if;
-end;
-$$;
 
 -- ---------------------------------------------------------------------------
 -- Droits d'exécution des fonctions
