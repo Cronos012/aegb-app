@@ -601,7 +601,6 @@ export type Database = {
           org_rna: string | null
           paying_types: Database["public"]["Enums"]["member_type"][]
           reminders: boolean
-          solidarity_months: number
           start_month: string
           updated_at: string | null
           updated_by_name: string | null
@@ -613,7 +612,6 @@ export type Database = {
           org_rna?: string | null
           paying_types?: Database["public"]["Enums"]["member_type"][]
           reminders?: boolean
-          solidarity_months?: number
           start_month?: string
           updated_at?: string | null
           updated_by_name?: string | null
@@ -625,7 +623,6 @@ export type Database = {
           org_rna?: string | null
           paying_types?: Database["public"]["Enums"]["member_type"][]
           reminders?: boolean
-          solidarity_months?: number
           start_month?: string
           updated_at?: string | null
           updated_by_name?: string | null
@@ -1824,7 +1821,6 @@ export type Database = {
           p_org_rna?: string
           p_paying: Database["public"]["Enums"]["member_type"][]
           p_reminders: boolean
-          p_solidarity_months: number
           p_start_month: string
         }
         Returns: undefined

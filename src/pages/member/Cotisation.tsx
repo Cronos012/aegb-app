@@ -7,7 +7,7 @@ import { MonthGrid, MonthLegend } from '../../components/dues/MonthGrid'
 import { PayPanel } from '../../components/dues/PayPanel'
 import { ErrorNote, Note, PageLoader } from '../../components/Feedback'
 import { Hero, Sheet } from '../../components/Hero'
-import { byExercise, duesSummary, euros, exerciseLabel, legendFor, solidarityLine, frenchDay, METHOD_LABELS, monthsLabel, payableMonths, shortDay, useMyDues, usePayments, type DuesState, type Payment } from '../../lib/dues'
+import { byExercise, duesSummary, euros, exerciseLabel, legendFor, voteLine, frenchDay, METHOD_LABELS, monthsLabel, payableMonths, shortDay, useMyDues, usePayments, type DuesState, type Payment } from '../../lib/dues'
 import { useIsDesktop } from '../../lib/media'
 import { useMe } from '../../lib/queries'
 
@@ -36,7 +36,8 @@ function Advice({ state }: { state: DuesState }) {
   if (state.status === 'pas_due') {
     return (
       <Note>
-        <strong>Tu gardes tous tes droits.</strong> Droit de solidarité, élections et événements, comme les membres qui cotisent.
+        <strong>Rien à payer pour toi.</strong>{' '}
+        {state.votes ? 'Tu gardes ton droit de vote et tu participes à toutes les activités.' : "Tu participes aux activités et aux assemblées générales, avec voix consultative (article 7 des statuts)."}
       </Note>
     )
   }
@@ -47,11 +48,14 @@ function Advice({ state }: { state: DuesState }) {
       </Note>
     )
   }
-  if (state.solidarity_suspended) {
-    return <Note tone="danger">Tant que tu n'es pas à jour, ton droit de solidarité (article 8) est suspendu.</Note>
+  if (state.radiation_possible) {
+    return <Note tone="danger">Tu as {state.late.length} mois de retard malgré le rappel : le bureau peut prononcer ta radiation (article 32 des statuts). Règle ton retard ou écris au bureau.</Note>
+  }
+  if (state.vote_suspended) {
+    return <Note tone="danger">Tant que ton retard n'est pas réglé, ton droit de vote et ton éligibilité au bureau sont suspendus (article 32 des statuts).</Note>
   }
   if (state.late.length) {
-    return <Note tone="warn">Règle ton retard avant {state.solidarity_months} mois : au-delà, ton droit de solidarité (article 8) est suspendu jusqu'au paiement.</Note>
+    return <Note tone="warn">Règle ton retard dès que possible : après trois mois de retard et un rappel resté sans effet, le bureau peut prononcer la radiation (article 32 des statuts).</Note>
   }
   return null
 }
@@ -128,9 +132,9 @@ function Receipts({ payments }: { payments: Payment[] }) {
 
 function Why() {
   const items = [
-    { icon: <ShieldCheck className="size-5" />, text: 'Le droit de solidarité (article 8) quand tu en as besoin' },
-    { icon: <Vote className="size-5" />, text: 'Le droit de voter aux élections du bureau' },
-    { icon: <HeartHandshake className="size-5" />, text: "Les événements de l'asso, gratuits ou moins chers" },
+    { icon: <Vote className="size-5" />, text: "Pour les étudiants, le droit de voter à l'assemblée générale et de se présenter au bureau" },
+    { icon: <HeartHandshake className="size-5" />, text: "L'accès aux activités financées par l'asso (article 8 des statuts)" },
+    { icon: <ShieldCheck className="size-5" />, text: "Une asso qui accueille, oriente et accompagne les nouveaux étudiants" },
   ]
   return (
     <section className="flex flex-col gap-3 rounded-[22px] bg-surface p-5">
@@ -179,7 +183,7 @@ export function Cotisation() {
         <div className="grid grid-cols-[minmax(0,1fr)_340px] items-start gap-6">
           <section className="overflow-hidden rounded-[26px] bg-surface">
             <div className="bg-tisse px-6 py-5 text-white">
-              <StatusBox state={s} extra={s.paying && summary.tone === 'ok' ? `droit de solidarité (article 8) actif` : undefined} />
+              <StatusBox state={s} extra={s.paying && s.votes && summary.tone === 'ok' ? 'droit de vote actif' : undefined} />
             </div>
             <div className="flex flex-col gap-[18px] px-6 py-6">
               {label ? (
@@ -226,13 +230,13 @@ export function Cotisation() {
         ) : null}
         <div className="overflow-hidden rounded-[18px] border-[1.5px] border-line-soft">
           <Row to="/app/cotisation/historique" icon={<FileText className="size-[22px]" />} tone="bg-select text-link" title="Historique et quittances" detail={historyLine(payments.data)} />
-          {s.paying ? (
+          {s.paying && s.votes && s.status !== 'pas_encore' ? (
             <div className="border-t border-line-soft">
               <Row
-                icon={<ShieldCheck className="size-[22px]" />}
-                tone={s.solidarity_suspended ? 'bg-danger-soft text-danger' : 'bg-ok-soft text-ok'}
-                title="Droit de solidarité (article 8)"
-                detail={solidarityLine(s)}
+                icon={<Vote className="size-[22px]" />}
+                tone={s.vote_suspended ? 'bg-danger-soft text-danger' : 'bg-ok-soft text-ok'}
+                title="Droit de vote (article 32)"
+                detail={voteLine(s)}
               />
             </div>
           ) : null}
