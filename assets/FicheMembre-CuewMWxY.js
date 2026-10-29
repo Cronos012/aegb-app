@@ -1,0 +1,1 @@
+import{c as e,gt as t,pt as n}from"./index-n0mFxqvK.js";import r,{t as i}from"./Membres-COaguV61.js";var a=n();function o(){let{id:n}=t();return e()?(0,a.jsx)(r,{openId:n}):(0,a.jsx)(i,{id:n})}export{o as default};
