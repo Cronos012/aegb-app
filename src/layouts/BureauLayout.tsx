@@ -32,7 +32,7 @@ export function BureauLayout() {
   const me = useMe().data
   const navigate = useNavigate()
   const counts = useBureauCounts(can(me, 'comptes', 'lecture')).data
-  const full = me?.role?.locked || ['presidence', 'vice_presidence'].includes(me?.role?.code ?? '')
+  const full = me?.guarantor || ['presidence', 'vice_presidence'].includes(me?.role?.code ?? '')
 
   const groups: { title: string; items: Item[] }[] = [
     {

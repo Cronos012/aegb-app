@@ -411,6 +411,7 @@ export type Database = {
         Args: { p_screen: string }
         Returns: Database["public"]["Enums"]["access_level"]
       }
+      my_bureau: { Args: never; Returns: Json }
       public_bureau: {
         Args: never
         Returns: {
@@ -445,6 +446,7 @@ export type Database = {
         Args: { p_member: string; p_reason: string }
         Returns: undefined
       }
+      transfer_guarantor: { Args: { p_member: string }; Returns: undefined }
       validate_member: { Args: { p_member: string }; Returns: undefined }
       warn_member: {
         Args: { p_member: string; p_reason: string }

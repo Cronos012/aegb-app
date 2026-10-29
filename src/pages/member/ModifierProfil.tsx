@@ -59,7 +59,7 @@ export function ModifierProfil() {
 
   async function save(e?: FormEvent) {
     e?.preventDefault()
-    if (!form.first_name.trim() || !form.last_name.trim()) return setError('Le prénom et le nom sont obligatoires.')
+    if (!form.first_name.trim() || (!form.last_name.trim() && !me.guarantor)) return setError('Le prénom et le nom sont obligatoires.')
     setBusy(true)
     setError(null)
     try {
@@ -142,7 +142,14 @@ export function ModifierProfil() {
 
         <div className="grid grid-cols-2 gap-3">
           <TextField label="Prénom" value={form.first_name} onChange={set('first_name')} maxLength={60} autoComplete="given-name" />
-          <TextField label="Nom" value={form.last_name} onChange={set('last_name')} maxLength={60} autoComplete="family-name" />
+          <TextField
+            label="Nom"
+            value={form.last_name}
+            onChange={set('last_name')}
+            maxLength={60}
+            autoComplete="family-name"
+            hint={me.guarantor ? 'Facultatif pour ton poste.' : undefined}
+          />
         </div>
         <TextArea label="Bio" counter maxLength={160} value={form.bio} onChange={set('bio')} placeholder="Présente-toi en quelques mots" />
         <div className="grid gap-[18px] lg:grid-cols-2">

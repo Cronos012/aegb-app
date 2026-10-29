@@ -89,7 +89,6 @@ export function FichePanel({ id, onClose, drawer = false }: { id: string; onClos
   const role = roles.find((r) => r.holder?.id === m.id) ?? null
   const isSelf = m.id === me.profile.id
   const manage = can(me, 'membres') && !isSelf
-  const protectedAdmin = !!role?.locked
 
   async function run(action: () => Promise<unknown>, done: string) {
     setError(null)
@@ -245,7 +244,7 @@ export function FichePanel({ id, onClose, drawer = false }: { id: string; onClos
           Réactiver
         </Button>
       ) : (
-        <Button variant="danger-outline" size="md" icon={<Ban className="size-4" />} onClick={() => setDialog({ kind: 'suspendre' })} disabled={m.status !== 'actif' || protectedAdmin}>
+        <Button variant="danger-outline" size="md" icon={<Ban className="size-4" />} onClick={() => setDialog({ kind: 'suspendre' })} disabled={m.status !== 'actif'}>
           Suspendre
         </Button>
       )}

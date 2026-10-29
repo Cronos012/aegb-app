@@ -38,7 +38,10 @@ L'appli s'ouvre sur http://localhost:5173.
 Toute la sécurité est dans la base : chaque table a des règles d'accès (RLS), et les actions du bureau passent par des fonctions qui vérifient le poste de la personne avant d'agir. L'interface ne fait que cacher ce qu'on ne peut pas faire.
 
 - Un compte reste « en attente » tant que le bureau ne l'a pas validé, et ne voit rien des autres membres.
-- Chaque poste du bureau ouvre certains écrans, en lecture ou en complet. L'admin numérique voit tout et ne peut pas être retiré.
+- Chaque poste du bureau ouvre certains écrans, en lecture ou en complet.
+- L'admin numérique voit tout et ne peut pas être retiré. Ces droits restent secrets : la base ne laisse lire ni la colonne `locked` ni `assigned_by` de `bureau_roles`, et chacun obtient ses propres droits par la fonction `my_bureau()`. Pour les autres, ce poste apparaît comme un poste ordinaire sans accès.
+- Le titulaire de ce poste le transmet lui-même à son successeur (« Transmettre » dans « Postes et droits », fonction `transfer_guarantor`). Le successeur garde son propre compte et reçoit tout de suite les mêmes droits.
+- Tout le monde doit donner un prénom et un nom, sauf le titulaire de ce poste, qui peut n'avoir qu'un prénom.
 - Le journal d'activité ne peut être ni modifié ni effacé, même par l'admin.
 
 Pour vérifier les règles d'accès, colle `supabase/tests/socle_test.sql` dans l'éditeur SQL de Supabase. Le script se termine toujours par une erreur volontaire qui annule tout : le message doit commencer par « TESTS OK ».
