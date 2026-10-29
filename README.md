@@ -40,6 +40,7 @@ Toute la sécurité est dans la base : chaque table a des règles d'accès (RLS)
 - Un compte reste « en attente » tant que le bureau ne l'a pas validé, et ne voit rien des autres membres.
 - Chaque poste du bureau ouvre certains écrans, en lecture ou en complet.
 - L'admin numérique voit tout et ne peut pas être retiré. Ces droits restent secrets : la base ne laisse lire ni la colonne `locked` ni `assigned_by` de `bureau_roles`, et chacun obtient ses propres droits par la fonction `my_bureau()`. Pour les autres, ce poste apparaît comme un poste ordinaire sans accès.
+- Ce que fait le titulaire de ce poste pour le bureau est signé « Le bureau » dans le journal, l'historique des fiches et les avertissements. Le vrai auteur est noté dans `private.discreet_actors`, que seul le titulaire relit (fonction `discreet_authors`).
 - Le titulaire de ce poste le transmet lui-même à son successeur (« Transmettre » dans « Postes et droits », fonction `transfer_guarantor`). Le successeur garde son propre compte et reçoit tout de suite les mêmes droits.
 - Tout le monde doit donner un prénom et un nom, sauf le titulaire de ce poste, qui peut n'avoir qu'un prénom.
 - Le journal d'activité ne peut être ni modifié ni effacé, même par l'admin.

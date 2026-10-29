@@ -1,3 +1,4 @@
+import { EyeOff } from 'lucide-react'
 import { Avatar } from '../../components/Avatar'
 import { Logo } from '../../components/Logo'
 import { Pill, type Tone } from '../../components/Pill'
@@ -26,6 +27,20 @@ export function ActorAvatar({ entry, size = 28 }: { entry: ActivityEntry; size?:
   return <Avatar person={{ id: entry.actor_id, ...nameParts(entry.actor_name) }} size={size} />
 }
 
+/** Qui a fait l'action. Pour le titulaire du poste d'admin numérique, un œil barré marque ce que les autres voient signé « Le bureau ». */
+function ActorName({ entry }: { entry: ActivityEntry }) {
+  if (!entry.discreet) return entry.actor_name
+  return (
+    <>
+      {entry.actor_name}
+      <span title="Les autres voient « Le bureau »" className="ml-1 inline-flex align-[-2px] text-muted">
+        <EyeOff className="size-3.5" />
+        <span className="sr-only">(les autres voient « Le bureau »)</span>
+      </span>
+    </>
+  )
+}
+
 export function motif(entry: ActivityEntry): string | null {
   const d = entry.details as { motif?: string } | null
   return d?.motif ?? null
@@ -38,7 +53,7 @@ export function ActivityLine({ entry }: { entry: ActivityEntry }) {
       <ActorAvatar entry={entry} size={32} />
       <div className="min-w-0 flex-1">
         <p className="m-0 text-[14px] leading-[1.35]">
-          <strong>{entry.actor_id ? entry.actor_name : 'AEGB, automatique'}</strong> {entry.summary}
+          <strong><ActorName entry={entry} /></strong> {entry.summary}
         </p>
         <p className="m-0 mt-0.5 text-xs text-muted">{relative(entry.created_at)}</p>
       </div>
@@ -55,11 +70,11 @@ export function ActivityRow({ entry }: { entry: ActivityEntry }) {
       <span className="hidden text-[13px] text-muted tabular-nums lg:block">{time(entry.created_at)}</span>
       <span className="flex shrink-0 items-center gap-2.5 lg:min-w-0">
         <ActorAvatar entry={entry} size={30} />
-        <span className="hidden truncate text-[14px] font-bold lg:block">{entry.actor_id ? entry.actor_name : 'AEGB, automatique'}</span>
+        <span className="hidden truncate text-[14px] font-bold lg:block"><ActorName entry={entry} /></span>
       </span>
       <div className="min-w-0 flex-1">
         <p className="m-0 text-[14px] leading-[1.4]">
-          <strong className="lg:hidden">{entry.actor_id ? entry.actor_name : 'AEGB, automatique'} </strong>
+          <strong className="lg:hidden"><ActorName entry={entry} /> </strong>
           {entry.summary}
         </p>
         {why ? <p className="m-0 mt-0.5 text-[13px] text-muted">Motif : {why}</p> : null}
