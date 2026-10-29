@@ -404,10 +404,13 @@ export function InfosGroupe() {
         onConfirm={async () => {
           const { error } = await supabase.rpc('leave_group', { p_conversation: id })
           if (error) throw error
-          // On quitte l'écran d'abord : sinon il redemande les infos d'un groupe qui n'est plus le nôtre.
+          // On quitte l'écran d'abord, et on oublie le groupe une fois l'écran fermé :
+          // sinon il redemanderait les infos d'un groupe qui n'est plus le nôtre.
           navigate('/app/messages', { replace: true })
-          queryClient.removeQueries({ queryKey: ['messages', 'fil', id] })
-          queryClient.removeQueries({ queryKey: ['messages', 'infos', id] })
+          window.setTimeout(() => {
+            queryClient.removeQueries({ queryKey: ['messages', 'fil', id] })
+            queryClient.removeQueries({ queryKey: ['messages', 'infos', id] })
+          }, 300)
           queryClient.invalidateQueries({ queryKey: ['messages', 'liste'] })
           toast('Tu as quitté le groupe.')
         }}
