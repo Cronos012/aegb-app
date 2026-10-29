@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { fullName, initials, longDate, relative, shortDate, time } from './format'
+import { frenchSpaces, fullName, initials, longDate, relative, shortDate, time } from './format'
 
 describe('affichage', () => {
   it('écrit les noms et les initiales', () => {
@@ -24,5 +24,10 @@ describe('affichage', () => {
     expect(relative('2026-10-28T09:00:00Z', now)).toBe('hier')
     expect(relative('2026-10-26T09:00:00Z', now)).toBe('il y a 3 jours')
     expect(relative('2026-10-20T09:00:00Z', now)).toBe('20 oct.')
+  })
+
+  it('colle la ponctuation haute au mot qui la précède', () => {
+    expect(frenchSpaces('Bienvenue dans l’AEGB ! Ça va ? Oui : « super »')).toBe('Bienvenue dans l’AEGB\u00a0! Ça va\u00a0? Oui\u00a0: «\u00a0super\u00a0»')
+    expect(frenchSpaces('https://aegb.fr')).toBe('https://aegb.fr')
   })
 })

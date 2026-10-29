@@ -12,7 +12,7 @@ import { Toggle } from '../../components/Toggle'
 import { OfficialBadge } from '../../components/feed/PostCard'
 import { Thread } from '../../components/messages/Thread'
 import { errorMessage } from '../../lib/errors'
-import { dateTime, longDate, TYPE_LABELS } from '../../lib/format'
+import { dateTime, frenchSpaces, longDate, TYPE_LABELS } from '../../lib/format'
 import { useIsDesktop } from '../../lib/media'
 import { fillWelcome, listDate, useAegbInbox, useAegbSettings, useConversationInfo, WELCOME_ACTIONS, type InboxRow } from '../../lib/messages'
 import { can, useMe } from '../../lib/queries'
@@ -181,7 +181,7 @@ function Preview({ text, actions, name }: { text: string; actions: string[]; nam
           {paragraphs.length ? (
             paragraphs.map((p, i) => (
               <div key={i} className="max-w-[92%] rounded-[16px] rounded-bl-[6px] bg-surface px-3 py-2 text-[14px] leading-[1.45] whitespace-pre-line shadow-[0_1px_1px_rgba(18,22,43,0.06)]">
-                {p}
+                {frenchSpaces(p)}
               </div>
             ))
           ) : (

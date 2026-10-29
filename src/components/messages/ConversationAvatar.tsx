@@ -1,19 +1,21 @@
 import { Users } from 'lucide-react'
 import type { ConversationKind } from '../../lib/messages'
 import { usePhotoUrl } from '../../lib/photos'
-import { Avatar } from '../Avatar'
+import { Avatar, type AvatarPerson } from '../Avatar'
 import { Logo } from '../Logo'
 
 type Props = {
   kind: ConversationKind
   title: string
   photoPath?: string | null
-  other?: { id?: string; first_name: string; last_name: string; avatar_path?: string | null } | null
+  other?: AvatarPerson | null
+  /** Un groupe sans photo montre deux de ses membres. */
+  faces?: AvatarPerson[] | null
   size?: number
 }
 
 /** Le grand groupe et AEGB portent le logo, un groupe sa photo, une conversation privée l'autre membre. */
-export function ConversationAvatar({ kind, title, photoPath, other, size = 52 }: Props) {
+export function ConversationAvatar({ kind, title, photoPath, other, faces, size = 52 }: Props) {
   const url = usePhotoUrl(kind === 'groupe' ? photoPath : null, 'messages')
   if (kind === 'grand_groupe' || kind === 'aegb') {
     return (
@@ -27,6 +29,20 @@ export function ConversationAvatar({ kind, title, photoPath, other, size = 52 }:
   }
   if (url) {
     return <img src={url} alt="" className="shrink-0 rounded-full object-cover" style={{ width: size, height: size }} />
+  }
+  if (!photoPath && faces && faces.length >= 2) {
+    const face = Math.round(size * 0.66)
+    const border = Math.max(2, Math.round(size / 26))
+    return (
+      <span className="relative shrink-0" style={{ width: size, height: size }} aria-hidden="true" title={title}>
+        <span className="absolute top-0 left-0">
+          <Avatar person={faces[0]} size={face} />
+        </span>
+        <span className="absolute right-0 bottom-0 rounded-full bg-surface" style={{ padding: border, margin: -border }}>
+          <Avatar person={faces[1]} size={face} />
+        </span>
+      </span>
+    )
   }
   return (
     <span className="bg-tisse grid shrink-0 place-items-center rounded-full text-safran" style={{ width: size, height: size }} aria-hidden="true" title={title}>

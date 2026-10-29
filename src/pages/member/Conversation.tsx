@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { useQueryClient } from '@tanstack/react-query'
 import { Ban, ChevronLeft, Info, MessageSquare, MoreHorizontal, User, UserRound, Users } from 'lucide-react'
+import { useSession } from '../../auth/session'
 import { Avatar } from '../../components/Avatar'
 import { ButtonLink } from '../../components/Button'
 import { EmptyState, ErrorNote, PageLoader } from '../../components/Feedback'
@@ -13,7 +14,7 @@ import { ConversationAvatar } from '../../components/messages/ConversationAvatar
 import { Thread } from '../../components/messages/Thread'
 import { errorMessage } from '../../lib/errors'
 import { TYPE_LABELS } from '../../lib/format'
-import { setBlocked, useConversationInfo, type ConversationInfo } from '../../lib/messages'
+import { groupFaces, setBlocked, useConversationInfo, type ConversationInfo } from '../../lib/messages'
 
 function subtitle(info: ConversationInfo): string {
   const o = info.other
@@ -62,6 +63,7 @@ export function Conversation() {
   const queryClient = useQueryClient()
   const toast = useToast()
   const info = useConversationInfo(id)
+  const uid = useSession().session?.user.id
   const [menu, setMenu] = useState(false)
   const [block, setBlock] = useState<{ id: string; first_name: string } | null>(null)
 
@@ -113,7 +115,7 @@ export function Conversation() {
 
   const head = (
     <>
-      <ConversationAvatar kind={c.as_aegb ? 'prive' : c.kind} title={title(c)} photoPath={c.photo_path} other={o} size={44} />
+      <ConversationAvatar kind={c.as_aegb ? 'prive' : c.kind} title={title(c)} photoPath={c.photo_path} other={o} faces={groupFaces(c, uid)} size={44} />
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-2">
           <span className="truncate text-[17px] font-bold">{title(c)}</span>
@@ -136,13 +138,17 @@ export function Conversation() {
           <div className="flex min-w-0 flex-1 items-center gap-3 py-1 pr-2">{head}</div>
         )}
         {c.kind === 'prive' && o ? (
-          <ButtonLink to={`/app/membres/${o.id}`} variant="outline" size="md" icon={<UserRound className="size-5" />} className="hidden lg:inline-flex">
-            Voir le profil
-          </ButtonLink>
+          <span className="hidden lg:block">
+            <ButtonLink to={`/app/membres/${o.id}`} variant="outline" size="md" icon={<UserRound className="size-5" />}>
+              Voir le profil
+            </ButtonLink>
+          </span>
         ) : c.kind === 'groupe' || c.kind === 'grand_groupe' ? (
-          <ButtonLink to={`/app/messages/${id}/infos`} variant="outline" size="md" icon={<Info className="size-5" />} className="hidden lg:inline-flex">
-            Infos du groupe
-          </ButtonLink>
+          <span className="hidden lg:block">
+            <ButtonLink to={`/app/messages/${id}/infos`} variant="outline" size="md" icon={<Info className="size-5" />}>
+              Infos du groupe
+            </ButtonLink>
+          </span>
         ) : null}
         {c.kind !== 'aegb' ? (
           <button type="button" onClick={() => setMenu(true)} aria-label="Plus d’options" className="grid size-11 shrink-0 place-items-center rounded-xl text-muted hover:bg-surface-2 lg:hidden">

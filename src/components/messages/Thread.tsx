@@ -217,7 +217,9 @@ export function Thread({ id, info, intro, readOnly = false }: Props) {
       )
     }
   })
-  pending.forEach((m, i) => {
+  // Le vrai message peut arriver avant que l'attente ne soit retirée.
+  const known = new Set(rows.map((m) => m.id))
+  pending.filter((m) => !known.has(m.id)).forEach((m, i) => {
     items.push(<Bubble key={m.id} m={m} uid={uid} staffView={staffView} group={group} first={i === 0 && (!newest || !isMine(newest))} pending onJump={jump} />)
   })
 

@@ -296,6 +296,15 @@ export default function Moderation() {
               <span className="mt-0.5 block text-[13px] leading-[1.45] text-white/80">Le bureau voit seulement le message signalé, jamais le reste de la conversation.</span>
             </span>
           </div>
+          <Card className="p-5">
+            <h2 className="titre m-0 text-[19px]">Ce que voient les membres</h2>
+            <span className="mt-3 inline-flex items-center gap-2 rounded-full border border-line px-3.5 py-1.5 text-[14px] text-muted italic">
+              <EyeOff className="size-4" /> Message masqué par le bureau
+            </span>
+            <p className="m-0 mt-3 text-[13px] leading-[1.5] text-muted">
+              Le message masqué est remplacé par cette mention dans la conversation. Seul son auteur le voit encore, avec le motif. Avec un avertissement, l’auteur le reçoit comme pour une publication.
+            </p>
+          </Card>
           {charter.data ? (
             <Card className="p-5">
               <h2 className="titre m-0 text-[19px]">La charte</h2>

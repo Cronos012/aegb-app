@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import { Ban, ChevronDown, EyeOff, Lock, Pause, Play, Sparkles, UserPlus } from 'lucide-react'
 import { REACTION, usePost } from '../../lib/feed'
 import { clock, duration, fileBadge, fileSize, type MessageFile, type MessageRow } from '../../lib/messages'
+import { frenchSpaces } from '../../lib/format'
 import { usePhotoUrl } from '../../lib/photos'
 import { Avatar } from '../Avatar'
 import { Logo } from '../Logo'
@@ -71,11 +72,11 @@ function bars(seed: string, n = 28): number[] {
 export function Waveform({ seed, progress, mine }: { seed: string; progress: number; mine: boolean }) {
   const list = bars(seed)
   return (
-    <span className="flex h-7 flex-1 items-center gap-[3px]" aria-hidden="true">
+    <span className="flex h-7 min-w-0 flex-1 items-center justify-between gap-[2px] overflow-hidden" aria-hidden="true">
       {list.map((v, i) => {
         const played = i / list.length < progress
         const tone = mine ? (played ? 'bg-safran' : 'bg-white/45') : played ? 'bg-primary' : 'bg-line'
-        return <span key={i} className={`w-[3px] rounded-full ${tone}`} style={{ height: `${Math.round(v * 100)}%` }} />
+        return <span key={i} className={`w-[3px] shrink-0 rounded-full ${tone}`} style={{ height: `${Math.round(v * 100)}%` }} />
       })}
     </span>
   )
@@ -122,7 +123,7 @@ export function VoicePlayer({ file, mine = false, className = '' }: { file: Pick
   }
 
   return (
-    <span className={`flex w-[230px] max-w-full items-center gap-3 ${className}`}>
+    <span className={`flex w-[250px] max-w-full items-center gap-3 ${className}`}>
       <button
         type="button"
         onClick={toggle}
@@ -279,17 +280,20 @@ export function Bubble({ m, uid, staffView, group, first, status, highlighted = 
   const doc = m.files.find((f) => f.kind === 'document')
   const showName = group && !mine && first && !m.as_aegb
   const masked = m.hidden && m.body === null && !m.files.length
+  const aegbLabel = m.as_aegb && (staffView || group)
+  // Une photo seule remplit la bulle, l'heure passe dessus.
+  const photoOnly = !m.deleted && !masked && photos.length > 0 && !m.body && !m.reply && !m.hidden && !voice && !doc && !m.post_id && !showName && !aegbLabel
 
   let content: ReactNode
   if (m.deleted) {
     content = (
-      <span className={`flex items-center gap-2 text-[14px] italic ${mine ? 'text-white/75' : 'text-muted'}`}>
+      <span className="flex items-center gap-2 text-[14px] text-muted italic">
         <Ban className="size-4 shrink-0" /> Message supprimé
       </span>
     )
   } else if (masked) {
     content = (
-      <span className={`flex items-center gap-2 text-[14px] italic ${mine ? 'text-white/75' : 'text-muted'}`}>
+      <span className="flex items-center gap-2 text-[14px] text-muted italic">
         <EyeOff className="size-4 shrink-0" /> Message masqué par le bureau
       </span>
     )
@@ -301,7 +305,7 @@ export function Bubble({ m, uid, staffView, group, first, status, highlighted = 
         {voice ? <VoicePlayer file={voice} mine={mine} /> : null}
         {doc ? <DocumentChip file={doc} mine={mine} /> : null}
         {m.post_id ? <SharedPost id={m.post_id} mine={mine} /> : null}
-        {m.body ? <p className={`m-0 text-[15px] leading-[1.45] break-words whitespace-pre-line ${photos.length || voice || doc || m.post_id ? 'mt-1.5' : ''}`}>{m.body}</p> : null}
+        {m.body ? <p className={`m-0 text-[15px] leading-[1.45] break-words whitespace-pre-line ${photos.length || voice || doc || m.post_id ? 'mt-1.5' : ''}`}>{frenchSpaces(m.body)}</p> : null}
       </>
     )
   }
@@ -329,10 +333,10 @@ export function Bubble({ m, uid, staffView, group, first, status, highlighted = 
         ) : null}
         <div
           {...(canAct ? press : {})}
-          className={`relative rounded-[18px] px-3.5 py-2.5 transition ${tone} ${mine ? 'rounded-br-[6px]' : 'rounded-bl-[6px]'} ${highlighted ? 'ring-[3px] ring-safran' : ''} ${pending ? 'opacity-70' : ''} select-none [-webkit-touch-callout:none] lg:select-text`}
+          className={`relative max-w-full min-w-0 rounded-[18px] transition ${photoOnly ? 'p-1' : 'px-3.5 py-2.5'} ${tone} ${mine ? 'rounded-br-[6px]' : 'rounded-bl-[6px]'} ${highlighted ? 'ring-[3px] ring-safran' : ''} ${pending ? 'opacity-70' : ''} select-none [-webkit-touch-callout:none] lg:select-text`}
         >
           {showName ? <span className="mb-0.5 block text-[13px] font-bold text-link">{m.sender_first_name ? `${m.sender_first_name} ${m.sender_last_name ?? ''}`.trim() : 'Membre parti'}</span> : null}
-          {m.as_aegb && (staffView || group) ? (
+          {aegbLabel ? (
             <span className={`mb-0.5 flex items-center gap-1.5 text-[12px] font-extrabold ${mine ? 'text-safran' : 'text-link'}`}>AEGB {group ? <OfficialBadge /> : null}</span>
           ) : null}
           {m.hidden && !masked ? (
@@ -345,7 +349,11 @@ export function Bubble({ m, uid, staffView, group, first, status, highlighted = 
             </span>
           ) : null}
           {content}
-          <span className={`mt-1 block text-right text-[11px] ${mine && !plainBox ? 'text-white/70' : 'text-muted'}`}>{pending ? 'Envoi…' : clock(m.created_at)}</span>
+          {photoOnly ? (
+            <span className="pointer-events-none absolute right-3 bottom-2.5 rounded-full bg-nuit/55 px-1.5 py-0.5 text-[11px] text-white">{pending ? 'Envoi…' : clock(m.created_at)}</span>
+          ) : (
+            <span className={`mt-1 block text-right text-[11px] ${mine && !plainBox ? 'text-white/70' : 'text-muted'}`}>{pending ? 'Envoi…' : clock(m.created_at)}</span>
+          )}
           {canAct ? (
             <button
               type="button"
@@ -394,7 +402,7 @@ export function ArrivalCard({ m, uid, onHello }: { m: MessageRow; uid: string | 
         <span className="mb-1 flex items-center gap-1.5 text-[13px] font-extrabold text-ink">
           AEGB <OfficialBadge />
         </span>
-        <p className="m-0 text-[15px] leading-[1.45]">{m.body}</p>
+        <p className="m-0 text-[15px] leading-[1.45]">{frenchSpaces(m.body ?? '')}</p>
         <div className="mt-2 flex items-center justify-between gap-3">
           {member && member !== uid ? (
             <button type="button" onClick={() => onHello(member)} className="inline-flex h-9 items-center gap-1.5 rounded-full bg-safran-pale px-3.5 text-[13px] font-bold text-[#6B4A00] hover:brightness-97">
@@ -422,7 +430,7 @@ export function WelcomeMessage({ m, actions }: { m: MessageRow; actions: { label
       ) : null}
       {paragraphs.map((p, i) => (
         <div key={i} className="max-w-[min(100%,520px)] rounded-[18px] rounded-bl-[6px] bg-surface px-3.5 py-2.5 shadow-[0_1px_1px_rgba(18,22,43,0.06)]">
-          <p className="m-0 text-[15px] leading-[1.45] whitespace-pre-line">{p}</p>
+          <p className="m-0 text-[15px] leading-[1.45] whitespace-pre-line">{frenchSpaces(p)}</p>
           {i === paragraphs.length - 1 ? <span className="mt-1 block text-right text-[11px] text-muted">{clock(m.created_at)}</span> : null}
         </div>
       ))}

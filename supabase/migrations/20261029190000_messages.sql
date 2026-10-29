@@ -730,7 +730,8 @@ returns table (
   last_as_aegb boolean,
   last_preview text,
   unread integer,
-  blocked boolean
+  blocked boolean,
+  faces jsonb
 )
 language plpgsql
 stable
@@ -765,7 +766,19 @@ begin
        and u.sender_id is distinct from auth.uid()
        and u.kind <> 'systeme'
        and u.blocked_for is distinct from auth.uid()),
-    o.id is not null and exists (select 1 from public.blocks b where b.blocker_id = auth.uid() and b.blocked_id = o.id)
+    o.id is not null and exists (select 1 from public.blocks b where b.blocker_id = auth.uid() and b.blocked_id = o.id),
+    -- Un groupe sans photo montre deux de ses membres.
+    case when c.kind = 'groupe' and c.photo_path is null then (
+      select jsonb_agg(jsonb_build_object('id', f.id, 'first_name', f.first_name, 'last_name', f.last_name, 'avatar_path', f.avatar_path))
+      from (
+        select p.id, p.first_name, p.last_name, p.avatar_path
+        from public.conversation_members x
+        join public.profiles p on p.id = x.member_id and p.status = 'actif'
+        where x.conversation_id = c.id and x.member_id <> auth.uid()
+        order by x.joined_at, p.first_name
+        limit 2
+      ) f
+    ) end
   from public.conversation_members me
   join public.conversations c on c.id = me.conversation_id
   left join lateral (
@@ -1029,6 +1042,9 @@ begin
   if v_title <> c.title then
     perform private.system_message(p_conversation, auth.uid(),
       private.full_name(auth.uid()) || ' a renommé le groupe « ' || v_title || ' »');
+  end if;
+  if p_photo is not null and v_old is distinct from p_photo then
+    perform private.system_message(p_conversation, auth.uid(), private.full_name(auth.uid()) || ' a changé la photo du groupe');
   end if;
   -- L'ancienne photo, que l'appli efface.
   return case when p_photo is not null and v_old is distinct from p_photo then v_old end;
