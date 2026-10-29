@@ -27,6 +27,9 @@ create table public.conversations (
   created_by uuid references public.profiles (id) on delete set null,
   created_at timestamptz not null default now(),
   last_message_at timestamptz,
+  -- Change à chaque nouveauté (message, réaction, suppression) : les appareils
+  -- qui écoutent en direct savent qu'il faut recharger la conversation.
+  changed_at timestamptz not null default now(),
   constraint conversations_shape check (
     (kind = 'prive' and pair_key is not null and title is null and member_id is null)
     or (kind = 'groupe' and title is not null and pair_key is null and member_id is null)
@@ -289,7 +292,7 @@ begin
   insert into public.messages (conversation_id, kind, as_aegb, body, meta)
   values (v_conv, 'bienvenue', true, private.welcome_text(s.welcome_text, p_member),
           jsonb_build_object('actions', to_jsonb(s.welcome_actions), 'essai', p_test));
-  update public.conversations set last_message_at = now() where id = v_conv;
+  update public.conversations set last_message_at = now(), changed_at = clock_timestamp() where id = v_conv;
 end;
 $$;
 
@@ -303,7 +306,7 @@ as $$
 begin
   insert into public.messages (conversation_id, kind, sender_id, body)
   values (p_conv, 'systeme', p_actor, p_text);
-  update public.conversations set last_message_at = now() where id = p_conv;
+  update public.conversations set last_message_at = now(), changed_at = clock_timestamp() where id = p_conv;
 end;
 $$;
 
@@ -476,7 +479,7 @@ begin
       values (v_group, 'arrivee', true,
               private.full_name(new.id) || ' vient de rejoindre l''AEGB. Souhaitez-lui la bienvenue !',
               jsonb_build_object('member', new.id));
-      update public.conversations set last_message_at = now() where id = v_group;
+      update public.conversations set last_message_at = now(), changed_at = clock_timestamp() where id = v_group;
       -- Sa propre annonce n'est pas « non lue » pour le nouveau membre.
       update public.conversation_members set last_read_at = clock_timestamp()
       where conversation_id = v_group and member_id = new.id;
@@ -627,7 +630,7 @@ begin
     values (p_id, case when private.is_guarantor(auth.uid()) then null else auth.uid() end, private.signature(auth.uid()));
   end if;
 
-  update public.conversations set last_message_at = now() where id = p_conversation;
+  update public.conversations set last_message_at = now(), changed_at = clock_timestamp() where id = p_conversation;
   update public.conversation_members set last_read_at = clock_timestamp()
   where conversation_id = p_conversation and member_id = auth.uid();
 end;
@@ -662,6 +665,7 @@ begin
   delete from public.message_files where message_id = p_id;
   delete from public.message_reactions where message_id = p_id;
   update public.messages set deleted_at = now(), body = null, post_id = null, meta = '{}'::jsonb where id = p_id;
+  update public.conversations set changed_at = clock_timestamp() where id = m.conversation_id;
   return v_paths;
 end;
 $$;
@@ -688,6 +692,7 @@ begin
     insert into public.message_reactions (message_id, member_id, kind) values (p_id, auth.uid(), p_kind)
     on conflict (message_id, member_id) do update set kind = excluded.kind, created_at = now();
   end if;
+  update public.conversations set changed_at = clock_timestamp() where id = m.conversation_id;
 end;
 $$;
 
@@ -1019,7 +1024,7 @@ begin
   end if;
 
   update public.conversations
-  set title = v_title, photo_path = coalesce(p_photo, photo_path)
+  set title = v_title, photo_path = coalesce(p_photo, photo_path), changed_at = clock_timestamp()
   where id = p_conversation;
   if v_title <> c.title then
     perform private.system_message(p_conversation, auth.uid(),
@@ -1251,6 +1256,7 @@ begin
       end if;
     end if;
     update public.messages set hidden_at = now(), hidden_reason = private.reason_label(v_reason) where id = p_id;
+    update public.conversations set changed_at = clock_timestamp() where id = m.conversation_id;
     if p_decision = 'masquer_avertir' then
       insert into public.member_warnings (member_id, given_by, given_by_name, reason)
       values (m.sender_id, auth.uid(), private.full_name(auth.uid()),

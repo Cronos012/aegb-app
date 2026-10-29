@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight, Play, X } from 'lucide-react'
 import type { Media } from '../../lib/feed'
-import { usePhotoUrl } from '../../lib/photos'
+import { usePhotoUrl, type Bucket } from '../../lib/photos'
 
 /** Le format d'une photo seule, entre portrait 4:5 et paysage large, comme sur les réseaux. */
 function ratio(m: Pick<Media, 'width' | 'height'>): number {
@@ -9,8 +9,8 @@ function ratio(m: Pick<Media, 'width' | 'height'>): number {
   return Math.min(1.91, Math.max(0.8, m.width / m.height))
 }
 
-function Photo({ media, className = '', onClick, label }: { media: Pick<Media, 'path'>; className?: string; onClick?: () => void; label?: string }) {
-  const url = usePhotoUrl(media.path, 'publications')
+function Photo({ media, className = '', onClick, label, bucket = 'publications' }: { media: Pick<Media, 'path'>; className?: string; onClick?: () => void; label?: string; bucket?: Bucket }) {
+  const url = usePhotoUrl(media.path, bucket)
   const body = url ? <img src={url} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" /> : <span className="block h-full w-full animate-pulse bg-surface-2" />
   if (!onClick) return <div className={`overflow-hidden bg-surface-2 ${className}`}>{body}</div>
   return (
@@ -59,9 +59,9 @@ export function MediaGrid({ media, onOpen }: { media: Media[]; onOpen: (index: n
 }
 
 /** Une case carrée de la grille d'un profil : la première photo, ou l'image de la vidéo. */
-export function MediaThumb({ media, className = '' }: { media: Pick<Media, 'path' | 'kind'>; className?: string }) {
-  const url = usePhotoUrl(media.path, 'publications')
-  if (media.kind === 'photo') return <Photo media={media} className={className} />
+export function MediaThumb({ media, className = '', bucket = 'publications' }: { media: Pick<Media, 'path' | 'kind'>; className?: string; bucket?: Bucket }) {
+  const url = usePhotoUrl(media.kind === 'video' ? media.path : null, bucket)
+  if (media.kind === 'photo') return <Photo media={media} className={className} bucket={bucket} />
   return (
     <div className={`relative overflow-hidden bg-nuit ${className}`}>
       {url ? <video src={`${url}#t=0.1`} muted playsInline preload="metadata" className="h-full w-full object-cover" /> : null}
@@ -75,7 +75,7 @@ export function MediaThumb({ media, className = '' }: { media: Pick<Media, 'path
 }
 
 /** Les photos en grand, sur fond noir. Flèches, balayage et Échap. */
-export function Lightbox({ media, start: first, onClose }: { media: Media[]; start: number; onClose: () => void }) {
+export function Lightbox({ media, start: first, onClose, bucket = 'publications' }: { media: Pick<Media, 'path' | 'kind'>[]; start: number; onClose: () => void; bucket?: Bucket }) {
   const [current, setCurrent] = useState(first)
   const start = useRef<number | null>(null)
   const photos = media.filter((m) => m.kind === 'photo')
@@ -120,7 +120,7 @@ export function Lightbox({ media, start: first, onClose }: { media: Media[]; sta
         </button>
       </div>
       <div className="relative flex min-h-0 flex-1 items-center justify-center px-2 pb-[max(env(safe-area-inset-bottom),16px)]" onClick={(e) => e.target === e.currentTarget && onClose()}>
-        <LightboxPhoto key={photo.path} path={photo.path} />
+        <LightboxPhoto key={photo.path} path={photo.path} bucket={bucket} />
         {current > 0 ? (
           <button type="button" onClick={() => setCurrent(current - 1)} aria-label="Photo précédente" className="absolute left-3 hidden size-12 place-items-center rounded-full bg-white/10 hover:bg-white/20 lg:grid">
             <ChevronLeft className="size-7" />
@@ -136,7 +136,7 @@ export function Lightbox({ media, start: first, onClose }: { media: Media[]; sta
   )
 }
 
-function LightboxPhoto({ path }: { path: string }) {
-  const url = usePhotoUrl(path, 'publications')
+function LightboxPhoto({ path, bucket }: { path: string; bucket: Bucket }) {
+  const url = usePhotoUrl(path, bucket)
   return url ? <img src={url} alt="" className="max-h-full max-w-full object-contain" /> : <span className="size-10 animate-pulse rounded-full bg-white/20" />
 }

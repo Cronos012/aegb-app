@@ -1,4 +1,4 @@
-import { useId, useState, type InputHTMLAttributes, type ReactNode, type TextareaHTMLAttributes } from 'react'
+import { useId, useState, type InputHTMLAttributes, type ReactNode, type Ref, type TextareaHTMLAttributes } from 'react'
 import { Eye, EyeOff } from 'lucide-react'
 
 /** Le style des champs, sans la hauteur : chaque champ choisit la sienne. */
@@ -82,6 +82,7 @@ export function PasswordField({ label, hint, error, labelRight, id, className = 
 }
 
 type AreaProps = TextareaHTMLAttributes<HTMLTextAreaElement> & {
+  ref?: Ref<HTMLTextAreaElement>
   label: string
   counter?: boolean
   error?: string | null
