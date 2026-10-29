@@ -140,11 +140,20 @@ insert into public.aegb_settings (welcome_text) values (
   || 'Une question ? Réponds simplement à ce message, un membre du bureau te répondra.'
 );
 
--- Les messages signalés rejoignent la modération du lot 2.
-alter table public.reports add column message_id uuid references public.messages (id) on delete cascade;
-alter table public.reports drop constraint reports_check;
-alter table public.reports add constraint reports_one_target check (num_nonnulls(post_id, comment_id, message_id) = 1);
-create unique index reports_message_once on public.reports (message_id, reporter_id) where message_id is not null;
+-- Les messages signalés rejoignent la modération du lot 2. Ils ont leur
+-- propre table, pour ne rien retirer à celle des publications.
+create table public.message_reports (
+  id bigint generated always as identity primary key,
+  message_id uuid not null references public.messages (id) on delete cascade,
+  reporter_id uuid not null references public.profiles (id) on delete cascade,
+  reason public.report_reason not null,
+  created_at timestamptz not null default now(),
+  resolved_at timestamptz,
+  unique (message_id, reporter_id)
+);
+
+create index message_reports_pending_idx on public.message_reports (created_at) where resolved_at is null;
+create index message_reports_reporter_idx on public.message_reports (reporter_id);
 
 alter table public.moderation_decisions add column message_id uuid references public.messages (id) on delete set null;
 
@@ -201,7 +210,7 @@ as $$
           (public.can_read_conversation(m.conversation_id)
             and (m.hidden_at is null or m.sender_id = (select auth.uid())))
           or (public.can('moderation', 'lecture')
-            and exists (select 1 from public.reports r where r.message_id = m.id))
+            and exists (select 1 from public.message_reports r where r.message_id = m.id))
         )
     )
     or exists (
@@ -931,7 +940,7 @@ begin
     v.deleted_at is not null,
     v.hidden_at is not null,
     v.hidden_reason,
-    exists (select 1 from public.reports rp where rp.message_id = v.id and rp.reporter_id = auth.uid())
+    exists (select 1 from public.message_reports rp where rp.message_id = v.id and rp.reporter_id = auth.uid())
   from visible v
   left join public.profiles s on s.id = v.sender_id
   left join public.aegb_replies ar on ar.message_id = v.id
@@ -1183,8 +1192,8 @@ begin
   if m.sender_id = auth.uid() then
     raise exception 'Tu ne peux pas signaler ton propre message.' using errcode = '22023';
   end if;
-  insert into public.reports (reporter_id, message_id, reason) values (auth.uid(), p_id, p_reason)
-  on conflict (message_id, reporter_id) where message_id is not null do nothing;
+  insert into public.message_reports (reporter_id, message_id, reason) values (auth.uid(), p_id, p_reason)
+  on conflict (message_id, reporter_id) do nothing;
   return found;
 end;
 $$;
@@ -1214,7 +1223,7 @@ begin
   if not found then
     raise exception 'Ce message n''existe plus.' using errcode = 'P0002';
   end if;
-  select count(*) into v_reports from public.reports where message_id = p_id and resolved_at is null;
+  select count(*) into v_reports from public.message_reports where message_id = p_id and resolved_at is null;
   if v_reports = 0 then
     -- Le bureau ne lit pas les conversations : il ne décide que sur un message signalé.
     raise exception 'Il n''y a plus rien à examiner ici.' using errcode = '22023';
@@ -1227,7 +1236,7 @@ begin
     end if;
     if v_reason is null then
       select r.reason into v_reason
-      from public.reports r
+      from public.message_reports r
       where r.message_id = p_id and r.resolved_at is null
       group by r.reason
       order by count(*) desc, r.reason
@@ -1249,7 +1258,7 @@ begin
     end if;
   end if;
 
-  update public.reports set resolved_at = now() where message_id = p_id and resolved_at is null;
+  update public.message_reports set resolved_at = now() where message_id = p_id and resolved_at is null;
 
   insert into public.moderation_decisions
     (message_id, author_id, author_name, excerpt, decision, reason, reports, decided_by, decided_by_name)
@@ -1269,18 +1278,12 @@ begin
 end;
 $$;
 
--- La file d'attente du bureau, avec les messages signalés. Pour un message,
--- le bureau voit ce message seul, jamais la conversation autour.
-drop function public.moderation_queue();
-
-create function public.moderation_queue()
+-- Les messages signalés, à côté de la file du lot 2 (publications et
+-- commentaires). Le bureau voit ce message seul, jamais la conversation autour.
+create function public.moderation_messages()
 returns table (
-  post_id uuid,
-  comment_id uuid,
   message_id uuid,
   place text,
-  parent_post_id uuid,
-  parent_author_name text,
   author_id uuid,
   author_first_name text,
   author_last_name text,
@@ -1308,38 +1311,30 @@ begin
   perform private.require('moderation', 'lecture');
   return query
   with by_reason as (
-    select r.post_id, r.comment_id, r.message_id, r.reason, count(*)::integer as n, max(r.created_at) as last_at
-    from public.reports r
+    select r.message_id, r.reason, count(*)::integer as n, max(r.created_at) as last_at
+    from public.message_reports r
     where r.resolved_at is null
-    group by r.post_id, r.comment_id, r.message_id, r.reason
+    group by r.message_id, r.reason
   ),
   pending as (
-    select b.post_id, b.comment_id, b.message_id, sum(b.n)::integer as n, max(b.last_at) as last_at,
+    select b.message_id, sum(b.n)::integer as n, max(b.last_at) as last_at,
            jsonb_object_agg(b.reason, b.n) as reasons
     from by_reason b
-    group by b.post_id, b.comment_id, b.message_id
+    group by b.message_id
   )
   select
-    q.post_id,
-    q.comment_id,
     q.message_id,
-    case
-      when q.post_id is not null then 'fil'
-      when q.comment_id is not null then 'commentaires'
-      else cv.kind::text
-    end,
-    c.post_id,
-    case when c.id is not null then coalesce(private.full_name(cp.author_id), 'Bureau de l''AEGB') end,
+    cv.kind::text,
     a.id,
     a.first_name,
     a.last_name,
     a.avatar_path,
-    coalesce(p.body, c.body, msg.body),
-    coalesce(m.path, mf.path),
-    coalesce(m.kind, mf.kind),
+    msg.body,
+    mf.path,
+    mf.kind,
     mf.duration,
-    coalesce(p.created_at, c.created_at, msg.created_at),
-    coalesce(p.hidden_at, c.hidden_at, msg.hidden_at) is not null,
+    msg.created_at,
+    msg.hidden_at is not null,
     q.n,
     q.reasons,
     q.last_at,
@@ -1347,15 +1342,9 @@ begin
     (select max(w.created_at) from public.member_warnings w where w.member_id = a.id),
     (select w.reason from public.member_warnings w where w.member_id = a.id order by w.created_at desc limit 1)
   from pending q
-  left join public.posts p on p.id = q.post_id
-  left join public.comments c on c.id = q.comment_id
-  left join public.posts cp on cp.id = c.post_id
-  left join public.messages msg on msg.id = q.message_id
-  left join public.conversations cv on cv.id = msg.conversation_id
-  left join public.profiles a on a.id = coalesce(p.author_id, c.author_id, msg.sender_id)
-  left join lateral (
-    select pm.path, pm.kind from public.post_media pm where pm.post_id = p.id order by pm.position limit 1
-  ) m on true
+  join public.messages msg on msg.id = q.message_id
+  join public.conversations cv on cv.id = msg.conversation_id
+  left join public.profiles a on a.id = msg.sender_id
   left join lateral (
     select f.path, f.kind, f.duration from public.message_files f where f.message_id = msg.id order by f.position limit 1
   ) mf on true
@@ -1372,8 +1361,10 @@ set search_path = ''
 as $$
   select case when public.can('moderation', 'lecture') then (
     select count(*)::integer from (
-      select distinct post_id, comment_id, message_id from public.reports where resolved_at is null
+      select distinct post_id, comment_id from public.reports where resolved_at is null
     ) t
+  ) + (
+    select count(distinct message_id)::integer from public.message_reports where resolved_at is null
   ) end;
 $$;
 
@@ -1536,13 +1527,14 @@ alter table public.message_reactions enable row level security;
 alter table public.aegb_replies enable row level security;
 alter table public.blocks enable row level security;
 alter table public.aegb_settings enable row level security;
+alter table public.message_reports enable row level security;
 
 revoke all on public.conversations, public.conversation_members, public.messages, public.message_files,
-  public.message_reactions, public.aegb_replies, public.blocks, public.aegb_settings
+  public.message_reactions, public.aegb_replies, public.blocks, public.aegb_settings, public.message_reports
   from anon, authenticated;
 
--- Les messages, leurs fichiers, leurs réactions et qui a répondu pour AEGB
--- ne se lisent que par les fonctions ci-dessus : pas d'accès direct.
+-- Les messages, leurs fichiers, leurs réactions, qui a répondu pour AEGB et
+-- les signalements ne se lisent que par les fonctions ci-dessus.
 grant select on public.conversations, public.conversation_members, public.blocks, public.aegb_settings to authenticated;
 
 create policy "Conversations visibles par leurs membres"
@@ -1603,7 +1595,7 @@ revoke execute on function
   public.unblock_member(uuid),
   public.report_message(uuid, public.report_reason),
   public.moderate_message(uuid, public.moderation_decision, public.report_reason),
-  public.moderation_queue(),
+  public.moderation_messages(),
   public.aegb_inbox(),
   public.aegb_pending(),
   public.save_welcome(text, text[], boolean),
@@ -1632,7 +1624,7 @@ grant execute on function
   public.unblock_member(uuid),
   public.report_message(uuid, public.report_reason),
   public.moderate_message(uuid, public.moderation_decision, public.report_reason),
-  public.moderation_queue(),
+  public.moderation_messages(),
   public.aegb_inbox(),
   public.aegb_pending(),
   public.save_welcome(text, text[], boolean),

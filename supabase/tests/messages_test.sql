@@ -467,7 +467,7 @@ begin
 
   perform set_config('request.jwt.claims', json_build_object('sub', com, 'role', 'authenticated')::text, true);
   set local role authenticated;
-  select count(*) into n from public.moderation_queue()
+  select count(*) into n from public.moderation_messages()
   where message_id = m7 and place = 'groupe' and author_id = b and body = 'Regardez ça' and media_kind = 'photo' and reports = 1;
   if n <> 1 then failures := failures || text 'modérer : message absent de la file'; end if;
   if coalesce(public.moderation_pending(), 0) < 1 then failures := failures || text 'modérer : compteur sans le message'; end if;
@@ -481,7 +481,7 @@ begin
   exception when invalid_parameter_value then null;
   end;
   perform public.moderate_message(m7, 'masquer_avertir');
-  select count(*) into n from public.moderation_queue() where message_id = m7;
+  select count(*) into n from public.moderation_messages() where message_id = m7;
   if n <> 0 then failures := failures || text 'modérer : message encore dans la file'; end if;
   reset role;
   select count(*) into n from public.member_warnings where member_id = b and reason like 'Un message masqué%';
