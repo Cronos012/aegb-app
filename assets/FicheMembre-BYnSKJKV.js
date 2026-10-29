@@ -1,0 +1,1 @@
+import{Y as e,st as t}from"./queries-BdzXpWl1.js";import{o as n}from"./BureauPage-zu5bWS8I.js";import r,{t as i}from"./Membres-BTq2JkEL.js";var a=e();function o(){let{id:e}=t();return n()?(0,a.jsx)(r,{openId:e}):(0,a.jsx)(i,{id:e})}export{o as default};
