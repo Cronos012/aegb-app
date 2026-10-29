@@ -31,9 +31,11 @@ L'appli s'ouvre sur http://localhost:5173.
 - `src/pages/bureau` : mode bureau (tableau de bord, comptes, membres, annonces, modération, compte AEGB, postes, journal).
 - `src/components/feed` : les morceaux du fil (carte de publication, réactions, commentaires, photos).
 - `src/components/messages` : les morceaux de la messagerie (liste, bulles, saisie, vocal).
+- `src/components/dues` : les morceaux de la cotisation (grille des mois, paiement, encaissement).
 - `src/lib` : accès à Supabase, requêtes, mise en forme.
 - `supabase/migrations` : la structure de la base, ses règles d'accès et ses fonctions.
 - `supabase/tests` : les scripts qui vérifient les règles d'accès.
+- `supabase/functions/helloasso` : la fonction serveur qui parle à HelloAsso (paiement par carte).
 
 ## La base Supabase
 
@@ -63,7 +65,18 @@ Toute la sécurité est dans la base : chaque table a des règles d'accès (RLS)
 - Le compte officiel AEGB : chaque membre a une conversation avec lui. Le bureau y répond au nom d'AEGB ; le membre ne voit jamais qui a répondu, le bureau si. À la validation d'un compte, AEGB envoie le message de bienvenue (modifiable dans « Compte AEGB ») et annonce l'arrivée dans le grand groupe.
 - Un message signalé arrive en modération seul : le bureau ne voit jamais le reste de la conversation.
 
-Pour vérifier les règles d'accès, colle `supabase/tests/socle_test.sql`, puis `supabase/tests/fil_test.sql`, puis `supabase/tests/messages_test.sql`, dans l'éditeur SQL de Supabase. Chaque script se termine par une erreur volontaire qui annule tout : le message doit commencer par « TESTS OK ».
+### Les cotisations (lot 4)
+
+- L'année va de septembre à août. Le montant par mois, la date de début, les types de membres qui cotisent et le seuil du droit de solidarité se règlent dans « Réglages de la cotisation ». Un membre arrivé en cours d'année ne doit que les mois à partir de sa validation.
+- Le membre paie par carte avec HelloAsso, un ou plusieurs mois d'un coup, jusqu'en août (l'année suivante s'ouvre en juillet). Un paiement par carte n'est compté que lorsque HelloAsso le confirme : la fonction serveur relit toujours le paiement chez HelloAsso, elle ne croit jamais l'appli ni la notification seule.
+- Le bureau encaisse les espèces, virements et chèques. Chaque paiement donne une quittance numérotée (2026-0001, 2026-0002…), en PDF, envoyée au membre dans sa conversation AEGB.
+- Le journal financier ne se modifie pas et ne s'efface pas. Une erreur se corrige par une contre-passation : une écriture inverse, et les deux restent visibles. Un remboursement se fait dans HelloAsso, puis on passe la contre-passation.
+- Le 1er de chaque mois, AEGB envoie un rappel aux membres en retard (une fois par mois, réglage « Relance automatique »).
+- Seuls les postes qui ont l'écran « Trésorerie » voient l'argent des autres.
+
+Pour brancher HelloAsso, il faut quatre secrets de plus dans GitHub (Settings → Secrets and variables → Actions) : `HELLOASSO_CLIENT_ID` et `HELLOASSO_CLIENT_SECRET` (HelloAsso → Mon compte → Intégrations et API), `HELLOASSO_ORG` (le nom de l'asso dans l'adresse de sa page HelloAsso) et `HELLOASSO_ENV` (`sandbox` pour les essais, `production` pour le vrai). Dans HelloAsso, l'adresse de notification à donner est `https://lahllstfpmjfcavptlmt.supabase.co/functions/v1/helloasso`. Tant que ces secrets manquent, l'appli dit que le paiement par carte n'est pas encore branché, et le bureau peut quand même encaisser à la main.
+
+Pour vérifier les règles d'accès, colle `supabase/tests/socle_test.sql`, puis `supabase/tests/fil_test.sql`, puis `supabase/tests/messages_test.sql`, puis `supabase/tests/cotisations_test.sql`, dans l'éditeur SQL de Supabase. Chaque script se termine par une erreur volontaire qui annule tout : le message doit commencer par « TESTS OK ».
 
 ### Mettre la base à jour
 
@@ -71,6 +84,8 @@ La base en ligne se met à jour toute seule : quand un fichier de `supabase/migr
 
 - `SUPABASE_ACCESS_TOKEN` : un jeton créé dans Supabase, Account → Access Tokens.
 - `SUPABASE_DB_PASSWORD` : le mot de passe de la base (Project Settings → Database ; « Reset database password » si on ne l'a plus, l'appli ne s'en sert pas).
+
+Le même travail publie la fonction serveur HelloAsso et lui passe ses secrets, s'ils sont dans GitHub.
 
 Chaque fichier de migration porte le numéro enregistré dans la base : ne jamais renommer un fichier déjà appliqué.
 

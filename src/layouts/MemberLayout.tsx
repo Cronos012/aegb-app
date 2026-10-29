@@ -46,6 +46,9 @@ export function MemberLayout() {
     useMatch('/app/fil/:id'),
     useMatch('/app/messages/:id'),
     useMatch('/app/messages/:id/infos'),
+    useMatch('/app/cotisation/payer'),
+    useMatch('/app/cotisation/retour/:id'),
+    useMatch('/app/cotisation/quittances/:numero'),
   ].some(Boolean)
 
   return (
@@ -56,7 +59,7 @@ export function MemberLayout() {
           <SideLink to="/app/fil" label="Fil d'actu" icon={House} />
           <SideLink to="/app/messages" label="Messages" icon={MessageSquare} badge={unread} />
           <SideLink to="/app/evenements" label="Événements" icon={Calendar} soon />
-          <SideLink to="/app/cotisation" label="Cotisation" icon={CreditCard} soon />
+          <SideLink to="/app/cotisation" label="Cotisation" icon={CreditCard} />
           <SideLink to="/app/votes" label="Votes" icon={SquareCheckBig} soon />
           <SideLink to="/app/documents" label="Documents" icon={FileText} soon />
           <SideLink to="/app/membres" label="Membres" icon={Users} />

@@ -2,6 +2,7 @@ import { useState, type ReactNode } from 'react'
 import { Link } from 'react-router'
 import { Ban, ChevronLeft, Lock, Mail, RotateCcw, Smartphone, TriangleAlert, X } from 'lucide-react'
 import { Avatar } from '../../components/Avatar'
+import { MemberDues } from '../../components/dues/MemberDues'
 import { Button } from '../../components/Button'
 import { Dialog } from '../../components/Dialog'
 import { ErrorNote, PageLoader } from '../../components/Feedback'
@@ -73,7 +74,7 @@ export function FichePanel({ id, onClose, drawer = false }: { id: string; onClos
   const history = useMemberHistory(id)
   const warnings = useWarnings(id)
   const roles = useRoles().data ?? []
-  const [tab, setTab] = useState<'infos' | 'historique' | 'avertissements'>('infos')
+  const [tab, setTab] = useState<'infos' | 'cotisation' | 'historique' | 'avertissements'>('infos')
   const [dialog, setDialog] = useState<ReasonDialog>(null)
   const [reason, setReason] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -197,6 +198,14 @@ export function FichePanel({ id, onClose, drawer = false }: { id: string; onClos
     </div>
   )
 
+  // La cotisation n'apparaît qu'aux postes qui ont accès à l'argent.
+  const seesMoney = can(me, 'tresorerie', 'lecture') && m.status !== 'en_attente' && m.status !== 'refuse'
+  const duesSection = seesMoney ? (
+    <Section title="Cotisation">
+      <MemberDues memberId={m.id} canCollect={can(me, 'tresorerie')} />
+    </Section>
+  ) : null
+
   const historyList = (
     <Section title="Historique">
       {history.isPending ? <PageLoader /> : null}
@@ -306,6 +315,7 @@ export function FichePanel({ id, onClose, drawer = false }: { id: string; onClos
           {(
             [
               ['infos', 'Infos'],
+              ...(seesMoney ? ([['cotisation', 'Cotisation']] as const) : []),
               ['historique', 'Historique'],
               ['avertissements', `Avertissements${warnings.data?.length ? ` · ${warnings.data.length}` : ''}`],
             ] as const
@@ -316,7 +326,7 @@ export function FichePanel({ id, onClose, drawer = false }: { id: string; onClos
           ))}
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
-          {tab === 'infos' ? infos : tab === 'historique' ? historyList : warningList}
+          {tab === 'infos' ? infos : tab === 'cotisation' ? duesSection : tab === 'historique' ? historyList : warningList}
           {m.status === 'suspendu' && m.suspension_reason ? (
             <p className="m-0 mt-5 rounded-xl bg-danger-soft px-3.5 py-2.5 text-[13px]">
               <strong>Compte suspendu le {m.suspended_at ? longDate(m.suspended_at) : ''}.</strong> Motif : {m.suspension_reason}
@@ -345,6 +355,7 @@ export function FichePanel({ id, onClose, drawer = false }: { id: string; onClos
           </p>
         ) : null}
         {infos}
+        {duesSection}
         {historyList}
         {warningList}
         <ErrorNote error={dialog ? null : error} />
