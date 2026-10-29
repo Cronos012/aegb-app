@@ -6,9 +6,16 @@ import { FullScreenLoader, PageLoader } from './components/Feedback'
 import { BureauLayout } from './layouts/BureauLayout'
 import { MemberLayout } from './layouts/MemberLayout'
 import { useIsDesktop } from './lib/media'
+import { Annuaire } from './pages/member/Annuaire'
 import { Bientot } from './pages/member/Bientot'
+import { Fil } from './pages/member/Fil'
+import { MembreProfil } from './pages/member/MembreProfil'
+import { Menu } from './pages/member/Menu'
 import { ModifierProfil } from './pages/member/ModifierProfil'
 import { Profil } from './pages/member/Profil'
+import { Publication } from './pages/member/Publication'
+import { Publier } from './pages/member/Publier'
+import { Recherche } from './pages/member/Recherche'
 import { Accueil } from './pages/public/Accueil'
 import { AuthRetour } from './pages/public/AuthRetour'
 import { Charte } from './pages/public/Charte'
@@ -26,6 +33,8 @@ const Membres = lazy(() => import('./pages/bureau/Membres'))
 const FicheMembre = lazy(() => import('./pages/bureau/FicheMembre'))
 const Postes = lazy(() => import('./pages/bureau/Postes'))
 const Journal = lazy(() => import('./pages/bureau/Journal'))
+const Annonces = lazy(() => import('./pages/bureau/Annonces'))
+const Moderation = lazy(() => import('./pages/bureau/Moderation'))
 
 /** Sur téléphone, l'accueil de l'appli ; sur ordinateur, le site de l'association. */
 function Home() {
@@ -53,9 +62,18 @@ export function App() {
         <Route element={<MemberGate />}>
           <Route path="/app" element={<MemberLayout />}>
             <Route index element={<Navigate to="/app/fil" replace />} />
-            <Route path="fil" element={<Bientot page="fil" />} />
+            <Route path="fil" element={<Fil />} />
+            <Route path="fil/:id" element={<Publication />} />
+            <Route path="publier" element={<Publier />} />
+            <Route path="recherche" element={<Recherche />} />
+            <Route path="menu" element={<Menu />} />
+            <Route path="membres" element={<Annuaire />} />
+            <Route path="membres/:id" element={<MembreProfil />} />
             <Route path="messages" element={<Bientot page="messages" />} />
             <Route path="cotisation" element={<Bientot page="cotisation" />} />
+            <Route path="evenements" element={<Bientot page="evenements" />} />
+            <Route path="votes" element={<Bientot page="votes" />} />
+            <Route path="documents" element={<Bientot page="documents" />} />
             <Route path="profil" element={<Profil />} />
             <Route path="profil/modifier" element={<ModifierProfil />} />
           </Route>
@@ -69,6 +87,12 @@ export function App() {
               <Route element={<ScreenGate screen="membres" />}>
                 <Route path="membres" element={<Suspense fallback={<PageLoader />}><Membres /></Suspense>} />
                 <Route path="membres/:id" element={<Suspense fallback={<PageLoader />}><FicheMembre /></Suspense>} />
+              </Route>
+              <Route element={<ScreenGate screen="annonces" />}>
+                <Route path="annonces" element={<Suspense fallback={<PageLoader />}><Annonces /></Suspense>} />
+              </Route>
+              <Route element={<ScreenGate screen="moderation" />}>
+                <Route path="moderation" element={<Suspense fallback={<PageLoader />}><Moderation /></Suspense>} />
               </Route>
               <Route element={<ScreenGate screen="postes" />}>
                 <Route path="postes" element={<Suspense fallback={<PageLoader />}><Postes /></Suspense>} />

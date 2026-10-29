@@ -1,10 +1,11 @@
 import { NavLink, Outlet, useMatch } from 'react-router'
-import { Briefcase, CreditCard, House, LogOut, MessageSquare, User, type LucideIcon } from 'lucide-react'
+import { Briefcase, Calendar, CreditCard, FileText, House, LogOut, MessageSquare, SquareCheckBig, User, Users, type LucideIcon } from 'lucide-react'
 import { signOut } from '../auth/session'
 import { Avatar } from '../components/Avatar'
 import { Brand } from '../components/Logo'
 import { TYPE_LABELS } from '../lib/format'
-import { can, isBureau, useBureauCounts, useMe } from '../lib/queries'
+import { useBureauBadge } from '../lib/feed'
+import { isBureau, useMe } from '../lib/queries'
 import { BottomNav } from './BottomNav'
 
 type Item = { to: string; label: string; icon: LucideIcon; soon?: boolean; badge?: number | null }
@@ -34,23 +35,27 @@ function SideLink({ to, label, icon: Icon, soon, badge }: Item) {
 export function MemberLayout() {
   const me = useMe().data
   const bureau = isBureau(me)
-  const counts = useBureauCounts(bureau && can(me, 'comptes', 'lecture')).data
-  // Le formulaire du profil prend tout l'écran sur téléphone, comme dans la maquette.
-  const fullScreen = useMatch('/app/profil/modifier') !== null
+  const badge = useBureauBadge()
+  // Ces écrans prennent tout l'écran sur téléphone, comme dans la maquette.
+  const fullScreen = [useMatch('/app/profil/modifier'), useMatch('/app/publier'), useMatch('/app/fil/:id')].some(Boolean)
 
   return (
     <div className="min-h-dvh lg:grid lg:grid-cols-[264px_minmax(0,1fr)]">
       <aside className="bg-tisse sticky top-0 hidden h-dvh flex-col px-4 py-6 text-white lg:flex">
         <Brand size={40} className="px-2 text-white" />
         <nav aria-label="Navigation principale" className="mt-8 flex flex-col gap-1">
-          <SideLink to="/app/fil" label="Fil d'actu" icon={House} soon />
+          <SideLink to="/app/fil" label="Fil d'actu" icon={House} />
           <SideLink to="/app/messages" label="Messages" icon={MessageSquare} soon />
+          <SideLink to="/app/evenements" label="Événements" icon={Calendar} soon />
           <SideLink to="/app/cotisation" label="Cotisation" icon={CreditCard} soon />
+          <SideLink to="/app/votes" label="Votes" icon={SquareCheckBig} soon />
+          <SideLink to="/app/documents" label="Documents" icon={FileText} soon />
+          <SideLink to="/app/membres" label="Membres" icon={Users} />
           <SideLink to="/app/profil" label="Mon profil" icon={User} />
           {bureau ? (
             <>
               <div className="mx-3 my-3 h-px bg-white/12" />
-              <SideLink to="/bureau" label="Mode bureau" icon={Briefcase} badge={counts?.pending} />
+              <SideLink to="/bureau" label="Mode bureau" icon={Briefcase} badge={badge} />
             </>
           ) : null}
         </nav>

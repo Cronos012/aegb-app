@@ -4,20 +4,15 @@ import { Calendar, Check, GraduationCap, Lock, LogOut, MapPin, ScrollText, Slide
 import { signOut } from '../../auth/session'
 import { Avatar } from '../../components/Avatar'
 import { Button, ButtonLink } from '../../components/Button'
+import { Cover } from '../../components/Cover'
 import { Dialog } from '../../components/Dialog'
+import { ErrorNote, Spinner } from '../../components/Feedback'
+import { NewMembers } from '../../components/feed/NewMembers'
+import { PostsGrid } from '../../components/feed/PostsGrid'
 import { Pill } from '../../components/Pill'
-import { monthYear, relative, TYPE_LABELS } from '../../lib/format'
-import { usePhotoUrl } from '../../lib/photos'
-import { useActiveMembers, useMe, type Me } from '../../lib/queries'
-
-function Cover({ path, className = '' }: { path: string | null; className?: string }) {
-  const url = usePhotoUrl(path)
-  return url ? (
-    <div className={`bg-leppi bg-cover bg-center ${className}`} style={{ backgroundImage: `url(${url})` }} />
-  ) : (
-    <div className={`bg-tisse ${className}`} />
-  )
-}
+import { monthYear, TYPE_LABELS } from '../../lib/format'
+import { useMemberPosts } from '../../lib/feed'
+import { useMe, type Me } from '../../lib/queries'
 
 function completion(me: Me) {
   const p = me.profile
@@ -65,7 +60,7 @@ export function Profil() {
   const [menu, setMenu] = useState(false)
   const steps = completion(me)
   const percent = Math.round((steps.filter((s) => s.done).length / steps.length) * 100)
-  const newcomers = useActiveMembers().data?.filter((m) => m.id !== p.id && m.validated_at).sort((a, b) => b.validated_at!.localeCompare(a.validated_at!)).slice(0, 3)
+  const posts = useMemberPosts(p.id)
 
   const school = [p.school, p.formation].filter(Boolean).join(' · ')
 
@@ -119,7 +114,7 @@ export function Profil() {
         <div className="mt-5 flex gap-6 border-b border-line-soft px-5 lg:px-6" role="tablist">
           {(
             [
-              ['publications', 'Publications'],
+              ['publications', posts.data ? `Publications · ${posts.data.count}` : 'Publications'],
               ['apropos', 'À propos'],
             ] as const
           ).map(([key, label]) => (
@@ -136,13 +131,22 @@ export function Profil() {
           ))}
         </div>
         {tab === 'publications' ? (
-          <div className="px-5 py-5 lg:px-6">
-            <div className="grid grid-cols-3 gap-2">
-              {[0, 1, 2].map((k) => (
-                <div key={k} className="aspect-square rounded-xl border-[1.5px] border-dashed border-line" />
-              ))}
-            </div>
-            <p className="mt-3 mb-0 text-center text-[13px] text-muted">Tes photos et vidéos apparaîtront ici à l'ouverture du fil.</p>
+          <div className="px-4 py-4 lg:px-6 lg:py-5">
+            <ErrorNote error={posts.error} />
+            {posts.isPending ? (
+              <div className="grid place-items-center py-8">
+                <Spinner />
+              </div>
+            ) : posts.data?.posts.length ? (
+              <PostsGrid posts={posts.data.posts} />
+            ) : (
+              <div className="flex flex-col items-center gap-3 py-8 text-center">
+                <p className="m-0 text-[14px] text-muted">Tes photos et tes publications apparaîtront ici.</p>
+                <ButtonLink to="/app/publier" size="md" variant="outline">
+                  Publier
+                </ButtonLink>
+              </div>
+            )}
           </div>
         ) : (
           <About me={me} />
@@ -178,26 +182,7 @@ export function Profil() {
             </ButtonLink>
           ) : null}
         </div>
-        {newcomers?.length ? (
-          <div className="rounded-[22px] bg-surface p-5">
-            <h2 className="titre m-0 text-[19px]">Nouveaux membres</h2>
-            <ul className="m-0 mt-4 flex list-none flex-col gap-3.5 p-0">
-              {newcomers.map((m) => (
-                <li key={m.id} className="flex items-center gap-3">
-                  <Avatar person={m} size={40} />
-                  <div className="min-w-0">
-                    <p className="m-0 truncate text-sm font-bold">
-                      {m.first_name} {m.last_name}
-                    </p>
-                    <p className="m-0 text-xs text-muted">
-                      {TYPE_LABELS[m.member_type]} · {relative(m.validated_at!)}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
+        <NewMembers />
       </aside>
 
       <Dialog open={menu} onClose={() => setMenu(false)} title="Mon compte">
