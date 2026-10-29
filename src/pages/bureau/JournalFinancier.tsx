@@ -417,7 +417,7 @@ export default function JournalFinancier() {
     const set = new Set(entries.map((e) => e.entry_date.slice(0, 7)))
     return [...set].sort().reverse()
   }, [entries])
-  const pastYears = useMemo(() => [...new Set(entries.map((e) => e.entry_date.slice(0, 4)))].filter((y) => y < year).sort().reverse(), [entries, year])
+  const pastYears = [...new Set(entries.map((e) => e.entry_date.slice(0, 4)))].filter((y) => y < year).sort().reverse()
 
   const q = normalize(query.trim())
   const shown = entries
