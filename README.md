@@ -65,6 +65,15 @@ Toute la sécurité est dans la base : chaque table a des règles d'accès (RLS)
 
 Pour vérifier les règles d'accès, colle `supabase/tests/socle_test.sql`, puis `supabase/tests/fil_test.sql`, puis `supabase/tests/messages_test.sql`, dans l'éditeur SQL de Supabase. Chaque script se termine par une erreur volontaire qui annule tout : le message doit commencer par « TESTS OK ».
 
+### Mettre la base à jour
+
+La base en ligne se met à jour toute seule : quand un fichier de `supabase/migrations` change sur `main` ou sur une branche `lot-…`, GitHub lance « Base Supabase » (`.github/workflows/base-supabase.yml`), qui applique les migrations pas encore passées. Il lui faut deux secrets, à mettre une seule fois dans GitHub (Settings → Secrets and variables → Actions) :
+
+- `SUPABASE_ACCESS_TOKEN` : un jeton créé dans Supabase, Account → Access Tokens.
+- `SUPABASE_DB_PASSWORD` : le mot de passe de la base (Project Settings → Database ; « Reset database password » si on ne l'a plus, l'appli ne s'en sert pas).
+
+Chaque fichier de migration porte le numéro enregistré dans la base : ne jamais renommer un fichier déjà appliqué.
+
 ### Réglages à faire dans Supabase
 
 1. **Authentication → URL Configuration** : mettre l'adresse de l'appli en ligne comme *Site URL*, et l'ajouter aux *Redirect URLs* avec `**` à la fin (par exemple `https://cronos012.github.io/aegb-app/**`). Sans ça, les liens de confirmation et de mot de passe oublié renvoient au mauvais endroit.
