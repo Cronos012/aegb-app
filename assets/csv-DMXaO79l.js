@@ -1,0 +1,2 @@
+function e(e,t,n){let r=e=>{let t=e==null?``:String(e);return/[";\n\r]/.test(t)?`"${t.replace(/"/g,`""`)}"`:t},i=[t,...n].map(e=>e.map(r).join(`;`)).join(`\r
+`),a=new Blob([`﻿`+i],{type:`text/csv;charset=utf-8`}),o=URL.createObjectURL(a),s=document.createElement(`a`);s.href=o,s.download=e,document.body.append(s),s.click(),s.remove(),setTimeout(()=>URL.revokeObjectURL(o),1e3)}export{e as t};
