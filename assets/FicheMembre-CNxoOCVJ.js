@@ -1,0 +1,1 @@
+import{_t as e,c as t,mt as n}from"./index-CB7TPcwe.js";import r,{t as i}from"./Membres-DMEJP7W6.js";var a=n();function o(){let{id:n}=e();return t()?(0,a.jsx)(r,{openId:n}):(0,a.jsx)(i,{id:n})}export{o as default};
