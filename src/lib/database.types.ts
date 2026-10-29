@@ -1075,6 +1075,7 @@ export type Database = {
         Args: never
         Returns: {
           blocked: boolean
+          faces: Json
           id: string
           kind: Database["public"]["Enums"]["conversation_kind"]
           last_as_aegb: boolean

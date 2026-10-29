@@ -35,6 +35,8 @@ export type ConversationRow = {
   last_preview: string | null
   unread: number
   blocked: boolean
+  /** Deux membres d'un groupe sans photo, pour son image. */
+  faces: { id: string; first_name: string; last_name: string; avatar_path: string | null }[] | null
 }
 
 export type MessageFile = {
@@ -115,6 +117,14 @@ export type ConversationInfo = {
   other: OtherMember | null
 }
 
+/** Les deux membres qui font l'image d'un groupe sans photo, comme dans la liste. */
+export function groupFaces(info: ConversationInfo, uid: string | undefined) {
+  return info.members
+    .filter((m) => m.id !== uid)
+    .sort((a, b) => a.joined_at.localeCompare(b.joined_at) || a.first_name.localeCompare(b.first_name))
+    .slice(0, 2)
+}
+
 export const MESSAGE_MAX = 4000
 export const MAX_PHOTOS = 10
 export const MAX_FILE_MB = 10
@@ -151,6 +161,8 @@ export function useConversations(enabled = true) {
   return useQuery({
     queryKey: ['messages', 'liste', uid],
     enabled: enabled && !!uid,
+    // Le direct prévient de chaque changement ; ceci rattrape une connexion perdue.
+    refetchInterval: 60_000,
     queryFn: async () => {
       const { data, error } = await supabase.rpc('my_conversations')
       if (error) throw error
@@ -186,6 +198,7 @@ export function useThread(id: string | undefined) {
     queryKey: ['messages', 'fil', id],
     enabled: !!id,
     retry: false,
+    refetchInterval: 30_000,
     initialPageParam: null as string | null,
     queryFn: async ({ pageParam }) => {
       const args: { p_conversation: string; p_limit: number; p_before?: string } = { p_conversation: id!, p_limit: PAGE }

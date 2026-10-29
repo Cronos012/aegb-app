@@ -68,6 +68,7 @@ export function ShareDialog({ post, onClose }: { post: string | null; onClose: (
                   title={conversationName(c)}
                   photoPath={c.photo_path}
                   other={c.other_id ? { id: c.other_id, first_name: c.other_first_name ?? '?', last_name: c.other_last_name ?? '', avatar_path: c.other_avatar_path } : null}
+                  faces={c.faces}
                   size={44}
                 />
                 <span className="min-w-0 flex-1 truncate text-[15px] font-bold">{conversationName(c)}</span>

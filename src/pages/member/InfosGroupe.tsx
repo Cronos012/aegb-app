@@ -15,7 +15,7 @@ import { MemberPicker } from '../../components/messages/MemberPicker'
 import { errorMessage } from '../../lib/errors'
 import { useDirectory } from '../../lib/feed'
 import { prepareImage } from '../../lib/images'
-import { openPrivate, refreshMessages, useConversationInfo, type ConversationInfo, type GroupMember } from '../../lib/messages'
+import { groupFaces, openPrivate, refreshMessages, useConversationInfo, type ConversationInfo, type GroupMember } from '../../lib/messages'
 import { removeFiles } from '../../lib/photos'
 import { supabase } from '../../lib/supabase'
 
@@ -25,6 +25,7 @@ const SHOWN = 8
 function EditDialog({ info, open, onClose }: { info: ConversationInfo; open: boolean; onClose: () => void }) {
   const queryClient = useQueryClient()
   const toast = useToast()
+  const uid = useSession().session?.user.id
   const [name, setName] = useState(info.title)
   const [photo, setPhoto] = useState<{ blob: Blob; preview: string } | null>(null)
   const [busy, setBusy] = useState(false)
@@ -87,7 +88,7 @@ function EditDialog({ info, open, onClose }: { info: ConversationInfo; open: boo
       }
     >
       <div className="flex flex-col items-center gap-3 pb-4">
-        {photo ? <img src={photo.preview} alt="" className="size-24 rounded-full object-cover" /> : <ConversationAvatar kind="groupe" title={info.title} photoPath={info.photo_path} size={96} />}
+        {photo ? <img src={photo.preview} alt="" className="size-24 rounded-full object-cover" /> : <ConversationAvatar kind="groupe" title={info.title} photoPath={info.photo_path} faces={groupFaces(info, uid)} size={96} />}
         <input
           ref={input}
           type="file"
@@ -295,7 +296,7 @@ export function InfosGroupe() {
       {header}
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
         <section className="flex flex-col items-center gap-2 bg-surface px-5 pt-6 pb-5 text-center">
-          <ConversationAvatar kind="groupe" title={c.title} photoPath={c.photo_path} size={112} />
+          <ConversationAvatar kind="groupe" title={c.title} photoPath={c.photo_path} faces={groupFaces(c, uid)} size={112} />
           <h2 className="titre m-0 mt-2 text-[26px] leading-tight">{c.title}</h2>
           <p className="m-0 text-[14px] text-muted">
             Groupe · {c.members_count} membre{c.members_count > 1 ? 's' : ''}
@@ -403,11 +404,12 @@ export function InfosGroupe() {
         onConfirm={async () => {
           const { error } = await supabase.rpc('leave_group', { p_conversation: id })
           if (error) throw error
-          await queryClient.invalidateQueries({ queryKey: ['messages', 'liste'] })
+          // On quitte l'écran d'abord : sinon il redemande les infos d'un groupe qui n'est plus le nôtre.
+          navigate('/app/messages', { replace: true })
           queryClient.removeQueries({ queryKey: ['messages', 'fil', id] })
           queryClient.removeQueries({ queryKey: ['messages', 'infos', id] })
+          queryClient.invalidateQueries({ queryKey: ['messages', 'liste'] })
           toast('Tu as quitté le groupe.')
-          navigate('/app/messages', { replace: true })
         }}
       />
       <EditDialog key={`${c.title}-${c.photo_path}`} info={c} open={edit} onClose={() => setEdit(false)} />
