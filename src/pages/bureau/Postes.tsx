@@ -7,6 +7,7 @@ import { ErrorNote, PageLoader } from '../../components/Feedback'
 import { SearchField } from '../../components/Field'
 import { useToast } from '../../components/Toast'
 import { errorMessage } from '../../lib/errors'
+import { orNull } from '../../lib/feed'
 import { fullName, TYPE_LABELS } from '../../lib/format'
 import { useIsDesktop } from '../../lib/media'
 import { can, useAction, useActiveMembers, useMe, useRoles, useScreensAndPermissions, type AccessLevel, type RoleWithHolder } from '../../lib/queries'
@@ -233,7 +234,7 @@ export default function Postes() {
   // Le poste d'admin numérique n'a rien de particulier aux yeux des autres :
   // seul son titulaire voit ses droits et peut le transmettre.
   const mine = (r: RoleWithHolder) => me.guarantor && r.code === me.role?.code
-  const setLevel = useAction((v: { role: string; screen: string; level: AccessLevel | null }) => supabase.rpc('set_role_permission', { p_role: v.role, p_screen: v.screen, p_level: v.level }), [['postes'], ['me']])
+  const setLevel = useAction((v: { role: string; screen: string; level: AccessLevel | null }) => supabase.rpc('set_role_permission', { p_role: v.role, p_screen: v.screen, p_level: orNull(v.level) }), [['postes'], ['me']])
 
   const levels = useMemo(() => new Map(rights.data?.permissions.map((p) => [`${p.role_code}:${p.screen_code}`, p.level])), [rights.data])
 

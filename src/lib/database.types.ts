@@ -9,6 +9,8 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "14.18"
   }
@@ -52,6 +54,39 @@ export type Database = {
           summary?: string
         }
         Relationships: []
+      }
+      announcement_authors: {
+        Row: {
+          post_id: string
+          written_by: string | null
+          written_by_name: string
+        }
+        Insert: {
+          post_id: string
+          written_by?: string | null
+          written_by_name: string
+        }
+        Update: {
+          post_id?: string
+          written_by?: string | null
+          written_by_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "announcement_authors_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: true
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "announcement_authors_written_by_fkey"
+            columns: ["written_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       bureau_roles: {
         Row: {
@@ -140,6 +175,64 @@ export type Database = {
         }
         Relationships: []
       }
+      comments: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          edited_at: string | null
+          hidden_at: string | null
+          hidden_reason: string | null
+          id: string
+          parent_id: string | null
+          post_id: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          edited_at?: string | null
+          hidden_at?: string | null
+          hidden_reason?: string | null
+          id?: string
+          parent_id?: string | null
+          post_id: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          edited_at?: string | null
+          hidden_at?: string | null
+          hidden_reason?: string | null
+          id?: string
+          parent_id?: string | null
+          post_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       member_contacts: {
         Row: {
           email: string
@@ -204,243 +297,6 @@ export type Database = {
             columns: ["member_id"]
             isOneToOne: false
             referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      profiles: {
-        Row: {
-          avatar_path: string | null
-          bio: string | null
-          charter_accepted_at: string | null
-          charter_version: number | null
-          city: string | null
-          cover_path: string | null
-          created_at: string
-          email_confirmed_at: string | null
-          first_name: string
-          formation: string | null
-          id: string
-          last_name: string
-          member_type: Database["public"]["Enums"]["member_type"]
-          refusal_reason: string | null
-          refused_at: string | null
-          refused_by: string | null
-          school: string | null
-          status: Database["public"]["Enums"]["member_status"]
-          suspended_at: string | null
-          suspended_by: string | null
-          suspension_reason: string | null
-          updated_at: string
-          validated_at: string | null
-          validated_by: string | null
-          welcomed_at: string | null
-        }
-        Insert: {
-          avatar_path?: string | null
-          bio?: string | null
-          charter_accepted_at?: string | null
-          charter_version?: number | null
-          city?: string | null
-          cover_path?: string | null
-          created_at?: string
-          email_confirmed_at?: string | null
-          first_name: string
-          formation?: string | null
-          id: string
-          last_name: string
-          member_type?: Database["public"]["Enums"]["member_type"]
-          refusal_reason?: string | null
-          refused_at?: string | null
-          refused_by?: string | null
-          school?: string | null
-          status?: Database["public"]["Enums"]["member_status"]
-          suspended_at?: string | null
-          suspended_by?: string | null
-          suspension_reason?: string | null
-          updated_at?: string
-          validated_at?: string | null
-          validated_by?: string | null
-          welcomed_at?: string | null
-        }
-        Update: {
-          avatar_path?: string | null
-          bio?: string | null
-          charter_accepted_at?: string | null
-          charter_version?: number | null
-          city?: string | null
-          cover_path?: string | null
-          created_at?: string
-          email_confirmed_at?: string | null
-          first_name?: string
-          formation?: string | null
-          id?: string
-          last_name?: string
-          member_type?: Database["public"]["Enums"]["member_type"]
-          refusal_reason?: string | null
-          refused_at?: string | null
-          refused_by?: string | null
-          school?: string | null
-          status?: Database["public"]["Enums"]["member_status"]
-          suspended_at?: string | null
-          suspended_by?: string | null
-          suspension_reason?: string | null
-          updated_at?: string
-          validated_at?: string | null
-          validated_by?: string | null
-          welcomed_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "profiles_charter_version_fkey"
-            columns: ["charter_version"]
-            isOneToOne: false
-            referencedRelation: "charter_versions"
-            referencedColumns: ["version"]
-          },
-          {
-            foreignKeyName: "profiles_refused_by_fkey"
-            columns: ["refused_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "profiles_suspended_by_fkey"
-            columns: ["suspended_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "profiles_validated_by_fkey"
-            columns: ["validated_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      role_permissions: {
-        Row: {
-          level: Database["public"]["Enums"]["access_level"]
-          role_code: string
-          screen_code: string
-        }
-        Insert: {
-          level: Database["public"]["Enums"]["access_level"]
-          role_code: string
-          screen_code: string
-        }
-        Update: {
-          level?: Database["public"]["Enums"]["access_level"]
-          role_code?: string
-          screen_code?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "role_permissions_role_code_fkey"
-            columns: ["role_code"]
-            isOneToOne: false
-            referencedRelation: "bureau_roles"
-            referencedColumns: ["code"]
-          },
-          {
-            foreignKeyName: "role_permissions_screen_code_fkey"
-            columns: ["screen_code"]
-            isOneToOne: false
-            referencedRelation: "bureau_screens"
-            referencedColumns: ["code"]
-          },
-        ]
-      }
-      announcement_authors: {
-        Row: {
-          post_id: string
-          written_by: string | null
-          written_by_name: string
-        }
-        Insert: {
-          post_id: string
-          written_by?: string | null
-          written_by_name: string
-        }
-        Update: {
-          post_id?: string
-          written_by?: string | null
-          written_by_name?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "announcement_authors_post_id_fkey"
-            columns: ["post_id"]
-            isOneToOne: true
-            referencedRelation: "posts"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "announcement_authors_written_by_fkey"
-            columns: ["written_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      comments: {
-        Row: {
-          author_id: string
-          body: string
-          created_at: string
-          edited_at: string | null
-          hidden_at: string | null
-          hidden_reason: string | null
-          id: string
-          parent_id: string | null
-          post_id: string
-        }
-        Insert: {
-          author_id: string
-          body: string
-          created_at?: string
-          edited_at?: string | null
-          hidden_at?: string | null
-          hidden_reason?: string | null
-          id?: string
-          parent_id?: string | null
-          post_id: string
-        }
-        Update: {
-          author_id?: string
-          body?: string
-          created_at?: string
-          edited_at?: string | null
-          hidden_at?: string | null
-          hidden_reason?: string | null
-          id?: string
-          parent_id?: string | null
-          post_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "comments_author_id_fkey"
-            columns: ["author_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "comments_parent_id_fkey"
-            columns: ["parent_id"]
-            isOneToOne: false
-            referencedRelation: "comments"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "comments_post_id_fkey"
-            columns: ["post_id"]
-            isOneToOne: false
-            referencedRelation: "posts"
             referencedColumns: ["id"]
           },
         ]
@@ -640,6 +496,119 @@ export type Database = {
           },
         ]
       }
+      profiles: {
+        Row: {
+          avatar_path: string | null
+          bio: string | null
+          charter_accepted_at: string | null
+          charter_version: number | null
+          city: string | null
+          cover_path: string | null
+          created_at: string
+          email_confirmed_at: string | null
+          first_name: string
+          formation: string | null
+          id: string
+          last_name: string
+          member_type: Database["public"]["Enums"]["member_type"]
+          refusal_reason: string | null
+          refused_at: string | null
+          refused_by: string | null
+          school: string | null
+          status: Database["public"]["Enums"]["member_status"]
+          suspended_at: string | null
+          suspended_by: string | null
+          suspension_reason: string | null
+          updated_at: string
+          validated_at: string | null
+          validated_by: string | null
+          welcomed_at: string | null
+        }
+        Insert: {
+          avatar_path?: string | null
+          bio?: string | null
+          charter_accepted_at?: string | null
+          charter_version?: number | null
+          city?: string | null
+          cover_path?: string | null
+          created_at?: string
+          email_confirmed_at?: string | null
+          first_name: string
+          formation?: string | null
+          id: string
+          last_name: string
+          member_type?: Database["public"]["Enums"]["member_type"]
+          refusal_reason?: string | null
+          refused_at?: string | null
+          refused_by?: string | null
+          school?: string | null
+          status?: Database["public"]["Enums"]["member_status"]
+          suspended_at?: string | null
+          suspended_by?: string | null
+          suspension_reason?: string | null
+          updated_at?: string
+          validated_at?: string | null
+          validated_by?: string | null
+          welcomed_at?: string | null
+        }
+        Update: {
+          avatar_path?: string | null
+          bio?: string | null
+          charter_accepted_at?: string | null
+          charter_version?: number | null
+          city?: string | null
+          cover_path?: string | null
+          created_at?: string
+          email_confirmed_at?: string | null
+          first_name?: string
+          formation?: string | null
+          id?: string
+          last_name?: string
+          member_type?: Database["public"]["Enums"]["member_type"]
+          refusal_reason?: string | null
+          refused_at?: string | null
+          refused_by?: string | null
+          school?: string | null
+          status?: Database["public"]["Enums"]["member_status"]
+          suspended_at?: string | null
+          suspended_by?: string | null
+          suspension_reason?: string | null
+          updated_at?: string
+          validated_at?: string | null
+          validated_by?: string | null
+          welcomed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_charter_version_fkey"
+            columns: ["charter_version"]
+            isOneToOne: false
+            referencedRelation: "charter_versions"
+            referencedColumns: ["version"]
+          },
+          {
+            foreignKeyName: "profiles_refused_by_fkey"
+            columns: ["refused_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_suspended_by_fkey"
+            columns: ["suspended_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_validated_by_fkey"
+            columns: ["validated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reactions: {
         Row: {
           comment_id: string | null
@@ -741,11 +710,45 @@ export type Database = {
           },
         ]
       }
+      role_permissions: {
+        Row: {
+          level: Database["public"]["Enums"]["access_level"]
+          role_code: string
+          screen_code: string
+        }
+        Insert: {
+          level: Database["public"]["Enums"]["access_level"]
+          role_code: string
+          screen_code: string
+        }
+        Update: {
+          level?: Database["public"]["Enums"]["access_level"]
+          role_code?: string
+          screen_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "role_permissions_role_code_fkey"
+            columns: ["role_code"]
+            isOneToOne: false
+            referencedRelation: "bureau_roles"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "role_permissions_screen_code_fkey"
+            columns: ["screen_code"]
+            isOneToOne: false
+            referencedRelation: "bureau_screens"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      accept_charter: { Args: { p_version: number }; Returns: undefined }
       add_comment: {
         Args: { p_body: string; p_parent?: string; p_post: string }
         Returns: string
@@ -762,6 +765,28 @@ export type Database = {
           written_by_name: string
         }[]
       }
+      assign_role: {
+        Args: { p_member: string; p_role: string }
+        Returns: undefined
+      }
+      bureau_counts: {
+        Args: never
+        Returns: {
+          active: number
+          new_this_month: number
+          pending: number
+          pending_unconfirmed: number
+          roles_filled: number
+          roles_total: number
+        }[]
+      }
+      can: {
+        Args: {
+          p_level?: Database["public"]["Enums"]["access_level"]
+          p_screen: string
+        }
+        Returns: boolean
+      }
       can_read_post: {
         Args: {
           p_audience: Database["public"]["Enums"]["post_audience"]
@@ -772,6 +797,8 @@ export type Database = {
         }
         Returns: boolean
       }
+      clear_journal: { Args: never; Returns: number }
+      clear_role: { Args: { p_role: string }; Returns: undefined }
       create_post: {
         Args: { p_body: string; p_id: string; p_media?: Json }
         Returns: undefined
@@ -779,7 +806,40 @@ export type Database = {
       delete_announcement: { Args: { p_id: string }; Returns: string[] }
       delete_comment: { Args: { p_id: string }; Returns: undefined }
       delete_post: { Args: { p_id: string }; Returns: string[] }
+      discreet_authors: {
+        Args: { p_ids: number[] }
+        Returns: {
+          actor_name: string
+          log_id: number
+        }[]
+      }
+      is_active_member: { Args: never; Returns: boolean }
+      is_bureau: { Args: never; Returns: boolean }
+      journal_locked: { Args: never; Returns: boolean }
+      lock_journal: { Args: never; Returns: undefined }
       mark_seen: { Args: { p_ids: string[] }; Returns: undefined }
+      mark_welcomed: { Args: never; Returns: undefined }
+      member_history: {
+        Args: { p_member: string }
+        Returns: {
+          action: string
+          actor_id: string | null
+          actor_name: string
+          category: string
+          created_at: string
+          details: Json
+          id: number
+          subject_id: string | null
+          subject_name: string | null
+          summary: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "activity_log"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       moderate: {
         Args: {
           p_comment: string
@@ -814,6 +874,21 @@ export type Database = {
           warnings: number
         }[]
       }
+      my_access: {
+        Args: { p_screen: string }
+        Returns: Database["public"]["Enums"]["access_level"]
+      }
+      my_bureau: { Args: never; Returns: Json }
+      public_bureau: {
+        Args: never
+        Returns: {
+          code: string
+          first_name: string
+          label: string
+          last_name: string
+          sort_order: number
+        }[]
+      }
       publish_announcement: {
         Args: {
           p_audience: Database["public"]["Enums"]["post_audience"]
@@ -834,6 +909,11 @@ export type Database = {
         }
         Returns: undefined
       }
+      reactivate_member: { Args: { p_member: string }; Returns: undefined }
+      refuse_member: {
+        Args: { p_member: string; p_reason: string }
+        Returns: undefined
+      }
       report_content: {
         Args: {
           p_comment: string
@@ -841,94 +921,6 @@ export type Database = {
           p_reason: Database["public"]["Enums"]["report_reason"]
         }
         Returns: boolean
-      }
-      storage_used: { Args: never; Returns: number }
-      unpin_announcement: { Args: { p_id: string }; Returns: undefined }
-      update_comment: {
-        Args: { p_body: string; p_id: string }
-        Returns: undefined
-      }
-      update_post: {
-        Args: { p_body: string; p_id: string }
-        Returns: undefined
-      }
-      accept_charter: { Args: { p_version: number }; Returns: undefined }
-      assign_role: {
-        Args: { p_member: string; p_role: string }
-        Returns: undefined
-      }
-      bureau_counts: {
-        Args: never
-        Returns: {
-          active: number
-          new_this_month: number
-          pending: number
-          pending_unconfirmed: number
-          roles_filled: number
-          roles_total: number
-        }[]
-      }
-      can: {
-        Args: {
-          p_level?: Database["public"]["Enums"]["access_level"]
-          p_screen: string
-        }
-        Returns: boolean
-      }
-      clear_journal: { Args: never; Returns: number }
-      clear_role: { Args: { p_role: string }; Returns: undefined }
-      discreet_authors: {
-        Args: { p_ids: number[] }
-        Returns: {
-          actor_name: string
-          log_id: number
-        }[]
-      }
-      is_active_member: { Args: never; Returns: boolean }
-      is_bureau: { Args: never; Returns: boolean }
-      journal_locked: { Args: never; Returns: boolean }
-      lock_journal: { Args: never; Returns: undefined }
-      mark_welcomed: { Args: never; Returns: undefined }
-      member_history: {
-        Args: { p_member: string }
-        Returns: {
-          action: string
-          actor_id: string | null
-          actor_name: string
-          category: string
-          created_at: string
-          details: Json
-          id: number
-          subject_id: string | null
-          subject_name: string | null
-          summary: string
-        }[]
-        SetofOptions: {
-          from: "*"
-          to: "activity_log"
-          isOneToOne: false
-          isSetofReturn: true
-        }
-      }
-      my_access: {
-        Args: { p_screen: string }
-        Returns: Database["public"]["Enums"]["access_level"]
-      }
-      my_bureau: { Args: never; Returns: Json }
-      public_bureau: {
-        Args: never
-        Returns: {
-          code: string
-          first_name: string
-          label: string
-          last_name: string
-          sort_order: number
-        }[]
-      }
-      reactivate_member: { Args: { p_member: string }; Returns: undefined }
-      refuse_member: {
-        Args: { p_member: string; p_reason: string }
-        Returns: undefined
       }
       set_member_type: {
         Args: {
@@ -939,17 +931,27 @@ export type Database = {
       }
       set_role_permission: {
         Args: {
-          p_level: Database["public"]["Enums"]["access_level"] | null
+          p_level: Database["public"]["Enums"]["access_level"]
           p_role: string
           p_screen: string
         }
         Returns: undefined
       }
+      storage_used: { Args: never; Returns: number }
       suspend_member: {
         Args: { p_member: string; p_reason: string }
         Returns: undefined
       }
       transfer_guarantor: { Args: { p_member: string }; Returns: undefined }
+      unpin_announcement: { Args: { p_id: string }; Returns: undefined }
+      update_comment: {
+        Args: { p_body: string; p_id: string }
+        Returns: undefined
+      }
+      update_post: {
+        Args: { p_body: string; p_id: string }
+        Returns: undefined
+      }
       validate_member: { Args: { p_member: string }; Returns: undefined }
       warn_member: {
         Args: { p_member: string; p_reason: string }
@@ -962,7 +964,13 @@ export type Database = {
       member_type: "etudiant" | "alumni" | "sympathisant" | "honneur"
       moderation_decision: "garder" | "masquer" | "masquer_avertir"
       post_audience: "tous" | "etudiants" | "alumni" | "bureau"
-      reaction_kind: "jaime" | "jadore" | "rire" | "wouah" | "triste" | "soutien"
+      reaction_kind:
+        | "jaime"
+        | "jadore"
+        | "rire"
+        | "wouah"
+        | "triste"
+        | "soutien"
       report_reason: "irrespect" | "fausse_info" | "spam" | "choquant" | "autre"
     }
     CompositeTypes: {
