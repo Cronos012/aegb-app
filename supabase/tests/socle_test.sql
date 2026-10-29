@@ -310,6 +310,48 @@ begin
   select given_by is null and given_by_name = 'Le bureau' into ok from public.member_warnings where member_id = b;
   if not ok then failures := failures || 'discrétion : avertissement au nom de l''admin'; end if;
 
+  -- 16. Pendant les essais, seul le titulaire vide le journal ; le verrou est définitif
+  perform set_config('request.jwt.claims', json_build_object('sub', b, 'role', 'authenticated')::text, true);
+  set local role authenticated;
+  begin
+    perform public.clear_journal();
+    failures := failures || 'essais : le secrétariat a vidé le journal';
+  exception when insufficient_privilege then null;
+  end;
+  reset role;
+  perform set_config('request.jwt.claims', json_build_object('sub', e, 'role', 'authenticated')::text, true);
+  set local role authenticated;
+  perform public.clear_journal();
+  reset role;
+  select count(*) into n from public.activity_log;
+  if n <> 0 then failures := failures || format('essais : %s lignes restent après le vidage', n); end if;
+  select count(*) into n from private.discreet_actors;
+  if n <> 0 then failures := failures || 'essais : vrais auteurs restés après le vidage'; end if;
+  perform set_config('request.jwt.claims', json_build_object('sub', e, 'role', 'authenticated')::text, true);
+  set local role authenticated;
+  perform public.lock_journal();
+  if not public.journal_locked() then failures := failures || 'essais : journal non verrouillé'; end if;
+  begin
+    perform public.clear_journal();
+    failures := failures || 'essais : journal vidé après le verrou';
+  exception when invalid_parameter_value then null;
+  end;
+  reset role;
+  begin
+    perform set_config('aegb.clear_journal', 'on', true);
+    delete from public.activity_log where id is not null;
+    failures := failures || 'essais : effacement possible après le verrou';
+  exception when insufficient_privilege then null;
+  end;
+  perform set_config('aegb.clear_journal', 'off', true);
+  begin
+    update private.journal_lock set locked_at = null where only_row;
+    failures := failures || 'essais : verrou enlevé';
+  exception when insufficient_privilege then null;
+  end;
+  select count(*) into n from public.activity_log where action = 'verrou_journal';
+  if n <> 1 then failures := failures || 'essais : verrou absent du journal'; end if;
+
   if cardinality(failures) = 0 then
     raise exception 'TESTS OK : toutes les vérifications passent (base remise dans son état initial)';
   else

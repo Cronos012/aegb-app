@@ -382,6 +382,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      clear_journal: { Args: never; Returns: number }
       clear_role: { Args: { p_role: string }; Returns: undefined }
       discreet_authors: {
         Args: { p_ids: number[] }
@@ -392,6 +393,8 @@ export type Database = {
       }
       is_active_member: { Args: never; Returns: boolean }
       is_bureau: { Args: never; Returns: boolean }
+      journal_locked: { Args: never; Returns: boolean }
+      lock_journal: { Args: never; Returns: undefined }
       mark_welcomed: { Args: never; Returns: undefined }
       member_history: {
         Args: { p_member: string }

@@ -263,6 +263,18 @@ export function useActivity(limit: number, category: string | null, actor: strin
 }
 
 /** Appelle une fonction de la base puis rafraîchit les écrans concernés. */
+/** Vrai une fois le journal rendu ineffaçable, au lancement officiel. Avant, le titulaire du poste d'admin numérique peut le vider. */
+export function useJournalLocked() {
+  return useQuery({
+    queryKey: ['bureau', 'journal-verrou'],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('journal_locked')
+      if (error) throw error
+      return data
+    },
+  })
+}
+
 export function useAction<V>(run: (vars: V) => PromiseLike<{ error: unknown }>, refresh: QueryKey[] = [['bureau'], ['me'], ['postes']]) {
   const queryClient = useQueryClient()
   return useMutation({
