@@ -1,0 +1,1 @@
+import{U as e,et as t}from"./queries-B4YStzXj.js";import{c as n}from"./index-Eo_nN3xu.js";import r,{t as i}from"./Membres-CZI2pFEe.js";var a=e();function o(){let{id:e}=t();return n()?(0,a.jsx)(r,{openId:e}):(0,a.jsx)(i,{id:e})}export{o as default};
