@@ -60,3 +60,7 @@ jobs:
       - name: Appliquer les migrations
         if: steps.secrets.outputs.pret == 'oui'
         run: supabase db push
+
+      - name: Vérifier que la base et les fichiers sont alignés
+        if: steps.secrets.outputs.pret == 'oui'
+        run: supabase migration list
