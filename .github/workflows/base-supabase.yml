@@ -55,12 +55,12 @@ jobs:
 
       - name: Migrations à appliquer
         if: steps.secrets.outputs.pret == 'oui'
-        run: supabase db push --dry-run
+        run: supabase db push --linked --dry-run
 
       - name: Appliquer les migrations
         if: steps.secrets.outputs.pret == 'oui'
-        run: supabase db push
+        run: supabase db push --linked
 
       - name: Vérifier que la base et les fichiers sont alignés
         if: steps.secrets.outputs.pret == 'oui'
-        run: supabase migration list
+        run: supabase migration list --linked
