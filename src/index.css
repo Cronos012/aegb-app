@@ -1,0 +1,140 @@
+@import "tailwindcss";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/bricolage-grotesque";
+
+/*
+  Direction « Leppi » : indigo tissé, touches de safran, anneau aux couleurs
+  du drapeau guinéen. Les couleurs de surface passent par des variables pour
+  que le mode sombre suive le réglage du téléphone.
+*/
+
+:root {
+  --page: #f3f4f8;
+  --surface: #ffffff;
+  --surface-2: #f5f6fa;
+  --ink: #12162b;
+  --muted: #5a6075;
+  --line: #d7dae6;
+  --line-soft: #e8eaf1;
+  --primary: #1a2352;
+  --primary-ink: #ffffff;
+  --link: #253070;
+  --select: #e9ebf6;
+  --ok: #0b7a4b;
+  --ok-soft: #e3f4ec;
+  --warn: #8a5700;
+  --warn-soft: #fff4d6;
+  --danger: #b3122a;
+  --danger-soft: #fdebee;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --page: #0c1029;
+    --surface: #161b3b;
+    --surface-2: #1d2348;
+    --ink: #eef0fa;
+    --muted: #a5abc6;
+    --line: #353d6e;
+    --line-soft: #272e58;
+    --primary: #eef0fa;
+    --primary-ink: #12183d;
+    --link: #b4bdff;
+    --select: #29315f;
+    --ok: #5bd69b;
+    --ok-soft: #12352a;
+    --warn: #f5c842;
+    --warn-soft: #3a3014;
+    --danger: #ff8796;
+    --danger-soft: #3d1520;
+    color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-line-soft: var(--line-soft);
+  --color-primary: var(--primary);
+  --color-primary-ink: var(--primary-ink);
+  --color-link: var(--link);
+  --color-select: var(--select);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+}
+
+@theme {
+  --font-sans: "Inter Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Bricolage Grotesque Variable", "Inter Variable", system-ui, sans-serif;
+
+  --color-nuit: #12183d;
+  --color-leppi: #1a2352;
+  --color-leppi-2: #253070;
+  --color-safran: #f5b800;
+  --color-safran-pale: #fff3c4;
+  --color-gn-rouge: #ce1126;
+  --color-gn-jaune: #fcd116;
+  --color-gn-vert: #009460;
+}
+
+@utility bg-tisse {
+  background-color: #1a2352;
+  background-image:
+    repeating-linear-gradient(45deg, rgba(245, 184, 0, 0.12) 0 1.5px, transparent 1.5px 24px),
+    repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.07) 0 1.5px, transparent 1.5px 24px);
+}
+
+@utility bg-anneau {
+  background: conic-gradient(#ce1126 0 33.3%, #fcd116 0 66.6%, #009460 0);
+}
+
+@utility barre-tricolore {
+  background: linear-gradient(90deg, #ce1126 0 33.3%, #fcd116 0 66.6%, #009460 0);
+}
+
+@utility titre {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  a {
+    color: var(--link);
+  }
+
+  :focus-visible {
+    outline: 3px solid rgba(245, 184, 0, 0.7);
+    outline-offset: 2px;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+}
