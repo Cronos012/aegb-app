@@ -5,6 +5,7 @@ import { Avatar } from '../components/Avatar'
 import { Brand } from '../components/Logo'
 import { TYPE_LABELS } from '../lib/format'
 import { useBureauBadge } from '../lib/feed'
+import { useMessagesLive, useUnreadConversations } from '../lib/messages'
 import { isBureau, useMe } from '../lib/queries'
 import { BottomNav } from './BottomNav'
 
@@ -36,8 +37,16 @@ export function MemberLayout() {
   const me = useMe().data
   const bureau = isBureau(me)
   const badge = useBureauBadge()
+  const unread = useUnreadConversations()
+  useMessagesLive(me?.profile.status === 'actif')
   // Ces écrans prennent tout l'écran sur téléphone, comme dans la maquette.
-  const fullScreen = [useMatch('/app/profil/modifier'), useMatch('/app/publier'), useMatch('/app/fil/:id')].some(Boolean)
+  const fullScreen = [
+    useMatch('/app/profil/modifier'),
+    useMatch('/app/publier'),
+    useMatch('/app/fil/:id'),
+    useMatch('/app/messages/:id'),
+    useMatch('/app/messages/:id/infos'),
+  ].some(Boolean)
 
   return (
     <div className="min-h-dvh lg:grid lg:grid-cols-[264px_minmax(0,1fr)]">
@@ -45,7 +54,7 @@ export function MemberLayout() {
         <Brand size={40} className="px-2 text-white" />
         <nav aria-label="Navigation principale" className="mt-8 flex flex-col gap-1">
           <SideLink to="/app/fil" label="Fil d'actu" icon={House} />
-          <SideLink to="/app/messages" label="Messages" icon={MessageSquare} soon />
+          <SideLink to="/app/messages" label="Messages" icon={MessageSquare} badge={unread} />
           <SideLink to="/app/evenements" label="Événements" icon={Calendar} soon />
           <SideLink to="/app/cotisation" label="Cotisation" icon={CreditCard} soon />
           <SideLink to="/app/votes" label="Votes" icon={SquareCheckBig} soon />

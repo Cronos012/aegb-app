@@ -8,10 +8,14 @@ import { MemberLayout } from './layouts/MemberLayout'
 import { useIsDesktop } from './lib/media'
 import { Annuaire } from './pages/member/Annuaire'
 import { Bientot } from './pages/member/Bientot'
+import { Conversation } from './pages/member/Conversation'
 import { Fil } from './pages/member/Fil'
+import { InfosGroupe } from './pages/member/InfosGroupe'
 import { MembreProfil } from './pages/member/MembreProfil'
 import { Menu } from './pages/member/Menu'
+import { Messages } from './pages/member/Messages'
 import { ModifierProfil } from './pages/member/ModifierProfil'
+import { NouveauMessage } from './pages/member/NouveauMessage'
 import { Profil } from './pages/member/Profil'
 import { Publication } from './pages/member/Publication'
 import { Publier } from './pages/member/Publier'
@@ -35,6 +39,7 @@ const Postes = lazy(() => import('./pages/bureau/Postes'))
 const Journal = lazy(() => import('./pages/bureau/Journal'))
 const Annonces = lazy(() => import('./pages/bureau/Annonces'))
 const Moderation = lazy(() => import('./pages/bureau/Moderation'))
+const CompteAegb = lazy(() => import('./pages/bureau/CompteAegb'))
 
 /** Sur téléphone, l'accueil de l'appli ; sur ordinateur, le site de l'association. */
 function Home() {
@@ -69,7 +74,11 @@ export function App() {
             <Route path="menu" element={<Menu />} />
             <Route path="membres" element={<Annuaire />} />
             <Route path="membres/:id" element={<MembreProfil />} />
-            <Route path="messages" element={<Bientot page="messages" />} />
+            <Route path="messages" element={<Messages />}>
+              <Route path="nouveau" element={<NouveauMessage />} />
+              <Route path=":id" element={<Conversation />} />
+              <Route path=":id/infos" element={<InfosGroupe />} />
+            </Route>
             <Route path="cotisation" element={<Bientot page="cotisation" />} />
             <Route path="evenements" element={<Bientot page="evenements" />} />
             <Route path="votes" element={<Bientot page="votes" />} />
@@ -93,6 +102,10 @@ export function App() {
               </Route>
               <Route element={<ScreenGate screen="moderation" />}>
                 <Route path="moderation" element={<Suspense fallback={<PageLoader />}><Moderation /></Suspense>} />
+              </Route>
+              <Route element={<ScreenGate screen="bienvenue" />}>
+                <Route path="aegb" element={<Suspense fallback={<PageLoader />}><CompteAegb /></Suspense>} />
+                <Route path="aegb/:id" element={<Suspense fallback={<PageLoader />}><CompteAegb /></Suspense>} />
               </Route>
               <Route element={<ScreenGate screen="postes" />}>
                 <Route path="postes" element={<Suspense fallback={<PageLoader />}><Postes /></Suspense>} />

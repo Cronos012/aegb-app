@@ -11,6 +11,7 @@ import { useToast } from '../../components/Toast'
 import { AttachButton, AttachmentPreviews } from '../../components/feed/Composer'
 import { ConfirmDialog } from '../../components/feed/Dialogs'
 import { PostCard } from '../../components/feed/PostCard'
+import { Toggle } from '../../components/Toggle'
 import { discardUploads, uploadAttachments, useAttachments } from '../../lib/attachments'
 import { errorMessage } from '../../lib/errors'
 import { AUDIENCES, POST_MAX, useAnnouncements, useNow, type Audience, type FeedPost } from '../../lib/feed'
@@ -26,21 +27,6 @@ const TITLE_MAX = 120
 function localInput(date: Date): string {
   const pad = (n: number) => String(n).padStart(2, '0')
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
-}
-
-function Toggle({ checked, onChange, title, detail }: { checked: boolean; onChange: (v: boolean) => void; title: string; detail: string }) {
-  return (
-    <label className="flex cursor-pointer items-center justify-between gap-4 rounded-2xl bg-surface-2 px-4 py-3.5">
-      <span>
-        <span className="block text-[15px] font-bold">{title}</span>
-        <span className="block text-[13px] text-muted">{detail}</span>
-      </span>
-      <input type="checkbox" role="switch" checked={checked} onChange={(e) => onChange(e.target.checked)} className="peer sr-only" />
-      <span className={`relative h-8 w-[52px] shrink-0 rounded-full transition peer-focus-visible:ring-[3px] peer-focus-visible:ring-safran/60 ${checked ? 'bg-primary' : 'bg-line'}`} aria-hidden="true">
-        <span className={`absolute top-1 size-6 rounded-full bg-surface shadow transition-all ${checked ? 'left-[24px]' : 'left-1'}`} />
-      </span>
-    </label>
-  )
 }
 
 export default function Annonces() {

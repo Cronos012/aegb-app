@@ -55,6 +55,33 @@ export type Database = {
         }
         Relationships: []
       }
+      aegb_settings: {
+        Row: {
+          announce_arrival: boolean
+          id: boolean
+          updated_at: string | null
+          updated_by_name: string | null
+          welcome_actions: string[]
+          welcome_text: string
+        }
+        Insert: {
+          announce_arrival?: boolean
+          id?: boolean
+          updated_at?: string | null
+          updated_by_name?: string | null
+          welcome_actions?: string[]
+          welcome_text?: string
+        }
+        Update: {
+          announce_arrival?: boolean
+          id?: boolean
+          updated_at?: string | null
+          updated_by_name?: string | null
+          welcome_actions?: string[]
+          welcome_text?: string
+        }
+        Relationships: []
+      }
       announcement_authors: {
         Row: {
           post_id: string
@@ -87,6 +114,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      blocks: {
+        Row: {
+          blocked_id: string
+          blocker_id: string
+          created_at: string
+        }
+        Insert: {
+          blocked_id?: string
+          blocker_id?: string
+          created_at?: string
+        }
+        Update: {
+          blocked_id?: string
+          blocker_id?: string
+          created_at?: string
+        }
+        Relationships: []
       }
       bureau_roles: {
         Row: {
@@ -233,6 +278,69 @@ export type Database = {
           },
         ]
       }
+      conversation_members: {
+        Row: {
+          conversation_id: string
+          is_manager: boolean
+          joined_at: string
+          last_read_at: string
+          member_id: string
+        }
+        Insert: {
+          conversation_id?: string
+          is_manager?: boolean
+          joined_at?: string
+          last_read_at?: string
+          member_id?: string
+        }
+        Update: {
+          conversation_id?: string
+          is_manager?: boolean
+          joined_at?: string
+          last_read_at?: string
+          member_id?: string
+        }
+        Relationships: []
+      }
+      conversations: {
+        Row: {
+          changed_at: string
+          created_at: string
+          created_by: string | null
+          id: string
+          kind: Database["public"]["Enums"]["conversation_kind"]
+          last_message_at: string | null
+          member_id: string | null
+          pair_key: string | null
+          photo_path: string | null
+          title: string | null
+        }
+        Insert: {
+          changed_at?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          kind?: Database["public"]["Enums"]["conversation_kind"]
+          last_message_at?: string | null
+          member_id?: string | null
+          pair_key?: string | null
+          photo_path?: string | null
+          title?: string | null
+        }
+        Update: {
+          changed_at?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          kind?: Database["public"]["Enums"]["conversation_kind"]
+          last_message_at?: string | null
+          member_id?: string | null
+          pair_key?: string | null
+          photo_path?: string | null
+          title?: string | null
+        }
+        Relationships: []
+      }
       member_contacts: {
         Row: {
           email: string
@@ -312,6 +420,7 @@ export type Database = {
           decision: Database["public"]["Enums"]["moderation_decision"]
           excerpt: string
           id: number
+          message_id: string | null
           post_id: string | null
           reason: Database["public"]["Enums"]["report_reason"] | null
           reports: number
@@ -753,6 +862,25 @@ export type Database = {
         Args: { p_body: string; p_parent?: string; p_post: string }
         Returns: string
       }
+      add_group_members: { Args: { p_conversation: string; p_members: string[] }; Returns: undefined }
+      aegb_inbox: {
+        Args: never
+        Returns: {
+          avatar_path: string
+          first_name: string
+          id: string
+          last_at: string
+          last_from_member: boolean
+          last_name: string
+          last_preview: string
+          member_id: string
+          member_type: Database["public"]["Enums"]["member_type"]
+          city: string
+          replied_by_name: string
+          validated_at: string
+        }[]
+      }
+      aegb_pending: { Args: never; Returns: number }
       announcements_overview: {
         Args: never
         Returns: {
@@ -769,6 +897,7 @@ export type Database = {
         Args: { p_member: string; p_role: string }
         Returns: undefined
       }
+      block_member: { Args: { p_member: string }; Returns: undefined }
       bureau_counts: {
         Args: never
         Returns: {
@@ -787,6 +916,8 @@ export type Database = {
         }
         Returns: boolean
       }
+      can_read_conversation: { Args: { p_conv: string }; Returns: boolean }
+      can_read_message_file: { Args: { p_name: string }; Returns: boolean }
       can_read_post: {
         Args: {
           p_audience: Database["public"]["Enums"]["post_audience"]
@@ -799,12 +930,39 @@ export type Database = {
       }
       clear_journal: { Args: never; Returns: number }
       clear_role: { Args: { p_role: string }; Returns: undefined }
+      conversation_info: { Args: { p_conversation: string }; Returns: Json }
+      conversation_messages: {
+        Args: { p_before?: string; p_conversation: string; p_limit?: number }
+        Returns: {
+          as_aegb: boolean
+          body: string
+          created_at: string
+          deleted: boolean
+          files: Json
+          hidden: boolean
+          hidden_reason: string
+          id: string
+          kind: string
+          meta: Json
+          post_id: string
+          reactions: Json
+          reply: Json
+          reported: boolean
+          sender_avatar_path: string
+          sender_first_name: string
+          sender_id: string
+          sender_last_name: string
+          written_by_name: string
+        }[]
+      }
+      create_group: { Args: { p_members: string[]; p_title: string }; Returns: string }
       create_post: {
         Args: { p_body: string; p_id: string; p_media?: Json }
         Returns: undefined
       }
       delete_announcement: { Args: { p_id: string }; Returns: string[] }
       delete_comment: { Args: { p_id: string }; Returns: undefined }
+      delete_message: { Args: { p_id: string }; Returns: string[] }
       delete_post: { Args: { p_id: string }; Returns: string[] }
       discreet_authors: {
         Args: { p_ids: number[] }
@@ -816,7 +974,9 @@ export type Database = {
       is_active_member: { Args: never; Returns: boolean }
       is_bureau: { Args: never; Returns: boolean }
       journal_locked: { Args: never; Returns: boolean }
+      leave_group: { Args: { p_conversation: string }; Returns: undefined }
       lock_journal: { Args: never; Returns: undefined }
+      mark_read: { Args: { p_conversation: string }; Returns: undefined }
       mark_seen: { Args: { p_ids: string[] }; Returns: undefined }
       mark_welcomed: { Args: never; Returns: undefined }
       member_history: {
@@ -849,6 +1009,37 @@ export type Database = {
         }
         Returns: undefined
       }
+      moderate_message: {
+        Args: {
+          p_decision: Database["public"]["Enums"]["moderation_decision"]
+          p_id: string
+          p_reason?: Database["public"]["Enums"]["report_reason"]
+        }
+        Returns: undefined
+      }
+      moderation_messages: {
+        Args: never
+        Returns: {
+          author_avatar_path: string
+          author_first_name: string
+          author_id: string
+          author_last_name: string
+          body: string
+          created_at: string
+          hidden: boolean
+          last_reported_at: string
+          last_warning_at: string
+          last_warning_reason: string
+          media_duration: number
+          media_kind: string
+          media_path: string
+          message_id: string
+          place: string
+          reasons: Json
+          reports: number
+          warnings: number
+        }[]
+      }
       moderation_pending: { Args: never; Returns: number }
       moderation_queue: {
         Args: never
@@ -878,7 +1069,31 @@ export type Database = {
         Args: { p_screen: string }
         Returns: Database["public"]["Enums"]["access_level"]
       }
+      my_aegb: { Args: never; Returns: string }
       my_bureau: { Args: never; Returns: Json }
+      my_conversations: {
+        Args: never
+        Returns: {
+          blocked: boolean
+          id: string
+          kind: Database["public"]["Enums"]["conversation_kind"]
+          last_as_aegb: boolean
+          last_at: string
+          last_kind: string
+          last_preview: string
+          last_sender_id: string
+          last_sender_name: string
+          members: number
+          other_avatar_path: string
+          other_first_name: string
+          other_id: string
+          other_last_name: string
+          photo_path: string
+          title: string
+          unread: number
+        }[]
+      }
+      open_private: { Args: { p_member: string }; Returns: string }
       public_bureau: {
         Args: never
         Returns: {
@@ -909,9 +1124,20 @@ export type Database = {
         }
         Returns: undefined
       }
+      react_message: {
+        Args: {
+          p_id: string
+          p_kind: Database["public"]["Enums"]["reaction_kind"]
+        }
+        Returns: undefined
+      }
       reactivate_member: { Args: { p_member: string }; Returns: undefined }
       refuse_member: {
         Args: { p_member: string; p_reason: string }
+        Returns: undefined
+      }
+      remove_group_member: {
+        Args: { p_conversation: string; p_member: string }
         Returns: undefined
       }
       report_content: {
@@ -921,6 +1147,33 @@ export type Database = {
           p_reason: Database["public"]["Enums"]["report_reason"]
         }
         Returns: boolean
+      }
+      report_message: {
+        Args: {
+          p_id: string
+          p_reason: Database["public"]["Enums"]["report_reason"]
+        }
+        Returns: boolean
+      }
+      save_welcome: {
+        Args: { p_actions: string[]; p_announce: boolean; p_text: string }
+        Returns: undefined
+      }
+      send_message: {
+        Args: {
+          p_body: string
+          p_conversation: string
+          p_files?: Json
+          p_id: string
+          p_post?: string
+          p_reply_to?: string
+        }
+        Returns: undefined
+      }
+      send_welcome_test: { Args: never; Returns: string }
+      set_group_manager: {
+        Args: { p_conversation: string; p_manager: boolean; p_member: string }
+        Returns: undefined
       }
       set_member_type: {
         Args: {
@@ -943,10 +1196,15 @@ export type Database = {
         Returns: undefined
       }
       transfer_guarantor: { Args: { p_member: string }; Returns: undefined }
+      unblock_member: { Args: { p_member: string }; Returns: undefined }
       unpin_announcement: { Args: { p_id: string }; Returns: undefined }
       update_comment: {
         Args: { p_body: string; p_id: string }
         Returns: undefined
+      }
+      update_group: {
+        Args: { p_conversation: string; p_photo?: string; p_title: string }
+        Returns: string
       }
       update_post: {
         Args: { p_body: string; p_id: string }
@@ -960,6 +1218,7 @@ export type Database = {
     }
     Enums: {
       access_level: "lecture" | "complet"
+      conversation_kind: "prive" | "groupe" | "grand_groupe" | "aegb"
       member_status: "en_attente" | "actif" | "refuse" | "suspendu"
       member_type: "etudiant" | "alumni" | "sympathisant" | "honneur"
       moderation_decision: "garder" | "masquer" | "masquer_avertir"

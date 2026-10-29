@@ -1,9 +1,10 @@
 import { Link } from 'react-router'
-import { Briefcase, ChevronRight, HardDrive, ShieldAlert, Star, UserCheck, UserPlus, Users } from 'lucide-react'
+import { Bot, Briefcase, ChevronRight, HardDrive, ShieldAlert, Star, UserCheck, UserPlus, Users } from 'lucide-react'
 import { ErrorNote, PageLoader } from '../../components/Feedback'
 import { Pill } from '../../components/Pill'
 import { useModerationPending, useStorageUsed } from '../../lib/feed'
 import { useIsDesktop } from '../../lib/media'
+import { useAegbPending } from '../../lib/messages'
 import { can, useAccounts, useActivity, useBureauCounts, useMe, useRoles } from '../../lib/queries'
 import { ActivityLine } from './activity'
 import { BureauPage, Card } from './BureauPage'
@@ -73,6 +74,8 @@ export default function Dashboard() {
   const seesRoles = can(me, 'postes', 'lecture')
   const seesReports = can(me, 'moderation', 'lecture')
   const reports = useModerationPending(seesReports).data ?? 0
+  const seesAegb = can(me, 'bienvenue', 'lecture')
+  const aegb = useAegbPending(seesAegb).data ?? 0
   const storage = useStorageUsed()
   const counts = useBureauCounts()
   const pending = useAccounts('en_attente', seesAccounts)
@@ -128,6 +131,21 @@ export default function Dashboard() {
             </Link>
           ) : null}
 
+          {!desktop && seesAegb && aegb ? (
+            <Link to="/bureau/aegb" className="flex items-center gap-3.5 rounded-[22px] bg-surface p-4 text-ink no-underline">
+              <span className="grid size-12 place-items-center rounded-2xl bg-select text-ink">
+                <Bot className="size-6" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-[16px] font-bold">Messages à AEGB</span>
+                <span className="block text-[13px] text-muted">
+                  {aegb} membre{aegb > 1 ? 's' : ''} attend{aegb > 1 ? 'ent' : ''} une réponse
+                </span>
+              </span>
+              <span className="grid size-8 place-items-center rounded-full bg-safran text-sm font-extrabold text-nuit">{aegb}</span>
+            </Link>
+          ) : null}
+
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
             <Kpi icon={<Users className="size-5" />} value={c.active} label="Membres actifs" detail={desktop ? `${c.new_this_month} nouveau${c.new_this_month > 1 ? 'x' : ''} ce mois-ci` : undefined} to={can(me, 'membres', 'lecture') ? '/bureau/membres' : undefined} />
             {desktop && seesAccounts ? (
@@ -148,7 +166,7 @@ export default function Dashboard() {
           </div>
 
           <div className="flex flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-start lg:gap-4">
-            {desktop && (seesAccounts || seesRoles || seesReports) ? (
+            {desktop && (seesAccounts || seesRoles || seesReports || seesAegb) ? (
               <Card className="p-5">
                 <div className="flex items-center justify-between">
                   <h2 className="titre m-0 text-[20px]">À traiter</h2>
@@ -177,9 +195,24 @@ export default function Dashboard() {
                         </span>
                         <span className="min-w-0 flex-1">
                           <span className="block text-[15px] font-bold">Signalements à examiner</span>
-                          <span className="block truncate text-[13px] text-muted">{reports ? 'Publications et commentaires signalés par les membres' : 'Rien à examiner'}</span>
+                          <span className="block truncate text-[13px] text-muted">{reports ? 'Publications, commentaires et messages signalés par les membres' : 'Rien à examiner'}</span>
                         </span>
                         <span className="titre text-[20px]">{reports}</span>
+                        <ChevronRight className="size-5 text-muted" />
+                      </Link>
+                    </li>
+                  ) : null}
+                  {seesAegb ? (
+                    <li>
+                      <Link to="/bureau/aegb" className="flex items-center gap-3.5 rounded-2xl border border-line-soft px-4 py-3 text-ink no-underline hover:bg-surface-2">
+                        <span className="grid size-10 place-items-center rounded-xl bg-select text-ink">
+                          <Bot className="size-5" />
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-[15px] font-bold">Messages à AEGB</span>
+                          <span className="block truncate text-[13px] text-muted">{aegb ? 'Des membres attendent une réponse du bureau' : 'Tout le monde a sa réponse'}</span>
+                        </span>
+                        <span className="titre text-[20px]">{aegb}</span>
                         <ChevronRight className="size-5 text-muted" />
                       </Link>
                     </li>

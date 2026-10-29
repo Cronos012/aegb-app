@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router'
 import { Briefcase, CreditCard, House, MessageSquare, User, type LucideIcon } from 'lucide-react'
 import { useBureauBadge } from '../lib/feed'
+import { useUnreadConversations } from '../lib/messages'
 import { isBureau, useMe } from '../lib/queries'
 
 type Item = { to: string; label: string; icon: LucideIcon; badge?: number | null }
@@ -9,9 +10,10 @@ export function BottomNav() {
   const me = useMe().data
   const bureau = isBureau(me)
   const badge = useBureauBadge()
+  const unread = useUnreadConversations()
   const items: Item[] = [
     { to: '/app/fil', label: 'Fil', icon: House },
-    { to: '/app/messages', label: 'Messages', icon: MessageSquare },
+    { to: '/app/messages', label: 'Messages', icon: MessageSquare, badge: unread },
     { to: '/app/cotisation', label: 'Cotisation', icon: CreditCard },
     { to: '/app/profil', label: 'Profil', icon: User },
   ]

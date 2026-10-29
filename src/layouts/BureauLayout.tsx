@@ -1,8 +1,10 @@
-import { NavLink, Outlet, useNavigate } from 'react-router'
-import { ChevronLeft, LayoutDashboard, Megaphone, ScrollText, ShieldAlert, Star, UserCheck, Users, type LucideIcon } from 'lucide-react'
+import { NavLink, Outlet, useMatch, useNavigate } from 'react-router'
+import { Bot, ChevronLeft, LayoutDashboard, Megaphone, ScrollText, ShieldAlert, Star, UserCheck, Users, type LucideIcon } from 'lucide-react'
 import { Avatar } from '../components/Avatar'
 import { Logo } from '../components/Logo'
 import { useModerationPending } from '../lib/feed'
+import { useIsDesktop } from '../lib/media'
+import { useAegbPending, useMessagesLive } from '../lib/messages'
 import { can, useBureauCounts, useMe, type ScreenCode } from '../lib/queries'
 import { BottomNav } from './BottomNav'
 
@@ -34,6 +36,11 @@ export function BureauLayout() {
   const navigate = useNavigate()
   const counts = useBureauCounts(can(me, 'comptes', 'lecture')).data
   const reports = useModerationPending(can(me, 'moderation', 'lecture')).data
+  const aegb = useAegbPending(can(me, 'bienvenue', 'lecture')).data
+  const desktop = useIsDesktop()
+  useMessagesLive(me?.profile.status === 'actif')
+  // Sur téléphone, une conversation avec AEGB prend tout l'écran.
+  const fullScreen = !!useMatch('/bureau/aegb/:id') && !desktop
   const full = me?.guarantor || ['presidence', 'vice_presidence'].includes(me?.role?.code ?? '')
 
   const groups: { title: string; items: Item[] }[] = [
@@ -56,6 +63,7 @@ export function BureauLayout() {
       title: 'Réglages',
       items: [
         { to: '/bureau/postes', label: 'Postes et droits', icon: Star, screen: 'postes' },
+        { to: '/bureau/aegb', label: 'Compte AEGB', icon: Bot, screen: 'bienvenue', badge: aegb },
         { to: '/bureau/journal', label: "Journal d'activité", icon: ScrollText, screen: 'journal' },
       ],
     },
@@ -104,10 +112,10 @@ export function BureauLayout() {
           </div>
         ) : null}
       </aside>
-      <main className="flex min-h-dvh min-w-0 flex-col bg-page pb-[calc(68px+env(safe-area-inset-bottom))] lg:px-10 lg:py-8 lg:pb-10">
+      <main className={`flex min-h-dvh min-w-0 flex-col bg-page lg:px-10 lg:py-8 lg:pb-10 ${fullScreen ? '' : 'pb-[calc(68px+env(safe-area-inset-bottom))]'}`}>
         <Outlet />
       </main>
-      <BottomNav />
+      {fullScreen ? null : <BottomNav />}
     </div>
   )
 }

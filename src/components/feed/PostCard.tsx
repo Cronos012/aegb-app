@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router'
 import { useQueryClient } from '@tanstack/react-query'
-import { Check, EyeOff, Flag, MessageCircle, MoreHorizontal, Pencil, Pin, PinOff, Trash2, User } from 'lucide-react'
+import { Check, EyeOff, Flag, MessageCircle, MoreHorizontal, Pencil, Pin, PinOff, Send, Trash2, User } from 'lucide-react'
 import { useSession } from '../../auth/session'
 import { errorMessage } from '../../lib/errors'
 import { AUDIENCES, markSeen, OFFICIAL_NAME, personLine, POST_MAX, react, summarize, useNow, type FeedPost, type ReactionKind } from '../../lib/feed'
@@ -16,6 +16,7 @@ import { ActionSheet, ConfirmDialog, EditTextDialog, HideDialog, ReportDialog, S
 import { Lightbox, MediaGrid } from './Media'
 import { ReactionButton, ReactionCount, ReactorsDialog } from './Reactions'
 import { RichText } from './RichText'
+import { ShareDialog } from '../messages/ShareDialog'
 
 export function OfficialBadge() {
   return (
@@ -96,6 +97,7 @@ export function PostCard({ post, pinned = false, preview = false, onComment, med
   const [pending, setPending] = useState<ReactionKind | null | undefined>(undefined)
   const [lightbox, setLightbox] = useState<number | null>(null)
   const [reactors, setReactors] = useState(false)
+  const [share, setShare] = useState(false)
   const root = useRef<HTMLElement>(null)
   const summary = summarize(post.reactions, uid, pending)
   const comments = post.comments[0]?.count ?? 0
@@ -185,8 +187,14 @@ export function PostCard({ post, pinned = false, preview = false, onComment, med
             <button type="button" onClick={comment} className="flex h-11 flex-1 items-center justify-center gap-2 rounded-xl text-[15px] font-bold text-muted hover:bg-surface-2">
               <MessageCircle className="size-5" /> Commenter
             </button>
+            {post.hidden_at ? null : (
+              <button type="button" onClick={() => setShare(true)} className="flex h-11 flex-1 items-center justify-center gap-2 rounded-xl text-[15px] font-bold text-muted hover:bg-surface-2">
+                <Send className="size-5" /> Envoyer
+              </button>
+            )}
           </div>
           <ReactorsDialog target={reactors ? { post: post.id } : null} onClose={() => setReactors(false)} />
+          <ShareDialog post={share ? post.id : null} onClose={() => setShare(false)} />
         </>
       )}
     </article>

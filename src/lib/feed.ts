@@ -3,6 +3,7 @@ import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-quer
 import { useSession } from '../auth/session'
 import type { Enums, Tables } from './database.types'
 import { TYPE_LABELS } from './format'
+import { useAegbPending } from './messages'
 import { can, isBureau, useBureauCounts, useMe, type Me, type Profile } from './queries'
 import { supabase } from './supabase'
 
@@ -439,7 +440,8 @@ export function useBureauBadge(): number | null {
   const bureau = isBureau(me)
   const accounts = useBureauCounts(bureau && can(me, 'comptes', 'lecture')).data?.pending ?? 0
   const reports = useModerationPending(bureau && can(me, 'moderation', 'lecture')).data ?? 0
-  return accounts + reports || null
+  const aegb = useAegbPending(bureau && can(me, 'bienvenue', 'lecture')).data ?? 0
+  return accounts + reports + aegb || null
 }
 
 /** L'heure à l'ouverture de l'écran : assez précis pour savoir si une annonce est encore épinglée. */

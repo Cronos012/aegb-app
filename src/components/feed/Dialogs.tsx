@@ -10,7 +10,7 @@ import { ErrorNote } from '../Feedback'
 import { TextArea } from '../Field'
 import { useToast } from '../Toast'
 
-export type Target = { post?: string; comment?: string }
+export type Target = { post?: string; comment?: string; message?: string }
 
 /** Une liste d'actions, en feuille sur téléphone. */
 export function ActionSheet({ open, onClose, title, children }: { open: boolean; onClose: () => void; title: string; children: ReactNode }) {
@@ -59,7 +59,7 @@ export function ReportDialog({ target, firstName, onClose }: { target: Target | 
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<unknown>(null)
   const toast = useToast()
-  const what = target?.comment ? 'ce commentaire' : 'cette publication'
+  const what = target?.message ? 'ce message' : target?.comment ? 'ce commentaire' : 'cette publication'
 
   function close() {
     setReason(null)
@@ -71,7 +71,9 @@ export function ReportDialog({ target, firstName, onClose }: { target: Target | 
     if (!target || !reason) return
     setBusy(true)
     setError(null)
-    const { data, error } = await supabase.rpc('report_content', { p_post: orNull(target.post), p_comment: orNull(target.comment), p_reason: reason })
+    const { data, error } = target.message
+      ? await supabase.rpc('report_message', { p_id: target.message, p_reason: reason })
+      : await supabase.rpc('report_content', { p_post: orNull(target.post), p_comment: orNull(target.comment), p_reason: reason })
     setBusy(false)
     if (error) return setError(error)
     close()
@@ -83,7 +85,11 @@ export function ReportDialog({ target, firstName, onClose }: { target: Target | 
       open={!!target}
       onClose={close}
       title={`Signaler ${what}`}
-      description={`Le bureau examine chaque signalement. ${firstName} ne saura pas que c'est toi.`}
+      description={
+        target?.message
+          ? `Le bureau voit seulement ce message, jamais le reste de la conversation. ${firstName} ne saura pas que c'est toi.`
+          : `Le bureau examine chaque signalement. ${firstName} ne saura pas que c'est toi.`
+      }
       footer={
         <Button onClick={send} busy={busy} disabled={!reason} className="w-full">
           Envoyer le signalement
@@ -120,21 +126,19 @@ export function HideDialog({
   const [error, setError] = useState<unknown>(null)
   const toast = useToast()
   const queryClient = useQueryClient()
-  const post = !target?.comment
+  const post = !target?.comment && !target?.message
 
   async function send() {
     if (!target || !reason) return
     setBusy(true)
     setError(null)
-    const { error } = await supabase.rpc('moderate', {
-      p_post: orNull(target.post),
-      p_comment: orNull(target.comment),
-      p_decision: warn ? 'masquer_avertir' : 'masquer',
-      p_reason: reason,
-    })
+    const decision = warn ? 'masquer_avertir' : 'masquer'
+    const { error } = target.message
+      ? await supabase.rpc('moderate_message', { p_id: target.message, p_decision: decision, p_reason: reason })
+      : await supabase.rpc('moderate', { p_post: orNull(target.post), p_comment: orNull(target.comment), p_decision: decision, p_reason: reason })
     setBusy(false)
     if (error) return setError(error)
-    await Promise.all([queryClient.invalidateQueries({ queryKey: ['fil'] }), queryClient.invalidateQueries({ queryKey: ['bureau'] })])
+    await Promise.all([queryClient.invalidateQueries({ queryKey: ['fil'] }), queryClient.invalidateQueries({ queryKey: ['bureau'] }), queryClient.invalidateQueries({ queryKey: ['messages'] })])
     onClose()
     onDone?.()
     toast(warn ? `Masqué, et ${firstName} a reçu un avertissement.` : 'Masqué. Le bureau garde une trace au journal.')
@@ -144,7 +148,7 @@ export function HideDialog({
     <Dialog
       open={!!target}
       onClose={onClose}
-      title={post ? 'Masquer cette publication' : 'Masquer ce commentaire'}
+      title={target?.message ? 'Masquer ce message' : post ? 'Masquer cette publication' : 'Masquer ce commentaire'}
       description={`Plus personne ne le voit, sauf ${firstName}, avec le motif. La décision va au journal.`}
       footer={
         <>
