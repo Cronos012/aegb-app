@@ -42,14 +42,18 @@ function matches(row: MatrixRow, filter: Filter) {
 }
 
 /** Les paiements hors carte, pour marquer d'un billet les mois payés en espèces, virement ou chèque. */
-function useOfflinePayments(enabled: boolean) {
+/** Les paiements confirmés : lesquels sont hors carte (pour l'icône), et leur quittance (pour ouvrir une case). */
+function useConfirmedPayments(enabled: boolean) {
   return useQuery({
-    queryKey: ['bureau', 'cotisations', 'hors-carte'],
+    queryKey: ['bureau', 'cotisations', 'paiements'],
     enabled,
     queryFn: async () => {
-      const { data, error } = await supabase.from('dues_payments').select('id').eq('status', 'confirme').neq('method', 'carte')
+      const { data, error } = await supabase.from('dues_payments').select('id, method, receipt_number').eq('status', 'confirme')
       if (error) throw error
-      return new Set(data.map((p) => p.id))
+      return {
+        offline: new Set(data.filter((p) => p.method !== 'carte').map((p) => p.id)),
+        receipts: new Map(data.flatMap((p) => (p.receipt_number ? [[p.id, p.receipt_number] as const] : []))),
+      }
     },
   })
 }
@@ -71,7 +75,8 @@ export default function Cotisations() {
   const full = can(me, 'tresorerie')
   const matrix = useDuesMatrix()
   const settings = useDuesSettings().data
-  const offline = useOfflinePayments(true).data
+  const confirmed = useConfirmedPayments(true).data
+  const offline = confirmed?.offline
   const [filter, setFilter] = useState<Filter>('tous')
   const [query, setQuery] = useState('')
 
@@ -206,7 +211,18 @@ export default function Cotisations() {
                   </td>
                   {r.dues.months.slice(0, 12).map((m) => (
                     <td key={m.month} className="px-0.5 py-2.5">
-                      <MonthCell month={m} cash={offline} label={`${fullName(r)}, ${monthYearLabel(m.month)}`} />
+                      {m.payment_id && confirmed?.receipts.get(m.payment_id) ? (
+                        <Link
+                          to={`/app/cotisation/quittances/${confirmed.receipts.get(m.payment_id)}`}
+                          onClick={(e) => e.stopPropagation()}
+                          title={`Quittance n° ${confirmed.receipts.get(m.payment_id)}`}
+                          className="mx-auto block w-fit rounded-[11px] hover:ring-2 hover:ring-primary/30"
+                        >
+                          <MonthCell month={m} cash={offline} label={`${fullName(r)}, ${monthYearLabel(m.month)}, quittance n° ${confirmed.receipts.get(m.payment_id)}`} />
+                        </Link>
+                      ) : (
+                        <MonthCell month={m} cash={offline} label={`${fullName(r)}, ${monthYearLabel(m.month)}`} />
+                      )}
                     </td>
                   ))}
                   <td className="px-3 py-2.5 text-right font-bold whitespace-nowrap">{r.dues.paying ? euros(paidThisYear(r.dues)) : '—'}</td>

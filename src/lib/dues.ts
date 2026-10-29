@@ -220,11 +220,11 @@ export function defaultUntil(state: DuesState): string | null {
    Lectures
 ---------------------------------------------------------------------------- */
 
-export function useMyDues() {
+export function useMyDues(enabled = true) {
   const { session } = useSession()
   return useQuery({
     queryKey: ['cotisation', 'moi', session?.user.id],
-    enabled: !!session,
+    enabled: !!session && enabled,
     queryFn: async () => {
       const { data, error } = await supabase.rpc('my_dues')
       if (error) throw error
