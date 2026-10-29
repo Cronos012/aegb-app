@@ -14,6 +14,7 @@ declare
   d uuid := gen_random_uuid(); -- inscrit qui demande « membre d'honneur »
   e uuid := gen_random_uuid(); -- membre déjà actif
   n integer;
+  m integer;
   ok boolean;
   failures text[] := '{}';
 
@@ -215,6 +216,70 @@ begin
   exception when insufficient_privilege then null;
   end;
   reset role;
+
+  -- 12. Les droits de l'admin numérique restent secrets
+  select count(*) into m from public.bureau_screens;
+  update public.profiles set status = 'actif' where id = b;
+  perform set_config('request.jwt.claims', json_build_object('sub', b, 'role', 'authenticated')::text, true);
+  set local role authenticated;
+  begin
+    select count(*) into n from public.bureau_roles where locked;
+    failures := failures || 'secrétariat : lit les postes protégés';
+  exception when insufficient_privilege then null;
+  end;
+  select count(*) into n from public.bureau_roles;
+  if n <> 7 then failures := failures || format('secrétariat : voit %s postes au lieu de 7', n); end if;
+  select (public.my_bureau() ->> 'guarantor')::boolean into ok;
+  if ok then failures := failures || 'secrétariat : vu comme admin numérique'; end if;
+  select public.my_bureau() -> 'access' ? 'journal' into ok;
+  if not ok then failures := failures || 'secrétariat : ses droits manquent'; end if;
+  begin
+    perform public.transfer_guarantor(b);
+    failures := failures || 'secrétariat : a pris le poste d''admin';
+  exception when insufficient_privilege then null;
+  end;
+  reset role;
+
+  -- 13. Prénom et nom obligatoires, sauf pour le titulaire du poste d'admin
+  perform set_config('request.jwt.claims', json_build_object('sub', b, 'role', 'authenticated')::text, true);
+  set local role authenticated;
+  begin
+    update public.profiles set last_name = ' ' where id = b;
+    failures := failures || 'membre : nom vide accepté';
+  exception when invalid_parameter_value then null;
+  end;
+  reset role;
+  perform set_config('request.jwt.claims', json_build_object('sub', a, 'role', 'authenticated')::text, true);
+  set local role authenticated;
+  select count(*) into n from jsonb_object_keys(public.my_bureau() -> 'access');
+  if n <> m then failures := failures || format('admin : %s écrans sur %s', n, m); end if;
+  begin
+    update public.profiles set last_name = '' where id = a;
+  exception when invalid_parameter_value then
+    failures := failures || 'admin : nom vide refusé';
+  end;
+  reset role;
+
+  -- 14. L'admin transmet son poste ; lui seul pouvait le faire
+  perform set_config('request.jwt.claims', json_build_object('sub', a, 'role', 'authenticated')::text, true);
+  set local role authenticated;
+  begin
+    perform public.transfer_guarantor(b);
+    failures := failures || 'admin : poste transmis à une personne qui en a déjà un';
+  exception when invalid_parameter_value then null;
+  end;
+  perform public.transfer_guarantor(e);
+  if public.my_bureau() is not null then failures := failures || 'ancien admin : garde ses droits'; end if;
+  begin
+    perform public.transfer_guarantor(a);
+    failures := failures || 'ancien admin : a repris le poste';
+  exception when insufficient_privilege then null;
+  end;
+  reset role;
+  select holder_id = e into ok from public.bureau_roles where code = 'admin_numerique';
+  if not ok then failures := failures || 'transmission : poste non transmis'; end if;
+  select count(*) into n from public.activity_log where action = 'attribution_poste' and subject_id = e;
+  if n <> 1 then failures := failures || 'transmission : absente du journal'; end if;
 
   if cardinality(failures) = 0 then
     raise exception 'TESTS OK : toutes les vérifications passent (base remise dans son état initial)';

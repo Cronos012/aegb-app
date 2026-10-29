@@ -5,7 +5,8 @@ import { supabase } from './supabase'
 
 export type Profile = Tables<'profiles'>
 export type Contact = Tables<'member_contacts'>
-export type Role = Tables<'bureau_roles'>
+/** Un poste tel que l'appli le lit : sans ce qui trahirait le poste d'admin numérique. */
+export type Role = Omit<Tables<'bureau_roles'>, 'locked' | 'assigned_by'>
 export type Screen = Tables<'bureau_screens'>
 export type Permission = Tables<'role_permissions'>
 export type ActivityEntry = Tables<'activity_log'>
@@ -20,7 +21,11 @@ export type Me = {
   contact: Contact | null
   role: Role | null
   access: Partial<Record<ScreenCode, AccessLevel>>
+  /** Vrai pour le seul titulaire du poste d'admin numérique. Personne d'autre ne le sait. */
+  guarantor: boolean
 }
+
+const ROLE_COLUMNS = 'code, label, description, sort_order, holder_id, assigned_at'
 
 /** Mon profil, mes coordonnées, mon poste et ce qu'il m'ouvre. L'affichage seulement : la base revérifie tout. */
 export function useMe() {
@@ -30,24 +35,16 @@ export function useMe() {
     queryKey: ['me', uid],
     enabled: !!uid,
     queryFn: async (): Promise<Me> => {
-      const [p, c, r] = await Promise.all([
+      const [p, c, r, b] = await Promise.all([
         supabase.from('profiles').select('*').eq('id', uid!).single(),
         supabase.from('member_contacts').select('*').eq('id', uid!).maybeSingle(),
-        supabase.from('bureau_roles').select('*').eq('holder_id', uid!).maybeSingle(),
+        supabase.from('bureau_roles').select(ROLE_COLUMNS).eq('holder_id', uid!).maybeSingle(),
+        supabase.rpc('my_bureau'),
       ])
       if (p.error) throw p.error
-      const role = r.data ?? null
-      const access: Me['access'] = {}
-      if (role && p.data.status === 'actif') {
-        if (role.locked) {
-          const { data } = await supabase.from('bureau_screens').select('code')
-          for (const s of data ?? []) access[s.code as ScreenCode] = 'complet'
-        } else {
-          const { data } = await supabase.from('role_permissions').select('screen_code, level').eq('role_code', role.code)
-          for (const row of data ?? []) access[row.screen_code as ScreenCode] = row.level
-        }
-      }
-      return { profile: p.data, contact: c.data ?? null, role, access }
+      if (b.error) throw b.error
+      const bureau = b.data as { guarantor: boolean; access: Me['access'] } | null
+      return { profile: p.data, contact: c.data ?? null, role: r.data ?? null, access: bureau?.access ?? {}, guarantor: bureau?.guarantor ?? false }
     },
   })
 }
@@ -190,7 +187,7 @@ export function useRoles() {
     queryFn: async (): Promise<RoleWithHolder[]> => {
       const { data, error } = await supabase
         .from('bureau_roles')
-        .select('*, holder:profiles!bureau_roles_holder_id_fkey(id, first_name, last_name, avatar_path, member_type, status)')
+        .select(`${ROLE_COLUMNS}, holder:profiles!bureau_roles_holder_id_fkey(id, first_name, last_name, avatar_path, member_type, status)`)
         .order('sort_order')
       if (error) throw error
       return data as unknown as RoleWithHolder[]

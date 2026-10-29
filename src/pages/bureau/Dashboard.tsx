@@ -48,7 +48,7 @@ export default function Dashboard() {
   const c = counts.data
   const vacant = roles.data?.filter((r) => !r.holder) ?? []
   const pendingNames = pending.data?.filter((p) => p.email_confirmed_at).slice(0, 3).map((p) => `${p.first_name} ${p.last_name}`).join(', ')
-  const full = me.role?.locked || ['presidence', 'vice_presidence'].includes(me.role?.code ?? '')
+  const full = me.guarantor || ['presidence', 'vice_presidence'].includes(me.role?.code ?? '')
 
   const kicker = desktop ? null : (
     <span className="mb-1 inline-flex w-fit items-center gap-1.5 rounded-full bg-safran px-2.5 py-1 text-[11px] font-extrabold tracking-wide text-nuit">

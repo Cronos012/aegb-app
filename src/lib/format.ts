@@ -38,9 +38,9 @@ export function fullName(p: Named): string {
 }
 
 export function initials(p: Named): string {
-  const a = p.first_name.trim()[0] ?? ''
-  const b = p.last_name.trim()[0] ?? ''
-  return (a + b).toUpperCase() || '?'
+  const first = p.first_name.trim()
+  const last = p.last_name.trim()
+  return (last ? (first[0] ?? '') + last[0] : first.slice(0, 2)).toUpperCase() || '?'
 }
 
 const TZ = 'Europe/Paris'

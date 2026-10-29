@@ -5,6 +5,7 @@ describe('affichage', () => {
   it('écrit les noms et les initiales', () => {
     expect(fullName({ first_name: 'Aïssatou', last_name: 'Diallo' })).toBe('Aïssatou Diallo')
     expect(initials({ first_name: 'aïssatou', last_name: 'diallo' })).toBe('AD')
+    expect(initials({ first_name: 'Cronos', last_name: '' })).toBe('CR')
     expect(initials({ first_name: ' ', last_name: '' })).toBe('?')
   })
 
