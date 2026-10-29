@@ -9,11 +9,12 @@ import { Pill } from '../../components/Pill'
 import { downloadCsv } from '../../lib/csv'
 import { fullName, longDate, STATUS_LABELS, TYPE_LABELS, TYPE_PLURALS, type MemberType } from '../../lib/format'
 import { useIsDesktop } from '../../lib/media'
-import { useMembers, useRoles, type MemberRow } from '../../lib/queries'
+import { statusShort, useDuesMatrix } from '../../lib/dues'
+import { can, useMe, useMembers, useRoles, type MemberRow } from '../../lib/queries'
 import { BureauPage, Card, Chips } from './BureauPage'
 import { FichePanel, statusTone } from './fiche'
 
-type Filter = 'tous' | MemberType | 'suspendus'
+type Filter = 'tous' | MemberType | 'suspendus' | 'retard'
 
 function normalize(s: string) {
   return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
@@ -24,6 +25,10 @@ export default function Membres({ openId }: { openId?: string }) {
   const navigate = useNavigate()
   const members = useMembers()
   const roles = useRoles().data
+  // La cotisation n'apparaît qu'aux postes qui ont accès à l'argent.
+  const seesMoney = can(useMe().data, 'tresorerie', 'lecture')
+  const matrix = useDuesMatrix(seesMoney).data
+  const duesOf = useMemo(() => new Map((matrix ?? []).map((r) => [r.member_id, r.dues])), [matrix])
   const [filter, setFilter] = useState<Filter>('tous')
   const [query, setQuery] = useState('')
 
@@ -31,20 +36,22 @@ export default function Membres({ openId }: { openId?: string }) {
   const all = members.data ?? []
   const actives = all.filter((m) => m.status === 'actif')
 
-  const count = (f: Filter) => (f === 'tous' ? actives.length : f === 'suspendus' ? all.filter((m) => m.status === 'suspendu').length : actives.filter((m) => m.member_type === f).length)
-  const options = (['tous', 'etudiant', 'alumni', 'sympathisant', 'honneur', 'suspendus'] as Filter[])
-    .map((f) => ({ value: f, label: f === 'tous' ? 'Actifs' : f === 'suspendus' ? 'Suspendus' : TYPE_PLURALS[f], count: count(f) }))
+  const late = (m: MemberRow) => duesOf.get(m.id)?.status === 'retard'
+  const count = (f: Filter) =>
+    f === 'tous' ? actives.length : f === 'suspendus' ? all.filter((m) => m.status === 'suspendu').length : f === 'retard' ? all.filter(late).length : actives.filter((m) => m.member_type === f).length
+  const options = (['tous', 'etudiant', 'alumni', 'sympathisant', 'honneur', 'suspendus', ...(seesMoney ? ['retard'] : [])] as Filter[])
+    .map((f) => ({ value: f, label: f === 'tous' ? 'Actifs' : f === 'suspendus' ? 'Suspendus' : f === 'retard' ? 'Cotisation en retard' : TYPE_PLURALS[f], count: count(f) }))
     .filter((o) => o.value === 'tous' || o.count > 0 || o.value === filter)
 
   const q = normalize(query.trim())
   const rows = all
-    .filter((m) => (filter === 'tous' ? m.status === 'actif' : filter === 'suspendus' ? m.status === 'suspendu' : m.status === 'actif' && m.member_type === filter))
+    .filter((m) => (filter === 'tous' ? m.status === 'actif' : filter === 'suspendus' ? m.status === 'suspendu' : filter === 'retard' ? late(m) : m.status === 'actif' && m.member_type === filter))
     .filter((m) => !q || normalize([m.first_name, m.last_name, m.member_contacts?.email, m.city, m.school].filter(Boolean).join(' ')).includes(q))
 
   function exportCsv() {
     downloadCsv(
       `membres-aegb-${new Date().toISOString().slice(0, 10)}.csv`,
-      ['Prénom', 'Nom', 'Type', 'Statut', 'Poste', 'Email', 'Téléphone', 'Ville', 'École', 'Formation', 'Membre depuis'],
+      ['Prénom', 'Nom', 'Type', 'Statut', 'Poste', 'Email', 'Téléphone', 'Ville', 'École', 'Formation', 'Membre depuis', ...(seesMoney ? ['Cotisation'] : [])],
       all.map((m) => [
         m.first_name,
         m.last_name,
@@ -57,6 +64,7 @@ export default function Membres({ openId }: { openId?: string }) {
         m.school,
         m.formation,
         m.validated_at ? longDate(m.validated_at) : '',
+        ...(seesMoney ? [duesOf.get(m.id) ? statusShort(duesOf.get(m.id)!).label : ''] : []),
       ]),
     )
   }
@@ -105,7 +113,7 @@ export default function Membres({ openId }: { openId?: string }) {
                         {role ? ` · ${role.label}` : ''}
                       </p>
                     </div>
-                    {m.status === 'suspendu' ? <Pill tone="danger">Suspendu</Pill> : role ? <Pill tone="safran">Bureau</Pill> : null}
+                    {m.status === 'suspendu' ? <Pill tone="danger">Suspendu</Pill> : late(m) ? <Pill tone="danger">{statusShort(duesOf.get(m.id)!).label}</Pill> : role ? <Pill tone="safran">Bureau</Pill> : null}
                     <ChevronRight className="size-5 shrink-0 text-muted" />
                   </Link>
                 </li>
@@ -125,6 +133,7 @@ export default function Membres({ openId }: { openId?: string }) {
                 <th className="px-3 py-3 font-bold">Poste</th>
                 <th className="px-3 py-3 font-bold">Ville et école</th>
                 <th className="px-3 py-3 font-bold">Statut</th>
+                {seesMoney ? <th className="px-3 py-3 font-bold">Cotisation</th> : null}
                 <th className="w-10 px-3 py-3" />
               </tr>
             </thead>
@@ -148,6 +157,15 @@ export default function Membres({ openId }: { openId?: string }) {
                     <td className="px-3 py-3">
                       <Pill tone={statusTone(m.status)}>{STATUS_LABELS[m.status]}</Pill>
                     </td>
+                    {seesMoney ? (
+                      <td className="px-3 py-3">
+                        {duesOf.get(m.id) ? (
+                          <Pill tone={statusShort(duesOf.get(m.id)!).tone}>{statusShort(duesOf.get(m.id)!).label}</Pill>
+                        ) : (
+                          <span className="text-muted">–</span>
+                        )}
+                      </td>
+                    ) : null}
                     <td className="px-3 py-3 text-muted">
                       <ChevronRight className="size-5" />
                     </td>

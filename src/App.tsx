@@ -9,16 +9,21 @@ import { useIsDesktop } from './lib/media'
 import { Annuaire } from './pages/member/Annuaire'
 import { Bientot } from './pages/member/Bientot'
 import { Conversation } from './pages/member/Conversation'
+import { Cotisation } from './pages/member/Cotisation'
 import { Fil } from './pages/member/Fil'
+import { Historique } from './pages/member/Historique'
 import { InfosGroupe } from './pages/member/InfosGroupe'
 import { MembreProfil } from './pages/member/MembreProfil'
 import { Menu } from './pages/member/Menu'
 import { Messages } from './pages/member/Messages'
 import { ModifierProfil } from './pages/member/ModifierProfil'
 import { NouveauMessage } from './pages/member/NouveauMessage'
+import { PaiementRetour } from './pages/member/PaiementRetour'
+import { Payer } from './pages/member/Payer'
 import { Profil } from './pages/member/Profil'
 import { Publication } from './pages/member/Publication'
 import { Publier } from './pages/member/Publier'
+import { Quittance } from './pages/member/Quittance'
 import { Recherche } from './pages/member/Recherche'
 import { Accueil } from './pages/public/Accueil'
 import { AuthRetour } from './pages/public/AuthRetour'
@@ -40,6 +45,10 @@ const Journal = lazy(() => import('./pages/bureau/Journal'))
 const Annonces = lazy(() => import('./pages/bureau/Annonces'))
 const Moderation = lazy(() => import('./pages/bureau/Moderation'))
 const CompteAegb = lazy(() => import('./pages/bureau/CompteAegb'))
+const Cotisations = lazy(() => import('./pages/bureau/Cotisations'))
+const Encaisser = lazy(() => import('./pages/bureau/Encaisser'))
+const ReglagesCotisation = lazy(() => import('./pages/bureau/ReglagesCotisation'))
+const JournalFinancier = lazy(() => import('./pages/bureau/JournalFinancier'))
 
 /** Sur téléphone, l'accueil de l'appli ; sur ordinateur, le site de l'association. */
 function Home() {
@@ -79,7 +88,11 @@ export function App() {
               <Route path=":id" element={<Conversation />} />
               <Route path=":id/infos" element={<InfosGroupe />} />
             </Route>
-            <Route path="cotisation" element={<Bientot page="cotisation" />} />
+            <Route path="cotisation" element={<Cotisation />} />
+            <Route path="cotisation/payer" element={<Payer />} />
+            <Route path="cotisation/retour/:id" element={<PaiementRetour />} />
+            <Route path="cotisation/historique" element={<Historique />} />
+            <Route path="cotisation/quittances/:numero" element={<Quittance />} />
             <Route path="evenements" element={<Bientot page="evenements" />} />
             <Route path="votes" element={<Bientot page="votes" />} />
             <Route path="documents" element={<Bientot page="documents" />} />
@@ -96,6 +109,12 @@ export function App() {
               <Route element={<ScreenGate screen="membres" />}>
                 <Route path="membres" element={<Suspense fallback={<PageLoader />}><Membres /></Suspense>} />
                 <Route path="membres/:id" element={<Suspense fallback={<PageLoader />}><FicheMembre /></Suspense>} />
+              </Route>
+              <Route element={<ScreenGate screen="tresorerie" />}>
+                <Route path="cotisations" element={<Suspense fallback={<PageLoader />}><Cotisations /></Suspense>} />
+                <Route path="cotisations/encaisser" element={<Suspense fallback={<PageLoader />}><Encaisser /></Suspense>} />
+                <Route path="cotisations/reglages" element={<Suspense fallback={<PageLoader />}><ReglagesCotisation /></Suspense>} />
+                <Route path="journal-financier" element={<Suspense fallback={<PageLoader />}><JournalFinancier /></Suspense>} />
               </Route>
               <Route element={<ScreenGate screen="annonces" />}>
                 <Route path="annonces" element={<Suspense fallback={<PageLoader />}><Annonces /></Suspense>} />
