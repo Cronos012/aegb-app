@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router'
 import { ImagePlus, LayoutGrid, Newspaper, Search } from 'lucide-react'
 import { Avatar } from '../../components/Avatar'
 import { ButtonLink } from '../../components/Button'
+import { FilVote } from '../../components/elections/FilVote'
 import { EmptyState, ErrorNote, Spinner } from '../../components/Feedback'
 import { SearchField } from '../../components/Field'
 import { Logo } from '../../components/Logo'
@@ -122,6 +123,7 @@ export function Fil() {
           </PhotoPicker>
         </div>
 
+        <FilVote className="mx-3 lg:mx-0" />
         {pin ? <PostCard post={pin} pinned className="mx-3 lg:mx-0" /> : null}
 
         <ErrorNote error={feed.error} className="mx-3 lg:mx-0" />
