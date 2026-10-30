@@ -110,14 +110,17 @@ begin
      or j ->> 'first_unpaid' is distinct from '2026-09-01'
      or j ->> 'paid_until' is not null
      or jsonb_array_length(j -> 'months') <> 12
-     or j -> 'months' -> 0 ->> 'state' is distinct from 'retard'
-     or j -> 'months' -> 2 ->> 'state' is distinct from 'en_cours'
-     or j -> 'months' -> 3 ->> 'state' is distinct from 'a_venir' then
+     or j ->> 'exercise_start' is distinct from '2026-01-01'
+     or j ->> 'horizon' is distinct from '2026-12-01'
+     or j -> 'months' -> 0 ->> 'state' is distinct from 'pas_du'
+     or j -> 'months' -> 8 ->> 'state' is distinct from 'retard'
+     or j -> 'months' -> 10 ->> 'state' is distinct from 'en_cours'
+     or j -> 'months' -> 11 ->> 'state' is distinct from 'a_venir' then
     failures := failures || ('état : Awa en retard mal calculée : ' || j::text);
   end if;
   j := private.dues_state(b);
   if j ->> 'status' is distinct from 'a_jour' or j ->> 'dues_from' is distinct from '2026-11-01'
-     or j -> 'months' -> 1 ->> 'state' is distinct from 'pas_du' or (j ->> 'vote_suspended')::boolean then
+     or j -> 'months' -> 9 ->> 'state' is distinct from 'pas_du' or (j ->> 'vote_suspended')::boolean then
     failures := failures || ('état : arrivée en novembre mal calculée : ' || j::text);
   end if;
   j := private.dues_state(c);
@@ -126,8 +129,8 @@ begin
   end if;
   perform set_config('aegb.today', '2026-08-15', true);
   j := private.dues_state(d);
-  if j ->> 'status' is distinct from 'pas_encore' or j ->> 'horizon' is distinct from '2027-08-01'
-     or jsonb_array_length(j -> 'months') <> 24 then
+  if j ->> 'status' is distinct from 'pas_encore' or j ->> 'horizon' is distinct from '2026-12-01'
+     or jsonb_array_length(j -> 'months') <> 12 then
     failures := failures || ('état : avant le début officiel : ' || j::text);
   end if;
   perform set_config('aegb.today', '2026-11-15', true);
@@ -253,24 +256,29 @@ begin
   -- 6. La trésorerie encaisse des espèces ------------------------------------------
   perform set_config('request.jwt.claims', json_build_object('sub', tr, 'role', 'authenticated')::text, true);
   set local role authenticated;
-  j := public.record_payment(b, '2027-01-01', 'especes', '2026-11-14', 'Remis en main propre');
+  j := public.record_payment(b, '2026-11-01', 'especes', '2026-11-14', 'Remis en main propre');
   pay2 := (j ->> 'payment')::uuid;
-  if (j ->> 'amount_cents')::integer is distinct from 1500 or (j ->> 'number')::integer is distinct from n0 + 2 then
+  if (j ->> 'amount_cents')::integer is distinct from 500 or (j ->> 'number')::integer is distinct from n0 + 2 then
     failures := failures || ('espèces : montant ou numéro : ' || j::text);
   end if;
   begin
-    perform public.record_payment(b, '2027-02-01', 'carte');
+    perform public.record_payment(b, '2026-12-01', 'carte');
     failures := failures || text 'espèces : carte saisie à la main';
   exception when invalid_parameter_value then null;
   end;
   begin
-    perform public.record_payment(b, '2027-02-01', 'cheque', '2026-12-01');
+    perform public.record_payment(b, '2026-12-01', 'cheque', '2026-12-01');
     failures := failures || text 'espèces : date dans le futur acceptée';
   exception when invalid_parameter_value then null;
   end;
   begin
-    perform public.record_payment(b, '2026-12-01', 'cheque');
+    perform public.record_payment(b, '2026-11-01', 'cheque');
     failures := failures || text 'espèces : mois déjà payés encaissés deux fois';
+  exception when invalid_parameter_value then null;
+  end;
+  begin
+    perform public.record_payment(b, '2027-01-01', 'cheque');
+    failures := failures || text 'espèces : année suivante payée avant décembre';
   exception when invalid_parameter_value then null;
   end;
   select count(*) into n from public.dues_matrix() where member_id in (a, b, c, d);
@@ -279,22 +287,22 @@ begin
   if n <> 1 then failures := failures || text 'trésorerie : ne voit pas les paiements'; end if;
   select count(*) into n from public.ledger_entries where number in (n0 + 1, n0 + 2);
   if n <> 2 then failures := failures || text 'trésorerie : ne lit pas le journal'; end if;
-  if public.member_dues(b) ->> 'paid_until' is distinct from '2027-01-31' then
+  if public.member_dues(b) ->> 'paid_until' is distinct from '2026-11-30' then
     failures := failures || text 'trésorerie : fiche de Bakary';
   end if;
   reset role;
 
   select count(*) into n from public.ledger_entries
   where payment_id = pay2 and method = 'especes' and created_by = tr and created_by_name = 'Lansana Touré'
-    and label = 'Cotisation novembre 2026 à janvier 2027' and note = 'Remis en main propre' and entry_date = '2026-11-14';
+    and label = 'Cotisation novembre 2026' and note = 'Remis en main propre' and entry_date = '2026-11-14';
   if n <> 1 then failures := failures || text 'espèces : écriture mal remplie'; end if;
   select count(*) into n from public.messages m join public.conversations x on x.id = m.conversation_id
   where x.kind = 'aegb' and x.member_id = b and m.kind = 'cotisation' and m.meta ->> 'type' = 'recu'
-    and m.body = 'Novembre 2026 à janvier 2027, 15 €, en espèces. Tu es à jour jusqu''au 31 janvier 2027.';
+    and m.body = 'Novembre 2026, 5 €, en espèces. Tu es à jour jusqu''au 30 novembre 2026.';
   if n <> 1 then failures := failures || text 'espèces : message de quittance'; end if;
   select count(*) into n from public.activity_log
   where category = 'argent' and action = 'encaissement' and actor_id = tr and subject_id = b
-    and summary = 'a encaissé 15 € en espèces (novembre 2026 à janvier 2027)';
+    and summary = 'a encaissé 5 € en espèces (novembre 2026)';
   if n <> 1 then failures := failures || text 'espèces : absent du journal d''activité'; end if;
 
   -- Le secrétariat n'a pas accès à l'argent
@@ -392,7 +400,7 @@ begin
   reset role;
 
   select count(*) into n from public.ledger_entries
-  where reverses = e and amount_cents = -1500 and category = 'correction' and method = 'especes' and member_id = b
+  where reverses = e and amount_cents = -500 and category = 'correction' and method = 'especes' and member_id = b
     and label = 'Contre-passation, montant erroné' and reason = 'montant' and note = 'Erreur de saisie'
     and entry_date = '2026-11-15';
   if n <> 1 then failures := failures || text 'correction : écriture inverse mal remplie'; end if;
@@ -406,7 +414,7 @@ begin
   if n <> 1 then failures := failures || text 'correction : quittance pas annulée'; end if;
   select count(*) into n from public.messages m join public.conversations x on x.id = m.conversation_id
   where x.kind = 'aegb' and x.member_id = b and m.kind = 'cotisation' and m.meta ->> 'type' = 'annule'
-    and m.body = 'Ton paiement « Novembre 2026 à janvier 2027 » (15 €) a été annulé : montant erroné. Ces mois sont de nouveau à payer.';
+    and m.body = 'Ton paiement « Novembre 2026 » (5 €) a été annulé : montant erroné. Ce mois est de nouveau à payer.';
   if n <> 1 then failures := failures || text 'correction : message au membre'; end if;
   if private.dues_state(b) ->> 'first_unpaid' is distinct from '2026-11-01' then
     failures := failures || text 'correction : novembre pas redevenu dû';
@@ -517,7 +525,7 @@ begin
   where monthly_cents = 1000 and org_address = '12 rue de Siam, Brest' and updated_by_name = 'Lansana Touré';
   if n <> 1 then failures := failures || text 'réglages : mal enregistrés'; end if;
   j := private.dues_state(a);
-  if (j ->> 'monthly_cents')::integer <> 1000 or (j -> 'months' -> 0 ->> 'amount_cents')::integer <> 500 then
+  if (j ->> 'monthly_cents')::integer <> 1000 or (j -> 'months' -> 8 ->> 'amount_cents')::integer <> 500 then
     failures := failures || text 'réglages : le nouveau prix change les mois déjà payés';
   end if;
   select count(*) into n from public.activity_log
@@ -525,11 +533,18 @@ begin
     and summary = 'a changé les réglages de la cotisation (10 € par mois)';
   if n <> 1 then failures := failures || text 'réglages : absents du journal d''activité'; end if;
 
-  -- 13. En juillet, on peut payer l'année suivante ----------------------------------------
-  perform set_config('aegb.today', '2027-07-10', true);
+  -- 13. En décembre, le mois de l'assemblée générale, on peut payer l'année suivante ----------
+  perform set_config('aegb.today', '2026-12-10', true);
   j := private.dues_state(a);
-  if j ->> 'horizon' is distinct from '2028-08-01' or jsonb_array_length(j -> 'months') <> 24 then
-    failures := failures || ('juillet : année suivante absente : ' || j::text);
+  if j ->> 'horizon' is distinct from '2027-12-01' or jsonb_array_length(j -> 'months') <> 24
+     or j ->> 'exercise_start' is distinct from '2026-01-01' then
+    failures := failures || ('décembre : année suivante absente : ' || j::text);
+  end if;
+  perform set_config('aegb.today', '2027-01-10', true);
+  j := private.dues_state(a);
+  if j ->> 'exercise_start' is distinct from '2027-01-01' or j ->> 'horizon' is distinct from '2027-12-01'
+     or jsonb_array_length(j -> 'months') <> 12 then
+    failures := failures || ('janvier : nouvelle année mal ouverte : ' || j::text);
   end if;
   perform set_config('aegb.today', '2026-11-15', true);
 

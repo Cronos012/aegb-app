@@ -109,10 +109,9 @@ export function addMonths(month: string, d: number): string {
   return date.toISOString().slice(0, 10)
 }
 
-/** « 2026-2027 » */
+/** L'année de cotisation, de janvier à décembre : « 2026 ». */
 export function exerciseLabel(start: string): string {
-  const y = parts(start)[0]
-  return `${y}-${y + 1}`
+  return String(parts(start)[0])
 }
 
 /** Comme la base : « Septembre et octobre 2026 », « Octobre à décembre 2026 », « Septembre 2026 à mars 2027 ». */
@@ -398,7 +397,7 @@ export function statusShort(s: Pick<DuesState, 'status' | 'late'>): { label: str
   return { label: 'Pas due', tone: 'neutral' }
 }
 
-/** Les mois par année de cotisation : 12 en temps normal, 24 en juillet et août. */
+/** Les mois par année de cotisation : 12 en temps normal, 24 en décembre (l'année suivante s'ouvre). */
 export function byExercise(months: DuesMonth[]): { label: string; months: DuesMonth[] }[] {
   const out: { label: string; months: DuesMonth[] }[] = []
   for (let i = 0; i < months.length; i += 12) {

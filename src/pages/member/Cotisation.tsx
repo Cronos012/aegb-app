@@ -167,7 +167,7 @@ export function Cotisation() {
   }
   const s = dues.data
   const label = payLabel(s)
-  const subtitle = `Année ${exerciseLabel(s.exercise_start)}, de septembre à août`
+  const subtitle = `Année ${exerciseLabel(s.exercise_start)}, de janvier à décembre`
 
   if (desktop) {
     const summary = duesSummary(s)

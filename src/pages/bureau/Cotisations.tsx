@@ -121,7 +121,7 @@ export default function Cotisations() {
     )
   }
 
-  const subtitle = settings ? `Année ${sample ? exerciseLabel(sample.exercise_start) : ''}, de septembre à août. ${euros(settings.monthly_cents)} par mois.` : undefined
+  const subtitle = settings ? `Année ${sample ? exerciseLabel(sample.exercise_start) : ''}, de janvier à décembre. ${euros(settings.monthly_cents)} par mois.` : undefined
   const open = (r: MatrixRow) => (full ? navigate(`/bureau/cotisations/encaisser?membre=${r.member_id}`) : can(me, 'membres', 'lecture') ? navigate(`/bureau/membres/${r.member_id}`) : undefined)
 
   return (

@@ -40,7 +40,7 @@ export function PayPanel({ state, footerClass = '' }: { state: DuesState; footer
   }
 
   if (!payable.length) {
-    return <Note>Tout est payé jusqu'à la fin de l'année. Merci ! Tu pourras payer l'année suivante à partir du 1er juillet.</Note>
+    return <Note>Tout est payé jusqu'à la fin de l'année. Merci ! Tu pourras payer l'année suivante à partir du 1er décembre.</Note>
   }
 
   const groups = byExercise(state.months)
