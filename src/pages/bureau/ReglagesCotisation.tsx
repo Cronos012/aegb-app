@@ -140,8 +140,8 @@ function Editor({ settings, readOnly }: { settings: DuesSettings; readOnly: bool
               <input type="month" value={form.start} disabled={readOnly} onChange={(e) => set('start', e.target.value)} className={inputClass} />
             </label>
             <div className="flex flex-col gap-2.5">
-              <Line label="L'année va de" value="septembre à août" />
-              <Line label="Payer d'avance" value="jusqu'en août, l'année suivante dès juillet" />
+              <Line label="L'année va de" value="janvier à décembre" />
+              <Line label="Payer d'avance" value="jusqu'en décembre, l'année suivante dès le 1er décembre" />
             </div>
             <p className="m-0 text-[13px] leading-[1.45] text-muted">Un nouveau montant ne touche que les mois pas encore payés. Les mois déjà payés gardent leur prix.</p>
           </Section>

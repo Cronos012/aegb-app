@@ -8,9 +8,7 @@ import { useMe } from '../../lib/queries'
 
 /** L'année de cotisation d'un paiement : celle de son premier mois. */
 function exerciseOf(p: Payment): string {
-  const first = [...p.months].sort()[0]
-  const [y, m] = first.split('-').map(Number)
-  return exerciseLabel(`${m >= 9 ? y : y - 1}-09-01`)
+  return exerciseLabel([...p.months].sort()[0])
 }
 
 function Totals({ state, payments }: { state: DuesState; payments: Payment[] }) {
@@ -27,7 +25,11 @@ function Totals({ state, payments }: { state: DuesState; payments: Payment[] }) 
         {state.paying ? `${paid.length} mois payé${paid.length > 1 ? 's' : ''} sur ${due} ${due > 1 ? 'dus' : 'dû'}` : "Ta cotisation n'est pas due"}
         {state.paid_until ? ` · à jour jusqu'au ${frenchDay(state.paid_until)}` : ''}
       </span>
-      {before ? <span className="mt-1 text-xs text-white/70">Rien n'est dû avant {monthName(before)}, le mois de ton arrivée.</span> : null}
+      {before ? (
+        <span className="mt-1 text-xs text-white/70">
+          Rien n'est dû avant {monthName(before)}, {before === state.start_month ? 'le début des cotisations' : 'le mois de ton arrivée'}.
+        </span>
+      ) : null}
       {payments.some((p) => p.status === 'annule') ? <span className="mt-1 text-xs text-white/70">Les paiements annulés ne comptent pas.</span> : null}
     </section>
   )

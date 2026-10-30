@@ -67,9 +67,9 @@ Toute la sécurité est dans la base : chaque table a des règles d'accès (RLS)
 
 ### Les cotisations (lot 4)
 
-- L'année va de septembre à août. Le montant par mois, la date de début et les types de membres qui cotisent se règlent dans « Réglages de la cotisation ». Un membre arrivé en cours d'année ne doit que les mois à partir de sa validation.
+- L'année va de janvier à décembre, comme l'exercice comptable et le mandat du bureau ; l'assemblée générale de décembre fixe le montant de l'année suivante. Le montant par mois, la date de début et les types de membres qui cotisent se règlent dans « Réglages de la cotisation ». Un membre arrivé en cours d'année ne doit que les mois à partir de sa validation.
 - Comme le disent les statuts (article 32), dès qu'un mois passé n'est pas payé, le droit de vote et l'éligibilité d'un étudiant sont suspendus. Après trois mois de retard et un rappel resté sans effet (la relance du 1er du mois), le bureau peut prononcer la radiation. La solidarité (article 30) ne dépend pas de la cotisation.
-- Le membre paie par carte avec HelloAsso, un ou plusieurs mois d'un coup, jusqu'en août (l'année suivante s'ouvre en juillet). Un paiement par carte n'est compté que lorsque HelloAsso le confirme : la fonction serveur relit toujours le paiement chez HelloAsso, elle ne croit jamais l'appli ni la notification seule.
+- Le membre paie par carte avec HelloAsso, un ou plusieurs mois d'un coup, jusqu'en décembre (l'année suivante s'ouvre le 1er décembre). Un paiement par carte n'est compté que lorsque HelloAsso le confirme : la fonction serveur relit toujours le paiement chez HelloAsso, elle ne croit jamais l'appli ni la notification seule.
 - Le bureau encaisse les espèces, virements et chèques. Chaque paiement donne une quittance numérotée (2026-0001, 2026-0002…), en PDF, envoyée au membre dans sa conversation AEGB.
 - Le journal financier ne se modifie pas et ne s'efface pas. Une erreur se corrige par une contre-passation : une écriture inverse, et les deux restent visibles. Un remboursement se fait dans HelloAsso, puis on passe la contre-passation.
 - Le 1er de chaque mois, AEGB envoie un rappel aux membres en retard (une fois par mois, réglage « Relance automatique »).
