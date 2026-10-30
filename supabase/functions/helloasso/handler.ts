@@ -1,4 +1,5 @@
-// Fonction serveur « helloasso » : le paiement des cotisations par carte.
+// Fonction serveur « helloasso » : le paiement par carte des cotisations et
+// des places d'événements.
 //
 // L'appli l'appelle pour ouvrir le paiement chez HelloAsso (checkout) et pour
 // savoir s'il a abouti (verify). HelloAsso l'appelle aussi à chaque paiement
@@ -39,6 +40,9 @@ interface Payment {
   method: string
   amount_cents: number
   label: string
+  /** Une cotisation, ou une place d'événement (lot 6). */
+  kind?: 'cotisation' | 'evenement'
+  event_id?: string | null
   checkout_intent_id: number | null
   created_at: string
   first_name: string | null
@@ -77,7 +81,7 @@ const ABANDON_MS = 2 * 60 * 60 * 1000
 const PAID_STATES = new Set(['Authorized', 'Processed'])
 
 const NOT_READY =
-  "Le paiement par carte n'est pas encore branché. Tu peux régler en espèces, par virement ou par chèque auprès de la trésorerie."
+  "Le paiement par carte n'est pas encore branché. Tu peux régler directement auprès du bureau."
 
 class Fail extends Error {
   status: number
@@ -216,16 +220,19 @@ export function createHandler(deps: Deps) {
     if (!config.appUrls.includes(base)) throw new Fail(400, "Cette adresse de l'appli n'est pas reconnue.")
     const p = await loadPayment(body.payment)
     if (!p || p.member_id !== userId || p.method !== 'carte') throw new Fail(404, "Ce paiement n'existe pas.")
-    if (p.status !== 'en_attente') throw new Fail(409, 'Ce paiement est déjà terminé. Recommence depuis « Payer ma cotisation ».')
+    const event = p.kind === 'evenement' && isUuid(p.event_id) ? p.event_id : null
+    if (p.status !== 'en_attente') {
+      throw new Fail(409, `Ce paiement est déjà terminé. Recommence depuis « ${event ? 'Payer dans l’appli' : 'Payer ma cotisation'} ».`)
+    }
 
     // L'identifiant du paiement est dans le chemin : HelloAsso ajoute ses
     // propres paramètres (checkoutIntentId, code, orderId) à la fin.
-    const back = `${base}app/cotisation/retour/${p.id}`
+    const back = event ? `${base}app/evenements/paiement/${p.id}` : `${base}app/cotisation/retour/${p.id}`
     const intent = {
       totalAmount: p.amount_cents,
       initialAmount: p.amount_cents,
-      itemName: `Cotisation AEGB, ${p.label}`.slice(0, 250),
-      backUrl: `${base}app/cotisation/payer`,
+      itemName: (event ? `Événement AEGB, ${p.label}` : `Cotisation AEGB, ${p.label}`).slice(0, 250),
+      backUrl: event ? `${base}app/evenements/${event}` : `${base}app/cotisation/payer`,
       errorUrl: back,
       returnUrl: back,
       containsDonation: false,
@@ -318,7 +325,7 @@ export function createHandler(deps: Deps) {
 
       const header = req.headers.get('authorization') ?? ''
       const userId = header.startsWith('Bearer ') ? await deps.userFromToken(header.slice(7)) : null
-      if (!userId) return json(401, { error: 'Reconnecte-toi pour payer ta cotisation.' })
+      if (!userId) return json(401, { error: 'Reconnecte-toi pour payer.' })
 
       switch (body.action) {
         case 'status':
