@@ -1,1 +1,0 @@
-import{Z as e,ut as t}from"./queries-BogGB4KN.js";import{c as n}from"./BureauPage-Donx0Ubz.js";import r,{t as i}from"./Membres-DVwM2nJW.js";var a=e();function o(){let{id:e}=t();return n()?(0,a.jsx)(r,{openId:e}):(0,a.jsx)(i,{id:e})}export{o as default};
