@@ -126,6 +126,21 @@ describe('ouvrir le paiement', () => {
     expect(rpcCalls).toContainEqual({ name: 'helloasso_attach', args: { p_payment: PAY, p_intent: 4242 } })
   })
 
+  it("renvoie vers l'événement pour une place payée dans l'appli", async () => {
+    const EVENT = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee'
+    payment = { ...payment, kind: 'evenement', event_id: EVENT, amount_cents: 500, label: 'Soirée de fin de semestre' }
+    const res = await handler()(post({ action: 'checkout', payment: PAY, base: BASE }, 'jeton-awa'))
+    expect(res.status).toBe(200)
+    const created = httpCalls.find((c) => c.method === 'POST' && c.url.endsWith('/checkout-intents'))
+    expect(created?.body).toMatchObject({
+      totalAmount: 500,
+      itemName: 'Événement AEGB, Soirée de fin de semestre',
+      returnUrl: `${BASE}app/evenements/paiement/${PAY}`,
+      errorUrl: `${BASE}app/evenements/paiement/${PAY}`,
+      backUrl: `${BASE}app/evenements/${EVENT}`,
+    })
+  })
+
   it('réessaie sans payeur prérempli si HelloAsso le refuse', async () => {
     refusePayer = true
     const res = await handler()(post({ action: 'checkout', payment: PAY, base: BASE }, 'jeton-awa'))

@@ -1146,7 +1146,9 @@ export type Database = {
           author_id: string | null
           body: string
           created_at: string
+          document_id: string | null
           edited_at: string | null
+          event_id: string | null
           hidden_at: string | null
           hidden_reason: string | null
           id: string
@@ -1160,7 +1162,9 @@ export type Database = {
           author_id?: string | null
           body?: string
           created_at?: string
+          document_id?: string | null
           edited_at?: string | null
+          event_id?: string | null
           hidden_at?: string | null
           hidden_reason?: string | null
           id: string
@@ -1174,7 +1178,9 @@ export type Database = {
           author_id?: string | null
           body?: string
           created_at?: string
+          document_id?: string | null
           edited_at?: string | null
+          event_id?: string | null
           hidden_at?: string | null
           hidden_reason?: string | null
           id?: string
@@ -1526,6 +1532,7 @@ export type Database = {
         Returns: boolean
       }
       can_read_conversation: { Args: { p_conv: string }; Returns: boolean }
+      can_read_document_file: { Args: { p_name: string }; Returns: boolean }
       can_read_message_file: { Args: { p_name: string }; Returns: boolean }
       can_read_post: {
         Args: {
@@ -1538,8 +1545,24 @@ export type Database = {
         Returns: boolean
       }
       cancel_assembly: { Args: { p_id: string; p_reason?: string }; Returns: undefined }
+      cancel_event: {
+        Args: {
+          p_id: string
+          p_reason?: string
+        }
+        Returns: number
+      }
       cast_vote: { Args: { p_ballot: string; p_choices: Json }; Returns: string }
+      check_in: {
+        Args: {
+          p_event: string
+          p_member: string
+          p_present: boolean
+        }
+        Returns: undefined
+      }
       clear_elections: { Args: never; Returns: number }
+      clear_events: { Args: never; Returns: number }
       clear_finances: { Args: never; Returns: number }
       clear_journal: { Args: never; Returns: number }
       clear_role: { Args: { p_role: string }; Returns: undefined }
@@ -1594,6 +1617,8 @@ export type Database = {
       }
       delete_announcement: { Args: { p_id: string }; Returns: string[] }
       delete_comment: { Args: { p_id: string }; Returns: undefined }
+      delete_document: { Args: { p_id: string }; Returns: string[] }
+      delete_document_category: { Args: { p_id: string }; Returns: undefined }
       delete_message: { Args: { p_id: string }; Returns: string[] }
       delete_post: { Args: { p_id: string }; Returns: string[] }
       discreet_authors: {
@@ -1610,6 +1635,7 @@ export type Database = {
           ledger_id: number
         }[]
       }
+      documents_list: { Args: never; Returns: Json }
       dues_matrix: {
         Args: never
         Returns: {
@@ -1622,6 +1648,12 @@ export type Database = {
           status: Database["public"]["Enums"]["member_status"]
         }[]
       }
+      event_admin: { Args: { p_id: string }; Returns: Json }
+      event_payment_status: { Args: { p_payment: string }; Returns: Json }
+      event_people: { Args: { p_id: string }; Returns: Json }
+      event_view: { Args: { p_id: string }; Returns: Json }
+      events_admin: { Args: never; Returns: Json }
+      events_list: { Args: never; Returns: Json }
       helloasso_attach: {
         Args: { p_intent: number; p_payment: string }
         Returns: undefined
@@ -1634,7 +1666,10 @@ export type Database = {
       helloasso_payment: { Args: { p_payment: string }; Returns: Json }
       is_active_member: { Args: never; Returns: boolean }
       is_bureau: { Args: never; Returns: boolean }
+      is_public_event_photo: { Args: { p_name: string }; Returns: boolean }
+      join_event: { Args: { p_id: string }; Returns: Json }
       journal_locked: { Args: never; Returns: boolean }
+      leave_event: { Args: { p_id: string }; Returns: undefined }
       leave_group: { Args: { p_conversation: string }; Returns: undefined }
       lock_journal: { Args: never; Returns: undefined }
       mark_read: { Args: { p_conversation: string }; Returns: undefined }
@@ -1771,6 +1806,8 @@ export type Database = {
           sort_order: number
         }[]
       }
+      public_documents: { Args: never; Returns: Json }
+      public_events: { Args: never; Returns: Json }
       publish_announcement: {
         Args: {
           p_audience: Database["public"]["Enums"]["post_audience"]
@@ -1800,6 +1837,14 @@ export type Database = {
         Returns: undefined
       }
       reactivate_member: { Args: { p_member: string }; Returns: undefined }
+      record_event_payment: {
+        Args: {
+          p_event: string
+          p_member: string
+          p_method?: Database["public"]["Enums"]["pay_method"]
+        }
+        Returns: Json
+      }
       record_payment: {
         Args: {
           p_member: string
@@ -1858,6 +1903,24 @@ export type Database = {
         }
         Returns: string
       }
+      save_document: {
+        Args: {
+          p_id: string
+          p_category: string
+          p_title: string
+          p_visibility: string
+          p_file?: Json
+          p_announce?: boolean
+        }
+        Returns: Json
+      }
+      save_document_category: {
+        Args: {
+          p_id: string | null
+          p_name: string
+        }
+        Returns: string
+      }
       save_dues_settings: {
         Args: {
           p_monthly_cents: number
@@ -1868,6 +1931,14 @@ export type Database = {
           p_start_month: string
         }
         Returns: undefined
+      }
+      save_event: {
+        Args: {
+          p_id: string
+          p_data: Json
+          p_publish?: boolean
+        }
+        Returns: Json
       }
       save_welcome: {
         Args: { p_actions: string[]; p_announce: boolean; p_text: string }
@@ -1906,6 +1977,7 @@ export type Database = {
         Returns: undefined
       }
       start_card_payment: { Args: { p_until: string }; Returns: Json }
+      start_event_payment: { Args: { p_id: string }; Returns: Json }
       storage_used: { Args: never; Returns: number }
       submit_candidacy: {
         Args: { p_assembly: string; p_role: string; p_statement: string }
