@@ -1,4 +1,4 @@
-import { candidacyMap, dayYear, hour, percent, plainDay, seatResults, type Assembly, type Question } from './elections'
+import { candidacyMap, dayYear, hour, percent, plainDay, seatResults, votants, type Assembly, type Question } from './elections'
 import { longDate } from './format'
 
 /* ----------------------------------------------------------------------------
@@ -17,7 +17,7 @@ const OUTCOMES: Record<string, string> = {
 
 /** Les polices de base du PDF ne connaissent pas les espaces fines de l'affichage en français. */
 function plain(text: string): string {
-  return text.replace(/[  ]/g, ' ').replace(/[−]/g, '-').replace(/[«»]/g, '"')
+  return text.replace(/[  ]/g, ' ').replace(/[−]/g, '-').replace(/«\s*/g, '"').replace(/\s*»/g, '"')
 }
 
 function quorumWords(a: Assembly, round: number): string {
@@ -126,24 +126,24 @@ export async function pvPdf(a: Assembly): Promise<Blob> {
   if (first) {
     row('Inscrits sur la liste électorale', `${first.electors} (étudiants actifs à jour, articles 7 et 32)`)
     row('Votants', `${first.voters} (${percent(first.voters, first.electors)} %)`, true)
-    row('Quorum', first.quorum ? `${first.quorum} votants, ${quorumWords(a, 1)}` : quorumWords(a, 1))
+    row('Quorum', first.quorum ? `${votants(first.quorum)}, ${quorumWords(a, 1)}` : quorumWords(a, 1))
     row('Résultat du quorum', first.quorum === 0 || first.voters >= first.quorum ? 'atteint' : 'non atteint', true)
   }
   if (a.first) {
-    para(`Cette seconde assemblée fait suite à celle du ${dayYear(a.first.held_at)}, qui n’avait pas atteint le quorum (${a.first.voters ?? 0} votants sur ${a.first.electors ?? 0}).`, 10, muted)
+    para(`Cette seconde assemblée fait suite à celle du ${dayYear(a.first.held_at)}, qui n’avait pas atteint le quorum (${votants(a.first.voters ?? 0)} sur ${a.first.electors ?? 0}).`, 10, muted)
   }
   y += 3
 
   heading('Ordre du jour')
   for (const i of a.items) {
-    para(`${i.position}. ${i.title}${i.kind === 'discussion' ? ' (sans vote)' : ''}${i.detail ? `, ${i.detail}` : ''}`)
+    para(`${i.position}. ${i.title}${i.kind === 'discussion' ? ' (sans vote)' : ''}${i.detail ? ` : ${i.detail.charAt(0).toLowerCase()}${i.detail.slice(1)}` : ''}`)
   }
   y += 3
 
   if (carence) {
     heading('Constat')
     para(
-      `Le quorum n’est pas atteint : ${first?.voters ?? 0} votants sur ${first?.electors ?? 0}, il en fallait ${first?.quorum ?? 0}. Le vote ne compte pas : les bulletins ont été détruits à la fermeture, sans être lus. Le bureau convoque une seconde assemblée générale entre 7 et 21 jours plus tard, avec le même ordre du jour (article 13).`,
+      `Le quorum n’est pas atteint : ${votants(first?.voters ?? 0)} sur ${first?.electors ?? 0}, il en fallait ${first?.quorum ?? 0}. Le vote ne compte pas : les bulletins ont été détruits à la fermeture, sans être lus. Le bureau convoque une seconde assemblée générale entre 7 et 21 jours plus tard, avec le même ordre du jour (article 13).`,
     )
   } else {
     const resolutions = first?.questions.filter((q) => q.kind === 'resolution') ?? []

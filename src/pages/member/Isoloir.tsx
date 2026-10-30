@@ -97,18 +97,15 @@ function Booth({ a, b }: { a: Assembly; b: Ballot }) {
   }
   const leave = () => (answered ? setLeaving(true) : navigate('/app/votes'))
   const deposit = () =>
-    cast.mutate(
-      { ballot: b.id, choices },
-      {
-        onSuccess: () => {
-          setConfirm(false)
-          setSent(true)
-          window.scrollTo(0, 0)
-        },
-        onError: (e) => {
-          setConfirm(false)
-          toast(errorMessage(e), 'error')
-        },
+    cast.mutateAsync({ ballot: b.id, choices }).then(
+      () => {
+        setConfirm(false)
+        setSent(true)
+        window.scrollTo(0, 0)
+      },
+      (e) => {
+        setConfirm(false)
+        toast(errorMessage(e), 'error')
       },
     )
 
@@ -474,7 +471,7 @@ function BallotNav({
                   <Check className="size-3.5" strokeWidth={3} />
                 </span>
               )
-            else mark = <span className="size-[22px] rounded-full border-2 border-line" />
+            else mark = <span className="block size-[22px] rounded-full border-2 border-line" />
             return (
               <button
                 key={q.id}

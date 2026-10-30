@@ -309,6 +309,17 @@ begin
   exception when invalid_parameter_value then null;
   end;
   perform public.decide_candidacy(c7, false, 'Formulaire papier incomplet.');
+  -- Personne ne vérifie sa propre candidature.
+  declare
+    mine uuid := public.submit_candidacy(ag, 'communication', 'Ma candidature');
+  begin
+    begin
+      perform public.decide_candidacy(mine, true);
+      failures := failures || text 'candidature : validée par son auteur';
+    exception when insufficient_privilege then null;
+    end;
+    perform public.withdraw_candidacy(mine);
+  end;
   j := public.assembly_admin();
   select count(*) into n from jsonb_array_elements(j -> 'assembly' -> 'seats') s, jsonb_array_elements(s -> 'candidates') c
   where c ->> 'status' = 'deposee';
@@ -735,6 +746,9 @@ begin
      or (select outcome from public.ballot_results where question_id = q_r1) <> 'rejetee'
      or (select outcome from public.ballot_results where question_id = q_pres) <> 'pourvu' then
     failures := failures || text 'seconde AG : dépouillement sans quorum';
+  end if;
+  if not exists (select 1 from public.activity_log where action = 'fermeture_vote' and summary like '%: 1 votant sur % inscrits') then
+    failures := failures || text 'journal : « 1 votant » au singulier';
   end if;
   perform set_config('request.jwt.claims', json_build_object('sub', sec, 'role', 'authenticated')::text, true);
   set local role authenticated;

@@ -51,15 +51,13 @@ function Form({ a }: { a: Assembly }) {
   const send = () => {
     setTried(true)
     if (missing || !role) return
-    submit.mutate(
-      { assembly: a.id, role, statement: text.trim() },
-      {
-        onSuccess: () => {
-          toast('Candidature envoyée : le bureau la vérifie')
-          navigate('/app/votes')
-        },
-        onError: (e) => toast(errorMessage(e), 'error'),
+    // L'écran se referme tout seul dès que la candidature existe : le message doit suivre.
+    submit.mutateAsync({ assembly: a.id, role, statement: text.trim() }).then(
+      () => {
+        toast('Candidature envoyée : le bureau la vérifie')
+        navigate('/app/votes', { replace: true })
       },
+      (e) => toast(errorMessage(e), 'error'),
     )
   }
 

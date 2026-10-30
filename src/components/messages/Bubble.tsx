@@ -542,7 +542,7 @@ export function AssemblyCard({ m, staffView }: { m: MessageRow; staffView: boole
             {meta.items?.length ? (
               <div className="flex flex-col gap-1">
                 <strong className="text-[15px]">Ordre du jour</strong>
-                <ol className="m-0 flex flex-col gap-0.5 pl-6 text-[15px] leading-[1.45]">
+                <ol className="m-0 flex list-decimal flex-col gap-0.5 pl-6 text-[15px] leading-[1.45]">
                   {meta.items.map((item, i) => (
                     <li key={i}>{item}</li>
                   ))}
