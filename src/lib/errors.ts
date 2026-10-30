@@ -18,6 +18,10 @@ export function errorMessage(error: unknown): string {
   if (code === 'over_email_send_rate_limit' || e?.status === 429 || /rate limit/i.test(message)) {
     return 'Trop de demandes en peu de temps. Attends quelques minutes et réessaie.'
   }
+  // Beaucoup de monde en même temps (un vote d'AG) : la base a abandonné la demande.
+  if (code === '57014' || [502, 503, 504].includes(e?.status ?? 0) || /statement timeout|upstream request timeout/i.test(message)) {
+    return 'Beaucoup de monde en même temps. Réessaie dans quelques secondes.'
+  }
   if (code === 'weak_password' || /password should/i.test(message)) {
     return 'Ce mot de passe est trop faible. Choisis-en un plus long.'
   }

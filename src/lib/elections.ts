@@ -286,7 +286,15 @@ export function useCandidacyActions() {
 }
 
 export function useCastVote() {
-  return useAction((v: { ballot: string; choices: Record<string, string> }) => supabase.rpc('cast_vote', { p_ballot: v.ballot, p_choices: v.choices }), REFRESH)
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (v: { ballot: string; choices: Record<string, string> }) => {
+      const { error } = await supabase.rpc('cast_vote', { p_ballot: v.ballot, p_choices: v.choices })
+      if (error) throw error
+    },
+    // Même après une erreur : si le bulletin était passé (réseau coupé juste après), l'écran « A voté » s'affiche.
+    onSettled: () => Promise.all(REFRESH.map((key) => queryClient.invalidateQueries({ queryKey: key }))),
+  })
 }
 
 /* ----------------------------------------------------------------------------
