@@ -41,6 +41,8 @@ export function Convoquee({ view, full }: { view: AdminView; full: boolean }) {
   const candidaciesOpen = !!a.candidacy_until && new Date(a.candidacy_until).getTime() > now
   const pending = a.seats.reduce((n, s) => n + s.candidates.filter((c) => c.status === 'deposee').length, 0)
   const sameDay = dayYear(a.now) === dayYear(a.held_at)
+  // L'heure d'ouverture est passée : le vote attend une candidature à vérifier (ou le prochain passage, dans la minute).
+  const late = new Date(a.vote_opens_at).getTime() <= now
 
   const openNow = () =>
     open.mutateAsync(a.id).then(
@@ -63,7 +65,11 @@ export function Convoquee({ view, full }: { view: AdminView; full: boolean }) {
     </>
   ) : null
 
-  const subtitle = a.seats.length
+  const subtitle = late
+    ? pending
+      ? `Il est ${hour(a.now)} : le vote aurait dû s’ouvrir à ${hour(a.vote_opens_at)}. Vérifie ${pending > 1 ? `les ${pending} candidatures restantes` : 'la candidature restante'}, puis ouvre le vote.`
+      : 'Le vote s’ouvre dans un instant.'
+    : a.seats.length
     ? candidaciesOpen
       ? `Jusqu’au ${dayYear(a.candidacy_until!).replace(/ \d{4}$/, '')}, ${hour(a.candidacy_until!)}. Une fois validée, une candidature apparaît dans l’onglet Votes.`
       : `Candidatures closes. Le vote s’ouvre tout seul le ${dayMonth(a.vote_opens_at)} à ${hour(a.vote_opens_at)}.`
@@ -83,7 +89,7 @@ export function Convoquee({ view, full }: { view: AdminView; full: boolean }) {
       <CheckLine
         state={pending ? 'todo' : 'ok'}
         title={pending ? `${pending} candidature${pending > 1 ? 's' : ''} à vérifier` : 'Tout est prêt pour le vote'}
-        detail={pending ? 'Le vote ne s’ouvre pas tant qu’il en reste à vérifier.' : `Il s’ouvre dans ${remaining(a.vote_opens_at, now)}, tout seul.`}
+        detail={pending ? 'Le vote ne s’ouvre pas tant qu’il en reste à vérifier.' : late ? 'Il s’ouvre dans un instant, tout seul.' : `Il s’ouvre dans ${remaining(a.vote_opens_at, now)}, tout seul.`}
       />
       <details className="rounded-[14px] bg-surface-2 px-4 py-3">
         <summary className="cursor-pointer text-sm font-bold">Ordre du jour ({a.items.length} points)</summary>

@@ -162,6 +162,11 @@ export function openBallot(a: Assembly | null | undefined): Ballot | null {
   return a?.ballots.find((b) => b.status === 'ouvert') ?? null
 }
 
+/** L'heure d'ouverture est passée mais le vote n'est pas encore ouvert (candidature à vérifier, ou dans la minute). */
+export function openingLate(a: Assembly | null | undefined): boolean {
+  return !!a && a.status === 'convoquee' && new Date(a.vote_opens_at).getTime() <= new Date(a.now).getTime()
+}
+
 export function useAssembly(id?: string) {
   const { session } = useSession()
   return useQuery({
@@ -173,7 +178,7 @@ export function useAssembly(id?: string) {
       return (data ?? null) as unknown as Assembly | null
     },
     // Pendant le vote, la participation bouge : on relit souvent.
-    refetchInterval: (query) => (openBallot(query.state.data) ? 10_000 : false),
+    refetchInterval: (query) => (openBallot(query.state.data) ? 10_000 : openingLate(query.state.data) ? 15_000 : false),
   })
 }
 
@@ -186,7 +191,7 @@ export function useAssemblyAdmin(id?: string, enabled = true) {
       if (error) throw error
       return data as unknown as AdminView
     },
-    refetchInterval: (query) => (openBallot(query.state.data?.assembly) ? 5_000 : false),
+    refetchInterval: (query) => (openBallot(query.state.data?.assembly) || openingLate(query.state.data?.assembly) ? 5_000 : false),
   })
 }
 

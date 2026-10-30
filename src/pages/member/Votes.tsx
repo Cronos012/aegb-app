@@ -18,6 +18,7 @@ import {
   hour,
   kindLabel,
   openBallot,
+  openingLate,
   percent,
   plainDay,
   remaining,
@@ -152,17 +153,20 @@ function MainCard({ a }: { a: Assembly }) {
   if (a.status === 'depouillement') return <ClosedCard a={a} />
   if (a.status === 'carence') return <CarenceCard a={a} />
   if (a.seats.length && a.candidacy_until && new Date(a.candidacy_until).getTime() > now) return <CandidacyCard a={a} />
+  const late = openingLate(a)
   return (
     <section className="flex flex-col gap-3 rounded-[24px] border-[1.5px] border-line-soft bg-surface p-5">
       <div className="flex items-center justify-between gap-3">
         <Pill tone="brand">Convocation envoyée</Pill>
         <span className="inline-flex items-center gap-1.5 text-sm font-bold text-muted">
-          <Clock className="size-4" /> Dans {remaining(a.vote_opens_at, now)}
+          <Clock className="size-4" /> {late ? 'Dans un instant' : `Dans ${remaining(a.vote_opens_at, now)}`}
         </span>
       </div>
-      <h2 className="titre m-0 text-[24px] leading-tight">Le vote s’ouvre le {day(a.vote_opens_at)}</h2>
+      <h2 className="titre m-0 text-[24px] leading-tight">{late ? 'Le vote va s’ouvrir' : `Le vote s’ouvre le ${day(a.vote_opens_at)}`}</h2>
       <p className="m-0 text-[15px] leading-[1.5]">
-        De {hour(a.vote_opens_at)} à {hour(a.vote_closes_at)}, dans l’appli, en salle ou à distance. Un message du compte AEGB te préviendra à l’ouverture.
+        {late
+          ? `Le bureau termine les derniers préparatifs. Le vote reste ouvert jusqu’à ${hour(a.vote_closes_at)}, et un message du compte AEGB te préviendra à l’ouverture.`
+          : `De ${hour(a.vote_opens_at)} à ${hour(a.vote_closes_at)}, dans l’appli, en salle ou à distance. Un message du compte AEGB te préviendra à l’ouverture.`}
       </p>
       {a.my.candidacy ? <MyCandidacy a={a} c={a.my.candidacy} /> : null}
     </section>
