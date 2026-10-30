@@ -15,6 +15,7 @@ export const CATEGORIES: Record<string, { label: string; tone: Tone }> = {
   annonces: { label: 'Annonces', tone: 'safran' },
   elections: { label: 'Élections', tone: 'danger' },
   evenements: { label: 'Événements', tone: 'neutral' },
+  documents: { label: 'Documents', tone: 'brand' },
 }
 
 function nameParts(name: string) {

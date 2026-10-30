@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link } from 'react-router'
-import { Ban, BellRing, CalendarDays, ChevronDown, CircleCheck, CircleX, EyeOff, Lock, MapPin, Megaphone, Pause, Play, Sparkles, UserPlus, Vote } from 'lucide-react'
-import { capitalize, dayMonth, dayYear, hour } from '../../lib/elections'
+import { Ban, BellRing, CalendarDays, ChevronDown, ChevronRight, CircleCheck, CircleX, Clock, EyeOff, Lock, MapPin, Megaphone, Pause, Play, Sparkles, UserPlus, Vote } from 'lucide-react'
+import { capitalize, day, dayMonth, dayYear, hour } from '../../lib/elections'
 import { REACTION, usePost } from '../../lib/feed'
 import { clock, duration, fileBadge, fileSize, type MessageFile, type MessageRow } from '../../lib/messages'
 import { frenchSpaces } from '../../lib/format'
@@ -563,6 +563,89 @@ export function AssemblyCard({ m, staffView }: { m: MessageRow; staffView: boole
         ) : type !== 'annulation' ? (
           <Link to="/app/votes" className="flex h-11 items-center justify-center rounded-[14px] bg-primary text-[15px] font-bold text-primary-ink no-underline">
             Voir l’assemblée générale
+          </Link>
+        ) : null}
+        <span className="block text-right text-[11px] text-muted">{clock(m.created_at)}</span>
+      </div>
+    </div>
+  )
+}
+
+const EVENT_CARDS = {
+  place: { title: 'Une place s’est libérée', icon: <CircleCheck className="size-[18px]" />, tone: 'text-ok' },
+  rappel: { title: 'C’est demain !', icon: <CalendarDays className="size-[18px]" />, tone: 'text-[#6B5200]' },
+  changement: { title: 'Changement', icon: <Clock className="size-[18px]" />, tone: 'text-link' },
+  annulation: { title: 'Événement annulé', icon: <CircleX className="size-[18px]" />, tone: 'text-danger' },
+  paiement: { title: 'Paiement reçu, merci !', icon: <CircleCheck className="size-[18px]" />, tone: 'text-ok' },
+  desinscription: { title: 'Désinscription', icon: <CalendarDays className="size-[18px]" />, tone: 'text-ink' },
+  rembourse: { title: 'Place remboursée', icon: <CircleCheck className="size-[18px]" />, tone: 'text-ok' },
+  paiement_annule: { title: 'Paiement annulé', icon: <CircleX className="size-[18px]" />, tone: 'text-danger' },
+}
+
+function changeTitle(changes: { label: string }[] | undefined): string {
+  const labels = (changes ?? []).map((c) => c.label)
+  if (labels.length === 1 && labels[0] === 'Quand') return 'Nouvel horaire'
+  if (labels.length === 1 && labels[0] === 'Où') return 'Nouveau lieu'
+  return 'Nouvel horaire et nouveau lieu'
+}
+
+/** Les cartes « événement » du compte AEGB : place libérée, rappel de la veille, changement, annulation, paiement. */
+export function EventMessageCard({ m, staffView }: { m: MessageRow; staffView: boolean }) {
+  const type = (m.meta.type ?? 'rappel') as keyof typeof EVENT_CARDS
+  const card = EVENT_CARDS[type] ?? EVENT_CARDS.rappel
+  const meta = m.meta
+  const title = type === 'changement' ? changeTitle(meta.changes) : card.title
+  const to = meta.event ? `/app/evenements/${meta.event}` : '/app/evenements'
+  const open = meta.event && !staffView && type !== 'annulation'
+  return (
+    <div className={`mt-2.5 flex flex-col gap-1.5 ${staffView ? 'items-end pl-10' : 'items-start pr-10'}`}>
+      <div className={`flex w-full max-w-[340px] flex-col gap-2.5 rounded-[18px] bg-surface px-3.5 py-3 shadow-[0_1px_1px_rgba(18,22,43,0.06)] ${staffView ? 'rounded-br-[6px]' : 'rounded-bl-[6px]'}`}>
+        <span className={`flex items-center gap-2 text-[15px] font-extrabold ${card.tone}`}>
+          {card.icon}
+          {frenchSpaces(title)}
+        </span>
+        <p className="m-0 text-[14px] leading-[1.45]">{frenchSpaces(m.body ?? '')}</p>
+        {type === 'changement' && meta.changes?.length ? (
+          <div className="flex flex-col gap-2 rounded-xl bg-surface-2 p-2.5 text-[13px]">
+            {meta.changes.map((c) => (
+              <span key={c.label} className="flex flex-col gap-1">
+                <span className="text-muted line-through">{c.before}</span>
+                <span className="flex items-center gap-1.5 font-extrabold">
+                  <ChevronRight className="size-3.5" strokeWidth={2.6} />
+                  {c.after}
+                </span>
+              </span>
+            ))}
+          </div>
+        ) : null}
+        {type === 'rappel' && meta.starts_at ? (
+          <div className="flex flex-col gap-1.5 rounded-xl bg-surface-2 p-2.5 text-[13px] leading-[1.35]">
+            <span className="flex items-start gap-2">
+              <Clock className="mt-px size-4 shrink-0 text-leppi" />
+              <strong>
+                {capitalize(day(meta.starts_at))}, {hour(meta.starts_at)}
+                {meta.ends_at ? ` à ${hour(meta.ends_at)}` : ''}
+              </strong>
+            </span>
+            <span className="flex items-start gap-2">
+              <MapPin className="mt-px size-4 shrink-0 text-leppi" />
+              {meta.online ? 'En ligne : le lien est sur la page de l’événement' : meta.place}
+            </span>
+          </div>
+        ) : null}
+        {type === 'rappel' && meta.place && !meta.online && !staffView ? (
+          <a
+            href={`https://www.openstreetmap.org/search?query=${encodeURIComponent(meta.place)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex h-[42px] items-center justify-center gap-2 rounded-[14px] bg-safran text-[14px] font-bold text-nuit no-underline"
+          >
+            <MapPin className="size-4" /> Voir le plan
+          </a>
+        ) : null}
+        {open ? (
+          <Link to={to} className="self-center text-[13px] font-bold text-leppi">
+            {type === 'rappel' ? 'Je ne peux plus venir' : 'Voir l’événement'}
           </Link>
         ) : null}
         <span className="block text-right text-[11px] text-muted">{clock(m.created_at)}</span>
