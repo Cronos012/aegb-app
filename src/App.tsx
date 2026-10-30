@@ -52,6 +52,7 @@ const Cotisations = lazy(() => import('./pages/bureau/Cotisations'))
 const Encaisser = lazy(() => import('./pages/bureau/Encaisser'))
 const ReglagesCotisation = lazy(() => import('./pages/bureau/ReglagesCotisation'))
 const JournalFinancier = lazy(() => import('./pages/bureau/JournalFinancier'))
+const Elections = lazy(() => import('./pages/bureau/Elections'))
 
 /** Sur téléphone, l'accueil de l'appli ; sur ordinateur, le site de l'association. */
 function Home() {
@@ -123,6 +124,9 @@ export function App() {
               </Route>
               <Route element={<ScreenGate screen="annonces" />}>
                 <Route path="annonces" element={<Suspense fallback={<PageLoader />}><Annonces /></Suspense>} />
+              </Route>
+              <Route element={<ScreenGate screen="elections" />}>
+                <Route path="elections" element={<Suspense fallback={<PageLoader />}><Elections /></Suspense>} />
               </Route>
               <Route element={<ScreenGate screen="moderation" />}>
                 <Route path="moderation" element={<Suspense fallback={<PageLoader />}><Moderation /></Suspense>} />

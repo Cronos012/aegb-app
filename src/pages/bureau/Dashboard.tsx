@@ -1,5 +1,6 @@
 import { Link } from 'react-router'
 import { Bot, Briefcase, ChevronRight, HardDrive, ShieldAlert, Star, UserCheck, UserPlus, Users, Wallet } from 'lucide-react'
+import { ElectionsCard } from '../../components/elections/DashboardCard'
 import { ErrorNote, PageLoader } from '../../components/Feedback'
 import { Pill } from '../../components/Pill'
 import { eurosExact, euros, useDuesMatrix, useLedger } from '../../lib/dues'
@@ -10,7 +11,7 @@ import { can, useAccounts, useActivity, useBureauCounts, useMe, useRoles } from 
 import { ActivityLine } from './activity'
 import { BureauPage, Card } from './BureauPage'
 
-const COMING = ['Élections', 'Événements', 'Documents', 'Notifications']
+const COMING = ['Événements', 'Documents', 'Notifications']
 
 /** L'offre gratuite de Supabase : 1 Go pour les photos et les vidéos. */
 const STORAGE_LIMIT = 1024 ** 3
@@ -185,6 +186,8 @@ export default function Dashboard() {
               <span className="grid size-8 place-items-center rounded-full bg-safran text-sm font-extrabold text-nuit">{aegb}</span>
             </Link>
           ) : null}
+
+          {can(me, 'elections', 'lecture') ? <ElectionsCard /> : null}
 
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
             <Kpi icon={<Users className="size-5" />} value={c.active} label="Membres actifs" detail={desktop ? `${c.new_this_month} nouveau${c.new_this_month > 1 ? 'x' : ''} ce mois-ci` : undefined} to={can(me, 'membres', 'lecture') ? '/bureau/membres' : undefined} />

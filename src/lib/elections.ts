@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useSession } from '../auth/session'
 import type { MemberType } from './format'
 import { useAction } from './queries'
@@ -223,18 +223,7 @@ export type Draft = {
 
 export function useElectionActions() {
   return {
-    save: useAction((d: Draft) =>
-      supabase.rpc('save_assembly', {
-        p_id: d.id,
-        p_kind: d.kind,
-        p_held_at: d.held_at,
-        p_place: d.place,
-        p_vote_opens_at: d.vote_opens_at,
-        p_vote_closes_at: d.vote_closes_at,
-        p_candidacy_until: d.candidacy_until,
-        p_mandate_start: d.mandate_start,
-        p_items: d.items.map((i) => ({ kind: i.kind, title: i.title, detail: i.detail, seats: i.kind === 'election' ? i.seats : [] })),
-      }), REFRESH),
+    save: useAction((d: Draft) => supabase.rpc('save_assembly', draftArgs(d)), REFRESH),
     convene: useAction((v: { id: string; force: boolean }) => supabase.rpc('send_convocation', { p_id: v.id, p_force: v.force }), REFRESH),
     cancel: useAction((v: { id: string; reason?: string }) => supabase.rpc('cancel_assembly', { p_id: v.id, p_reason: v.reason }), REFRESH),
     decide: useAction((v: { id: string; valid: boolean; reason?: string }) =>
@@ -257,6 +246,35 @@ export function useElectionActions() {
     confirmHandover: useAction((id: string) => supabase.rpc('confirm_handover', { p_assembly: id }), [...REFRESH, ['postes'], ['me']]),
     clear: useAction(() => supabase.rpc('clear_elections'), REFRESH),
   }
+}
+
+function draftArgs(d: Draft) {
+  return {
+    p_id: d.id,
+    p_kind: d.kind,
+    p_held_at: d.held_at,
+    p_place: d.place,
+    p_vote_opens_at: d.vote_opens_at,
+    p_vote_closes_at: d.vote_closes_at,
+    p_candidacy_until: d.candidacy_until,
+    p_mandate_start: d.mandate_start,
+    p_items: d.items.map((i) => ({ kind: i.kind, title: i.title.trim(), detail: i.detail.trim(), seats: i.kind === 'election' ? i.seats : [] })),
+  }
+}
+
+/** Enregistre le brouillon puis envoie la convocation, en une fois. Renvoie le nombre de membres convoqués. */
+export function useSaveAndConvene() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ draft, force }: { draft: Draft; force: boolean }) => {
+      const saved = await supabase.rpc('save_assembly', draftArgs(draft))
+      if (saved.error) throw saved.error
+      const sent = await supabase.rpc('send_convocation', { p_id: saved.data, p_force: force })
+      if (sent.error) throw sent.error
+      return sent.data
+    },
+    onSettled: () => Promise.all(REFRESH.map((key) => queryClient.invalidateQueries({ queryKey: key }))),
+  })
 }
 
 export function useCandidacyActions() {
@@ -329,6 +347,17 @@ export function remaining(until: string, now: number): string {
   if (minutes >= 48 * 60) return `${Math.floor(minutes / (24 * 60))} jours`
   if (minutes >= 60) return `${Math.floor(minutes / 60)} h ${String(minutes % 60).padStart(2, '0')}`
   return `${minutes} min`
+}
+
+/** Le quorum attendu au premier tour, en votants, pour une liste électorale (articles 13 et 14). */
+export function quorumOf(kind: AssemblyKind, convocation: 1 | 2, electors: number): number {
+  if (convocation === 2) return kind === 'ordinaire' ? 0 : Math.ceil(electors / 3)
+  return Math.ceil(kind === 'ordinaire' ? electors / 3 : electors / 2)
+}
+
+/** « 1 votant », « 32 votants » */
+export function votants(n: number): string {
+  return `${n} votant${n > 1 ? 's' : ''}`
 }
 
 export function percent(part: number, total: number): number {

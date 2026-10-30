@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useMatch, useNavigate } from 'react-router'
-import { Bot, ChevronLeft, LayoutDashboard, Megaphone, ReceiptText, ScrollText, Settings, ShieldAlert, Star, UserCheck, Users, Wallet, type LucideIcon } from 'lucide-react'
+import { Bot, ChevronLeft, LayoutDashboard, Megaphone, ReceiptText, ScrollText, Settings, ShieldAlert, SquareCheckBig, Star, UserCheck, Users, Wallet, type LucideIcon } from 'lucide-react'
 import { Avatar } from '../components/Avatar'
 import { Logo } from '../components/Logo'
 import { useModerationPending } from '../lib/feed'
@@ -63,6 +63,7 @@ export function BureauLayout() {
       title: "Vie de l'asso",
       items: [
         { to: '/bureau/annonces', label: 'Annonces', icon: Megaphone, screen: 'annonces' },
+        { to: '/bureau/elections', label: 'Élections', icon: SquareCheckBig, screen: 'elections' },
         { to: '/bureau/moderation', label: 'Modération', icon: ShieldAlert, screen: 'moderation', badge: reports },
       ],
     },

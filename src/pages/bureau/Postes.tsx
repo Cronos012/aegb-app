@@ -3,6 +3,7 @@ import { Check, Eye, EyeOff, Info, TriangleAlert, UserPlus } from 'lucide-react'
 import { Avatar, EmptyAvatar } from '../../components/Avatar'
 import { Button } from '../../components/Button'
 import { Dialog } from '../../components/Dialog'
+import { Passation } from '../../components/elections/Passation'
 import { ErrorNote, PageLoader } from '../../components/Feedback'
 import { SearchField } from '../../components/Field'
 import { useToast } from '../../components/Toast'
@@ -279,6 +280,7 @@ export default function Postes() {
       }
     >
       <ErrorNote error={error ?? roles.error ?? rights.error} />
+      <Passation enabled={can(me, 'postes', 'lecture')} editable={editable} />
       {desktop ? vacantNote : null}
 
       {!desktop ? (

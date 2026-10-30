@@ -13,6 +13,7 @@ import {
   hour,
   personLine,
   stepOf,
+  votants,
   type Assembly,
   type Ballot,
   type Candidacy,
@@ -44,10 +45,10 @@ export function Participation({ ballot, dark = false, compact = false }: { ballo
             <Check className="size-4" strokeWidth={2.6} /> Quorum de {quorum} atteint
           </span>
         ) : (
-          <span className={`font-bold ${dark ? 'text-white/80' : 'text-muted'}`}>Quorum : {quorum} votants</span>
+          <span className={`font-bold ${dark ? 'text-white/80' : 'text-muted'}`}>Quorum : {votants(quorum)}</span>
         )}
       </div>
-      <div className={`relative h-2.5 rounded-full ${dark ? 'bg-white/90' : 'bg-line-soft'}`} role="img" aria-label={`${voters} votants sur ${electors}${quorum ? `, quorum de ${quorum}` : ''}`}>
+      <div className={`relative h-2.5 rounded-full ${dark ? 'bg-white/90' : 'bg-line-soft'}`} role="img" aria-label={`${votants(voters)} sur ${electors}${quorum ? `, quorum de ${quorum}` : ''}`}>
         <div className="absolute inset-y-0 left-0 rounded-full bg-ok" style={{ width: `${fill}%` }} />
         {mark !== null ? <div className="absolute -top-1 -bottom-1 w-0.5 rounded bg-nuit" style={{ left: `calc(${mark}% - 1px)` }} /> : null}
       </div>
@@ -88,7 +89,7 @@ export function Frise({ a }: { a: Assembly }) {
             >
               {done ? <Check className="size-4" strokeWidth={3} /> : null}
             </span>
-            <span className={`text-[13px] font-bold leading-tight ${done || now ? 'text-ink' : 'text-muted'}`}>{s.label}</span>
+            <span className={`text-[12px] font-bold leading-tight tracking-tight ${done || now ? 'text-ink' : 'text-muted'}`}>{s.label}</span>
             <span className="text-xs leading-tight text-muted">{s.date}</span>
             <span className="sr-only">{done ? 'fait' : now ? 'en cours' : 'à venir'}</span>
           </li>
