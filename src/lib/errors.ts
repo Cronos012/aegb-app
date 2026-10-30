@@ -34,6 +34,10 @@ export function errorMessage(error: unknown): string {
   if (['22023', '42501', 'P0002', 'P0001'].includes(code) && message) {
     return message
   }
+  // Un second bulletin : la base le dit en français.
+  if (code === '23505' && message && !/duplicate key/i.test(message)) {
+    return message
+  }
   return 'Quelque chose a coincé. Réessaie dans un instant.'
 }
 

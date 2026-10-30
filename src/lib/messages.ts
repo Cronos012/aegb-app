@@ -14,8 +14,11 @@ import { supabase } from './supabase'
 */
 
 export type ConversationKind = Enums<'conversation_kind'>
-export type MessageKind = 'message' | 'bienvenue' | 'arrivee' | 'systeme' | 'cotisation'
+export type MessageKind = 'message' | 'bienvenue' | 'arrivee' | 'systeme' | 'cotisation' | 'assemblee'
 export type FileKind = 'photo' | 'vocal' | 'document'
+export type AssemblyMessageType =
+  | 'convocation' | 'seconde' | 'ouverture' | 'second_tour' | 'relance' | 'annulation'
+  | 'candidature_validee' | 'candidature_refusee' | 'candidature_retiree'
 
 export type ConversationRow = {
   id: string
@@ -68,11 +71,24 @@ export type MessageRow = {
     essai?: boolean
     member?: string
     publication?: boolean
-    /** Cartes « cotisation » du compte AEGB : relance, paiement reçu, paiement annulé. */
-    type?: 'relance' | 'recu' | 'annule'
+    /** Cartes « cotisation » (relance, recu, annule) et « assemblee » (convocation, ouverture…) du compte AEGB. */
+    type?: 'relance' | 'recu' | 'annule' | AssemblyMessageType
     receipt?: string
     amount_cents?: number
     months?: string[]
+    // Cartes « assemblee » :
+    first_name?: string
+    kind?: 'ordinaire' | 'extraordinaire'
+    held_at?: string
+    place?: string
+    vote_opens_at?: string
+    vote_closes_at?: string
+    candidacy_until?: string | null
+    items?: string[]
+    closes_at?: string
+    label?: string
+    labels?: string[]
+    reason?: string
   }
   files: MessageFile[]
   post_id: string | null

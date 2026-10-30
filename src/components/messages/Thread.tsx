@@ -10,7 +10,7 @@ import { Button } from '../Button'
 import { EmptyState, ErrorNote, Spinner } from '../Feedback'
 import { useToast } from '../Toast'
 import { ReportDialog } from '../feed/Dialogs'
-import { ArrivalCard, Bubble, DaySeparator, DuesCard, SystemLine, WelcomeMessage } from './Bubble'
+import { ArrivalCard, AssemblyCard, Bubble, DaySeparator, DuesCard, SystemLine, WelcomeMessage } from './Bubble'
 import { Composer } from './Composer'
 import { MessageActions } from './MessageActions'
 
@@ -199,6 +199,8 @@ export function Thread({ id, info, intro, readOnly = false }: Props) {
       )
     } else if (m.kind === 'cotisation') {
       items.push(<DuesCard key={m.id} m={m} staffView={staffView} />)
+    } else if (m.kind === 'assemblee') {
+      items.push(<AssemblyCard key={m.id} m={m} staffView={staffView} />)
     } else if (m.kind === 'bienvenue') {
       const list = (m.meta.actions ?? []).map((v) => WELCOME_ACTIONS.find((a) => a.value === v)).filter((a) => !!a)
       items.push(<WelcomeMessage key={m.id} m={m} actions={list} />)

@@ -8,11 +8,13 @@ import { MemberLayout } from './layouts/MemberLayout'
 import { useIsDesktop } from './lib/media'
 import { Annuaire } from './pages/member/Annuaire'
 import { Bientot } from './pages/member/Bientot'
+import { Candidature } from './pages/member/Candidature'
 import { Conversation } from './pages/member/Conversation'
 import { Cotisation } from './pages/member/Cotisation'
 import { Fil } from './pages/member/Fil'
 import { Historique } from './pages/member/Historique'
 import { InfosGroupe } from './pages/member/InfosGroupe'
+import { Isoloir } from './pages/member/Isoloir'
 import { MembreProfil } from './pages/member/MembreProfil'
 import { Menu } from './pages/member/Menu'
 import { Messages } from './pages/member/Messages'
@@ -25,6 +27,7 @@ import { Publication } from './pages/member/Publication'
 import { Publier } from './pages/member/Publier'
 import { Quittance } from './pages/member/Quittance'
 import { Recherche } from './pages/member/Recherche'
+import { Votes } from './pages/member/Votes'
 import { Accueil } from './pages/public/Accueil'
 import { AuthRetour } from './pages/public/AuthRetour'
 import { Charte } from './pages/public/Charte'
@@ -94,7 +97,9 @@ export function App() {
             <Route path="cotisation/historique" element={<Historique />} />
             <Route path="cotisation/quittances/:numero" element={<Quittance />} />
             <Route path="evenements" element={<Bientot page="evenements" />} />
-            <Route path="votes" element={<Bientot page="votes" />} />
+            <Route path="votes" element={<Votes />} />
+            <Route path="votes/candidature" element={<Candidature />} />
+            <Route path="votes/isoloir" element={<Isoloir />} />
             <Route path="documents" element={<Bientot page="documents" />} />
             <Route path="profil" element={<Profil />} />
             <Route path="profil/modifier" element={<ModifierProfil />} />
