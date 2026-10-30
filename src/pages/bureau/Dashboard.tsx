@@ -1,6 +1,7 @@
 import { Link } from 'react-router'
 import { Bot, Briefcase, ChevronRight, HardDrive, ShieldAlert, Star, UserCheck, UserPlus, Users, Wallet } from 'lucide-react'
 import { ElectionsCard } from '../../components/elections/DashboardCard'
+import { EventsCard } from '../../components/events/DashboardCard'
 import { ErrorNote, PageLoader } from '../../components/Feedback'
 import { Pill } from '../../components/Pill'
 import { eurosExact, euros, useDuesMatrix, useLedger } from '../../lib/dues'
@@ -11,9 +12,9 @@ import { can, useAccounts, useActivity, useBureauCounts, useMe, useRoles } from 
 import { ActivityLine } from './activity'
 import { BureauPage, Card } from './BureauPage'
 
-const COMING = ['Événements', 'Documents', 'Notifications']
+const COMING = ['Notifications']
 
-/** L'offre gratuite de Supabase : 1 Go pour les photos et les vidéos. */
+/** L’offre gratuite de Supabase : 1 Go pour les photos, les vidéos et les documents. */
 const STORAGE_LIMIT = 1024 ** 3
 
 function megabytes(bytes: number) {
@@ -30,7 +31,7 @@ function StorageCard({ used }: { used: number }) {
           <HardDrive className="size-5" />
         </span>
         <div className="min-w-0 flex-1">
-          <h2 className="m-0 text-[15px] font-bold">Photos et vidéos</h2>
+          <h2 className="m-0 text-[15px] font-bold">Photos, vidéos et documents</h2>
           <p className="m-0 text-[13px] text-muted">
             {megabytes(used)} Mo utilisés sur 1 Go{percent >= 80 ? ' : il faudra bientôt faire de la place' : ''}
           </p>
@@ -188,6 +189,7 @@ export default function Dashboard() {
           ) : null}
 
           {can(me, 'elections', 'lecture') ? <ElectionsCard /> : null}
+          {can(me, 'evenements', 'lecture') ? <EventsCard /> : null}
 
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
             <Kpi icon={<Users className="size-5" />} value={c.active} label="Membres actifs" detail={desktop ? `${c.new_this_month} nouveau${c.new_this_month > 1 ? 'x' : ''} ce mois-ci` : undefined} to={can(me, 'membres', 'lecture') ? '/bureau/membres' : undefined} />

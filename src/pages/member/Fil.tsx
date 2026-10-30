@@ -4,6 +4,7 @@ import { ImagePlus, LayoutGrid, Newspaper, Search } from 'lucide-react'
 import { Avatar } from '../../components/Avatar'
 import { ButtonLink } from '../../components/Button'
 import { FilVote } from '../../components/elections/FilVote'
+import { NextEventBand } from '../../components/events/EventParts'
 import { EmptyState, ErrorNote, Spinner } from '../../components/Feedback'
 import { SearchField } from '../../components/Field'
 import { Logo } from '../../components/Logo'
@@ -110,6 +111,7 @@ export function Fil() {
           </form>
         </div>
 
+        <NextEventBand />
         <div className="flex items-center gap-3 bg-surface px-4 py-3 lg:rounded-[22px] lg:p-4">
           <Avatar person={me.profile} size={44} />
           <Link to="/app/publier" className="flex h-12 min-w-0 flex-1 items-center rounded-full border-[1.5px] border-line px-5 text-[16px] text-muted no-underline hover:bg-surface-2 lg:border-0 lg:bg-surface-2">

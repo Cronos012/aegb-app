@@ -58,6 +58,9 @@ export function MemberLayout() {
     useMatch('/app/cotisation/quittances/:numero'),
     useMatch('/app/votes/candidature'),
     useMatch('/app/votes/isoloir'),
+    useMatch('/app/evenements/:id'),
+    useMatch('/app/evenements/paiement/:id'),
+    useMatch('/app/documents/:id'),
   ].some(Boolean)
 
   return (
@@ -67,10 +70,10 @@ export function MemberLayout() {
         <nav aria-label="Navigation principale" className="mt-8 flex flex-col gap-1">
           <SideLink to="/app/fil" label="Fil d'actu" icon={House} />
           <SideLink to="/app/messages" label="Messages" icon={MessageSquare} badge={unread} />
-          <SideLink to="/app/evenements" label="Événements" icon={Calendar} soon />
+          <SideLink to="/app/evenements" label="Événements" icon={Calendar} />
           <SideLink to="/app/cotisation" label="Cotisation" icon={CreditCard} alert={late ? 'en retard' : null} />
           <SideLink to="/app/votes" label="Votes" icon={SquareCheckBig} />
-          <SideLink to="/app/documents" label="Documents" icon={FileText} soon />
+          <SideLink to="/app/documents" label="Documents" icon={FileText} />
           <SideLink to="/app/membres" label="Membres" icon={Users} />
           <SideLink to="/app/profil" label="Mon profil" icon={User} />
           {bureau ? (
