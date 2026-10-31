@@ -109,10 +109,14 @@
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
+    /* Rien ne doit élargir la page : sinon le téléphone la réduit ou la décale. */
+    overflow-x: clip;
   }
 
   body {
     margin: 0;
+    overflow-x: clip;
+    overflow-wrap: break-word;
     background: var(--page);
     color: var(--ink);
     font-family: var(--font-sans);
@@ -131,6 +135,16 @@
 
   button {
     cursor: pointer;
+  }
+
+  /* Sur téléphone, un champ écrit en moins de 16 px fait zoomer l'iPhone dès
+     qu'on touche dedans, et la page reste zoomée. */
+  @media (max-width: 1023px) {
+    input,
+    textarea,
+    select {
+      font-size: max(16px, 1em) !important;
+    }
   }
 
   button:disabled {
