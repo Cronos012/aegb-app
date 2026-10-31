@@ -4,6 +4,31 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="%BASE_URL%favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
+    <script>
+      // Sur un téléphone réglé en « version pour ordinateur » ou avec un zoom réduit
+      // dans Chrome, la page se met en page sur ~1000 px et tout devient minuscule.
+      // On remet l'appli à la taille d'un téléphone. Un téléphone se reconnaît à son
+      // écran tactile très allongé (une tablette ne l'est pas).
+      ;(function () {
+        var root = document.documentElement
+        function fit() {
+          var s = window.screen
+          var ratio = Math.max(s.width, s.height) / Math.min(s.width, s.height)
+          var phone = window.matchMedia('(pointer: coarse)').matches && ratio > 1.8
+          root.style.zoom = ''
+          root.style.removeProperty('--zoom')
+          var width = root.clientWidth
+          if (phone && width > 600) {
+            var zoom = width / 420
+            root.style.zoom = String(zoom)
+            root.style.setProperty('--zoom', String(zoom))
+          }
+        }
+        fit()
+        window.addEventListener('resize', fit)
+        window.addEventListener('orientationchange', fit)
+      })()
+    </script>
     <meta name="theme-color" content="#FFFFFF" />
     <link rel="manifest" href="%BASE_URL%manifest.webmanifest" />
     <link rel="apple-touch-icon" href="%BASE_URL%icons/apple-touch-icon.png" />

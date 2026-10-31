@@ -24,7 +24,7 @@ export function AuthRetour() {
   if (!linkError && (loading || !waited)) return <FullScreenLoader />
 
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center gap-5 bg-surface px-6 text-center">
+    <div className="flex min-h-app flex-col items-center justify-center gap-5 bg-surface px-6 text-center">
       <Logo size={64} />
       <h1 className="titre m-0 text-[28px]">Ce lien ne marche plus</h1>
       <p className="m-0 max-w-sm text-[15px] leading-[1.5] text-muted">

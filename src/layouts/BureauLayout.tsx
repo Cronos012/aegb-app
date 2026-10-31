@@ -80,8 +80,8 @@ export function BureauLayout() {
   ]
 
   return (
-    <div className="min-h-dvh lg:grid lg:grid-cols-[248px_minmax(0,1fr)]">
-      <aside className="sticky top-0 hidden h-dvh flex-col overflow-y-auto border-r border-line-soft bg-surface px-3 py-5 lg:flex">
+    <div className="min-h-app lg:grid lg:grid-cols-[248px_minmax(0,1fr)]">
+      <aside className="sticky top-0 hidden h-app flex-col overflow-y-auto border-r border-line-soft bg-surface px-3 py-5 lg:flex">
         <div className="flex items-center gap-2.5 px-1.5">
           <Logo size={34} />
           <span className="titre text-[20px] text-primary">AEGB</span>
@@ -122,7 +122,7 @@ export function BureauLayout() {
           </div>
         ) : null}
       </aside>
-      <main className={`flex min-h-dvh min-w-0 flex-col bg-page lg:px-10 lg:py-8 lg:pb-10 ${fullScreen ? '' : 'pb-[calc(68px+env(safe-area-inset-bottom))]'}`}>
+      <main className={`flex min-h-app min-w-0 flex-col bg-page lg:px-10 lg:py-8 lg:pb-10 ${fullScreen ? '' : 'pb-[calc(68px+env(safe-area-inset-bottom))]'}`}>
         <Outlet />
       </main>
       {fullScreen ? null : <BottomNav />}

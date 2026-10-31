@@ -69,8 +69,8 @@ export function MemberLayout() {
   ].some(Boolean)
 
   return (
-    <div className="min-h-dvh lg:grid lg:grid-cols-[264px_minmax(0,1fr)]">
-      <aside className="sticky top-0 hidden h-dvh flex-col overflow-y-auto border-r border-line-soft bg-surface px-3 py-5 lg:flex">
+    <div className="min-h-app lg:grid lg:grid-cols-[264px_minmax(0,1fr)]">
+      <aside className="sticky top-0 hidden h-app flex-col overflow-y-auto border-r border-line-soft bg-surface px-3 py-5 lg:flex">
         <Brand size={38} className="px-2 text-primary" />
         <nav aria-label="Navigation principale" className="mt-6 flex flex-col gap-0.5">
           <SideLink to="/app/fil" label="Accueil" icon="accueil" />
@@ -104,7 +104,7 @@ export function MemberLayout() {
           </div>
         ) : null}
       </aside>
-      <main className={`flex min-h-dvh flex-col lg:pb-0 ${fullScreen ? '' : 'pb-[calc(68px+env(safe-area-inset-bottom))]'}`}>
+      <main className={`flex min-h-app flex-col lg:pb-0 ${fullScreen ? '' : 'pb-[calc(68px+env(safe-area-inset-bottom))]'}`}>
         <Outlet />
       </main>
       {fullScreen ? null : <BottomNav />}

@@ -31,7 +31,7 @@ export function Bienvenue({ me }: { me: Me }) {
   }
 
   return (
-    <div className="bg-tisse relative flex min-h-dvh justify-center overflow-hidden text-white">
+    <div className="bg-tisse relative flex min-h-app justify-center overflow-hidden text-white">
       <div className="pointer-events-none absolute inset-x-0 top-0 mx-auto h-[230px] max-w-[480px]" aria-hidden="true">
         {CONFETTI.map((c, i) => (
           <span key={i} className="absolute h-3.5 w-2 rounded-[2px]" style={{ left: c.left, top: c.top, background: c.color, transform: `rotate(${c.rotate}deg)` }} />

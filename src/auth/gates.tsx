@@ -25,7 +25,7 @@ export function MemberGate() {
   if (me.isPending) return <FullScreenLoader />
   if (me.isError) {
     return (
-      <div className="flex min-h-dvh flex-col items-center justify-center gap-4 px-6">
+      <div className="flex min-h-app flex-col items-center justify-center gap-4 px-6">
         <ErrorNote error={me.error} className="w-full max-w-sm" />
         <Button variant="outline" onClick={() => me.refetch()} className="w-full max-w-sm">
           Réessayer

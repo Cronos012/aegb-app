@@ -31,7 +31,7 @@ export function MediaGrid({ media, onOpen }: { media: Media[]; onOpen: (index: n
   if (!media.length) return null
   const first = media[0]
   if (first.kind === 'video') {
-    return <Video media={first} className="block max-h-[75dvh] w-full" />
+    return <Video media={first} className="block max-h-[calc(75dvh/var(--zoom,1))] w-full" />
   }
   if (media.length === 1) {
     return (

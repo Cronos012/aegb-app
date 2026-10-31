@@ -230,7 +230,7 @@ function Booth({ a, b }: { a: Assembly; b: Ballot }) {
   }
 
   return (
-    <div className="flex min-h-dvh flex-1 flex-col bg-surface">
+    <div className="flex min-h-app flex-1 flex-col bg-surface">
       <header className="sticky top-0 z-20 border-b border-line-soft bg-surface px-3 pt-[env(safe-area-inset-top)]">
         <div className="flex min-h-[62px] items-center gap-1.5">
           {review ? (
@@ -547,7 +547,7 @@ function AVote({ b }: { b: Ballot }) {
     )
   }
   return (
-    <div className="bg-tisse flex min-h-dvh flex-1 flex-col px-5 pt-[max(env(safe-area-inset-top),24px)] pb-[max(env(safe-area-inset-bottom),20px)] text-white">
+    <div className="bg-tisse flex min-h-app flex-1 flex-col px-5 pt-[max(env(safe-area-inset-top),24px)] pb-[max(env(safe-area-inset-bottom),20px)] text-white">
       <div className="flex flex-1 flex-col justify-center gap-6 py-8">{body}</div>
       {actions}
     </div>

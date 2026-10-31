@@ -39,7 +39,7 @@ export function VerifierEmail() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col items-center bg-surface px-5 pt-[max(env(safe-area-inset-top),24px)] pb-[max(env(safe-area-inset-bottom),24px)]">
+    <div className="flex min-h-app flex-col items-center bg-surface px-5 pt-[max(env(safe-area-inset-top),24px)] pb-[max(env(safe-area-inset-bottom),24px)]">
       <div className="flex w-full max-w-[440px] flex-1 flex-col">
         <div className="flex flex-1 flex-col items-center justify-center gap-5 py-8 text-center">
           <div className="bg-anneau relative rounded-full p-[6px]">

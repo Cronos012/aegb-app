@@ -22,7 +22,7 @@ export function NouveauMotDePasse() {
 
   if (!session) {
     return (
-      <div className="flex min-h-dvh flex-col items-center justify-center gap-5 bg-surface px-6 text-center">
+      <div className="flex min-h-app flex-col items-center justify-center gap-5 bg-surface px-6 text-center">
         <h1 className="titre m-0 text-[28px]">Ce lien ne marche plus</h1>
         <p className="m-0 max-w-sm text-[15px] leading-[1.5] text-muted">Le lien a expiré ou a déjà servi. Demande-en un nouveau.</p>
         <ButtonLink to="/mot-de-passe-oublie" className="w-full max-w-sm">
@@ -45,7 +45,7 @@ export function NouveauMotDePasse() {
   }
 
   return (
-    <div className="flex min-h-dvh justify-center bg-page lg:items-center lg:py-10">
+    <div className="flex min-h-app justify-center bg-page lg:items-center lg:py-10">
       <form onSubmit={submit} noValidate className="flex w-full max-w-[480px] flex-col bg-surface px-5 pt-[max(env(safe-area-inset-top),24px)] pb-[max(env(safe-area-inset-bottom),24px)] lg:rounded-[12px] lg:px-10 lg:py-10 lg:shadow-sm">
         <span className="mt-6 grid size-[60px] place-items-center rounded-2xl bg-leppi text-ciel">
           <KeyRound className="size-7" />

@@ -8,7 +8,7 @@ import { RULE_ICONS } from '../../lib/charter'
 export function Charte() {
   const charter = useCharter()
   return (
-    <div className="min-h-dvh bg-page">
+    <div className="min-h-app bg-page">
       <header className="bg-tisse px-5 pt-[max(env(safe-area-inset-top),20px)] pb-12 text-white">
         <div className="mx-auto max-w-[720px]">
           <Link to="/association" className="text-white no-underline">
