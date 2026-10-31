@@ -222,7 +222,7 @@ export default function Annonces() {
                 post={preview}
                 preview
                 pinned={pin}
-                className="rounded-[22px]"
+                className="rounded-[12px]"
                 mediaSlot={
                   media.list.length ? (
                     <div className="px-4 pb-2">

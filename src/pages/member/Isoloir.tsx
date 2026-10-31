@@ -202,7 +202,7 @@ function Booth({ a, b }: { a: Assembly; b: Ballot }) {
           </div>
         </div>
         <div className="grid max-w-[1120px] grid-cols-[300px_minmax(0,1fr)] items-start gap-5">
-          <aside className="sticky top-8 flex flex-col gap-3 rounded-[22px] bg-surface p-4">
+          <aside className="sticky top-8 flex flex-col gap-3 rounded-[12px] bg-surface p-4">
             <div className="px-1">
               <h2 className="m-0 text-[17px] font-extrabold">Ton bulletin</h2>
               <p className="m-0 text-[13px] text-muted">
@@ -214,7 +214,7 @@ function Booth({ a, b }: { a: Assembly; b: Ballot }) {
               <Participation ballot={b} compact />
             </div>
           </aside>
-          <section className="flex flex-col gap-5 rounded-[22px] bg-surface p-7">
+          <section className="flex flex-col gap-5 rounded-[12px] bg-surface p-7">
             {content}
             <div className="flex items-center gap-3 border-t border-line-soft pt-4">
               <p className="m-0 flex flex-1 items-center gap-2 text-[13px] text-muted">
@@ -310,7 +310,7 @@ function QuestionView({
       <>
         {head()}
         {q.detail ? (
-          <div className="flex flex-col gap-2.5 rounded-[20px] bg-surface-2 p-4">
+          <div className="flex flex-col gap-2.5 rounded-[12px] bg-surface-2 p-4">
             <p className="m-0 text-[16px] leading-[1.55] whitespace-pre-line">{q.detail}</p>
             <span className="inline-flex items-center gap-1.5 text-[13px] font-bold text-muted">
               <FileText className="size-4" /> Proposée par le bureau, inscrite à l’ordre du jour
@@ -341,7 +341,7 @@ function QuestionView({
     return (
       <>
         {head('Une seule candidature : pour, contre, ou vote blanc.')}
-        <div className="flex flex-col gap-2.5 rounded-[20px] bg-surface-2 p-4">
+        <div className="flex flex-col gap-2.5 rounded-[12px] bg-surface-2 p-4">
           <CandidateHead c={c} size={48} />
           {quote(c, desktop)}
           {desktop ? null : <span>{readLink(c)}</span>}
@@ -482,7 +482,7 @@ function BallotNav({
               >
                 <span className="shrink-0">{mark}</span>
                 <span className={`min-w-0 flex-1 truncate text-[14px] ${current || choice ? 'font-bold text-ink' : 'font-semibold text-muted'}`}>{q.title}</span>
-                <span className={`shrink-0 text-xs font-bold ${current ? 'text-[#6B4A00]' : 'text-muted'}`}>{current ? 'En cours' : shortChoice(q, choice, names)}</span>
+                <span className={`shrink-0 text-xs font-bold ${current ? 'text-[#163F93]' : 'text-muted'}`}>{current ? 'En cours' : shortChoice(q, choice, names)}</span>
               </button>
             )
           })}
@@ -510,15 +510,15 @@ function AVote({ b }: { b: Ballot }) {
   const desktop = useIsDesktop()
   const body = (
     <>
-      <div className="relative mx-auto grid size-[132px] place-items-center rounded-full bg-safran ring-[12px] ring-white/10">
-        <Vote className="size-14 text-nuit" strokeWidth={2} />
-        <span className="absolute right-[-6px] bottom-1 grid size-12 place-items-center rounded-[15px] border-4 border-nuit bg-ok text-white">
+      <div className="relative mx-auto grid size-[132px] place-items-center rounded-full bg-white ring-[12px] ring-white/15">
+        <Vote className="size-14 text-leppi" strokeWidth={2} />
+        <span className="absolute right-[-6px] bottom-1 grid size-12 place-items-center rounded-[15px] border-4 border-leppi bg-ok text-white">
           <Check className="size-6" strokeWidth={3} />
         </span>
       </div>
       <h1 className="titre m-0 text-center text-[46px] leading-none">A voté !</h1>
       <p className="m-0 text-center text-[17px] leading-[1.5] text-white/88">Ton bulletin est dans l’urne. Personne ne peut savoir ce que tu as choisi.</p>
-      <div className="rounded-[22px] bg-white/10 px-4 py-3.5">
+      <div className="rounded-[12px] bg-white/10 px-4 py-3.5">
         <Participation ballot={b} dark />
       </div>
       <p className="m-0 text-center text-[15px] leading-[1.5] text-white/80">
@@ -528,7 +528,7 @@ function AVote({ b }: { b: Ballot }) {
   )
   const actions = (
     <div className="flex flex-col gap-3">
-      <ButtonLink to="/app/fil" variant="accent">
+      <ButtonLink to="/app/fil" variant="onblue">
         Retour au fil
       </ButtonLink>
       <ButtonLink to="/app/votes" variant="light">
@@ -539,7 +539,7 @@ function AVote({ b }: { b: Ballot }) {
   if (desktop) {
     return (
       <div className="flex flex-1 items-center justify-center px-10 py-8">
-        <div className="bg-tisse flex w-full max-w-[560px] flex-col gap-6 rounded-[28px] p-10 text-white">
+        <div className="bg-tisse flex w-full max-w-[560px] flex-col gap-6 rounded-[12px] p-10 text-white">
           {body}
           {actions}
         </div>

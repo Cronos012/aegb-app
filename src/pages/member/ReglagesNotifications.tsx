@@ -48,7 +48,7 @@ function DeviceCard() {
   if (s.subscribed) {
     const title = desktop ? `Activées sur ce PC (${deviceLabel().split(' · ').reverse().join(', ')})${other === 'Et sur ton téléphone' ? ' et sur ton téléphone' : ''}` : `Activées sur ${here()}`
     return (
-      <div className="flex items-center gap-3.5 rounded-[22px] bg-ok-soft px-4 py-3.5">
+      <div className="flex items-center gap-3.5 rounded-[12px] bg-ok-soft px-4 py-3.5">
         <span className="grid size-11 shrink-0 place-items-center rounded-full bg-ok text-white">
           <Bell className="size-5" />
         </span>
@@ -80,7 +80,7 @@ function DeviceCard() {
 
   if (s.support === 'installer') {
     return (
-      <div className="flex flex-col gap-3 rounded-[22px] bg-safran-pale px-4 py-4 text-[#4A3300]">
+      <div className="flex flex-col gap-3 rounded-[12px] bg-safran-pale px-4 py-4 text-[#163F93]">
         <p className="m-0 text-[15px] leading-[1.45]">
           <strong>Sur iPhone</strong>, les notifications marchent quand l’appli est sur ton écran d’accueil (iOS 16.4 ou plus récent).
         </p>
@@ -93,7 +93,7 @@ function DeviceCard() {
 
   if (s.support === 'non') {
     return (
-      <div className="flex items-start gap-3 rounded-[22px] bg-surface px-4 py-3.5 text-[14px] leading-[1.45] text-muted">
+      <div className="flex items-start gap-3 rounded-[12px] bg-surface px-4 py-3.5 text-[14px] leading-[1.45] text-muted">
         <BellOff className="mt-0.5 size-5 shrink-0" />
         Ce navigateur ne sait pas recevoir de notifications. Tu les retrouves dans la cloche, en haut du fil.
       </div>
@@ -102,7 +102,7 @@ function DeviceCard() {
 
   if (s.permission === 'denied') {
     return (
-      <div className="flex items-start gap-3 rounded-[22px] bg-warn-soft px-4 py-3.5 text-[14px] leading-[1.45]">
+      <div className="flex items-start gap-3 rounded-[12px] bg-warn-soft px-4 py-3.5 text-[14px] leading-[1.45]">
         <BellOff className="mt-0.5 size-5 shrink-0 text-warn" />
         <span>
           <strong>Bloquées sur {here()}.</strong> {unblockSteps()}
@@ -112,7 +112,7 @@ function DeviceCard() {
   }
 
   return (
-    <div className="flex items-center gap-3.5 rounded-[22px] bg-surface px-4 py-3.5">
+    <div className="flex items-center gap-3.5 rounded-[12px] bg-surface px-4 py-3.5">
       <span className="grid size-11 shrink-0 place-items-center rounded-full bg-select text-ink">
         <BellOff className="size-5" />
       </span>
@@ -167,7 +167,7 @@ function PcPreview({ apercu }: { apercu: boolean }) {
     </div>
   )
   return (
-    <section className="rounded-[22px] bg-surface p-5">
+    <section className="rounded-[12px] bg-surface p-5">
       <div className="flex items-center justify-between">
         <h2 className="titre m-0 text-[18px]">Aperçu sur ce PC</h2>
         <span className="text-[13px] text-muted">Selon « Texte sur l’écran verrouillé »</span>

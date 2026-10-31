@@ -184,7 +184,7 @@ function MemberLine({ m, me, onMenu }: { m: GroupMember; me: boolean; onMenu: (m
         <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <span className="truncate text-[16px] font-bold">{me ? 'Toi' : `${m.first_name} ${m.last_name}`}</span>
           {m.is_manager ? (
-            <span className="inline-flex h-6 items-center gap-1 rounded-full bg-safran-pale px-2 text-[12px] font-bold text-[#6B4A00]">
+            <span className="inline-flex h-6 items-center gap-1 rounded-full bg-safran-pale px-2 text-[12px] font-bold text-[#163F93]">
               <Star className="size-3" /> Gère le groupe
             </span>
           ) : null}

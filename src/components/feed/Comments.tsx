@@ -73,7 +73,7 @@ function CommentItem({ comment: c, onReply, small = false }: { comment: Comment;
         </Link>
       ) : null}
       <div className="min-w-0 flex-1">
-        <div className={`w-fit max-w-full rounded-[18px] bg-surface-2 px-3.5 py-2.5 ${c.hidden_at ? 'opacity-70' : ''}`}>
+        <div className={`w-fit max-w-full rounded-[12px] bg-surface-2 px-3.5 py-2.5 ${c.hidden_at ? 'opacity-70' : ''}`}>
           <p className="m-0 text-[14px] font-bold">
             {a ? (
               <Link to={`/app/membres/${a.id}`} className="text-ink no-underline hover:underline">
@@ -243,7 +243,7 @@ export function CommentInput({ postId, replyTo, onCancelReply, focusKey }: { pos
         }}
       >
         <Avatar person={me.profile} size={40} />
-        <div className="flex min-h-12 min-w-0 flex-1 items-end gap-1 rounded-[24px] bg-surface-2 py-1 pr-1 pl-4 focus-within:ring-[3px] focus-within:ring-safran/45">
+        <div className="flex min-h-12 min-w-0 flex-1 items-end gap-1 rounded-[12px] bg-surface-2 py-1 pr-1 pl-4 focus-within:ring-[3px] focus-within:ring-safran/45">
           <label htmlFor="commentaire" className="sr-only">
             {replyTo ? `Répondre à ${replyTo.firstName}` : 'Écrire un commentaire'}
           </label>

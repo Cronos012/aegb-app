@@ -66,13 +66,13 @@ export function Attente({ me }: { me: Me }) {
 
   return (
     <div className="flex min-h-dvh justify-center bg-page lg:items-center lg:py-10">
-      <div className="flex w-full max-w-[480px] flex-col overflow-hidden bg-surface lg:rounded-[26px] lg:shadow-sm">
+      <div className="flex w-full max-w-[480px] flex-col overflow-hidden bg-surface lg:rounded-[12px] lg:shadow-sm">
         <header className="bg-tisse px-5 pt-[max(env(safe-area-inset-top),20px)] pb-12 text-white">
           <Logo size={34} />
           <h1 className="titre mt-5 mb-0 text-[30px]">Demande envoyée !</h1>
           <p className="mt-1.5 mb-0 text-[15px] text-white/85">Le bureau vérifie que tu fais partie de l'AEGB.</p>
         </header>
-        <div className="relative -mt-6 flex flex-1 flex-col rounded-t-[26px] bg-surface px-5 pt-6 pb-[max(env(safe-area-inset-bottom),24px)]">
+        <div className="relative -mt-6 flex flex-1 flex-col rounded-t-[12px] bg-surface px-5 pt-6 pb-[max(env(safe-area-inset-bottom),24px)]">
           <div className="flex items-center gap-3 rounded-2xl bg-surface-2 px-3.5 py-3">
             <Avatar person={p} size={44} />
             <div className="min-w-0">

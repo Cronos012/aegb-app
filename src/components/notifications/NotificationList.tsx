@@ -30,16 +30,16 @@ const BADGES: Record<string, { icon: LucideIcon; tone: string }> = {
   reponse: { icon: Reply, tone: 'bg-[#5B2D91] text-white' },
   commentaire: { icon: MessageCircle, tone: 'bg-leppi-2 text-white' },
   aegb: { icon: MessageSquare, tone: 'bg-leppi text-white' },
-  annonce: { icon: Megaphone, tone: 'bg-safran text-nuit' },
+  annonce: { icon: Megaphone, tone: 'bg-safran text-white' },
   compte: { icon: BadgeCheck, tone: 'bg-ok text-white' },
 }
 
 /** Sans personne derrière : une tuile de couleur avec l'icône du sujet. */
 const TILES: Record<string, { icon: LucideIcon; tone: string }> = {
-  vote: { icon: SquareCheckBig, tone: 'bg-safran-pale text-[#6B4A00]' },
+  vote: { icon: SquareCheckBig, tone: 'bg-safran-pale text-[#163F93]' },
   evenement: { icon: CalendarDays, tone: 'bg-danger-soft text-danger' },
   cotisation: { icon: CreditCard, tone: 'bg-ok-soft text-ok' },
-  comptes: { icon: UserCheck, tone: 'bg-safran-pale text-[#6B4A00]' },
+  comptes: { icon: UserCheck, tone: 'bg-safran-pale text-[#163F93]' },
   signalement: { icon: TriangleAlert, tone: 'bg-danger-soft text-danger' },
   candidature: { icon: SquareCheckBig, tone: 'bg-[#F1E8FB] text-[#5B2D91]' },
   paiement: { icon: Euro, tone: 'bg-ok-soft text-ok' },
@@ -48,7 +48,7 @@ const TILES: Record<string, { icon: LucideIcon; tone: string }> = {
 
 /** L'écran du bureau d'où vient la notification. */
 const CHIPS: Record<string, string> = {
-  Comptes: 'bg-safran-pale text-[#6B4A00]',
+  Comptes: 'bg-safran-pale text-[#163F93]',
   Modération: 'bg-danger-soft text-danger',
   'Compte AEGB': 'bg-select text-ink',
   Élections: 'bg-[#F1E8FB] text-[#5B2D91]',

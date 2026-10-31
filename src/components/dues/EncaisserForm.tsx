@@ -172,7 +172,7 @@ export function EncaisserForm({ initialMember, onCancel }: { initialMember?: str
         matrix.data ? <MemberPicker rows={matrix.data} onPick={pickMember} /> : null
       ) : (
         <>
-          <div className="flex items-center gap-3 rounded-[18px] bg-surface-2 p-3">
+          <div className="flex items-center gap-3 rounded-[12px] bg-surface-2 p-3">
             <Avatar person={{ id: row.member_id, first_name: row.first_name, last_name: row.last_name, avatar_path: row.avatar_path }} size={44} />
             <span className="min-w-0 flex-1">
               <span className="block truncate text-[15px] font-bold">{fullName(row)}</span>
@@ -231,7 +231,7 @@ export function EncaisserForm({ initialMember, onCancel }: { initialMember?: str
                 </label>
               </div>
 
-              <div className="flex flex-col gap-2.5 rounded-[18px] bg-surface-2 p-4">
+              <div className="flex flex-col gap-2.5 rounded-[12px] bg-surface-2 p-4">
                 <div className="flex justify-between gap-3 text-[15px]">
                   <span>{chosen.length ? monthsLabel(chosen) : 'Aucun mois choisi'}</span>
                   <span className="shrink-0 text-muted">

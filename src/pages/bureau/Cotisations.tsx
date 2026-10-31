@@ -60,7 +60,7 @@ function useConfirmedPayments(enabled: boolean) {
 
 function Tile({ label, value, detail, tone = '' }: { label: string; value: string; detail: string; tone?: string }) {
   return (
-    <div className="flex flex-col gap-1 rounded-[20px] bg-surface px-[18px] py-4">
+    <div className="flex flex-col gap-1 rounded-[12px] bg-surface px-[18px] py-4">
       <span className="text-[13px] font-semibold text-muted">{label}</span>
       <span className={`titre text-[28px] leading-none ${tone}`}>{value}</span>
       <span className="text-[13px] text-muted">{detail}</span>
@@ -290,7 +290,7 @@ export default function Cotisations() {
       {settings && current ? (
         <div className="grid gap-3 lg:grid-cols-2 lg:gap-4">
           <Card className="flex items-center gap-3 p-4">
-            <span className="grid size-10 shrink-0 place-items-center rounded-full bg-safran-pale text-[#6B4A00]">
+            <span className="grid size-10 shrink-0 place-items-center rounded-full bg-safran-pale text-[#163F93]">
               <BellRing className="size-5" />
             </span>
             <span className="min-w-0 flex-1">

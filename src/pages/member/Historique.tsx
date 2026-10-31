@@ -18,7 +18,7 @@ function Totals({ state, payments }: { state: DuesState; payments: Payment[] }) 
   const cents = paid.reduce((sum, m) => sum + (m.amount_cents ?? 0), 0)
   const before = state.paying && state.dues_from && state.dues_from > state.exercise_start ? state.dues_from : null
   return (
-    <section className="bg-tisse flex flex-col gap-1 rounded-[22px] px-5 py-[18px] text-white">
+    <section className="bg-tisse flex flex-col gap-1 rounded-[12px] px-5 py-[18px] text-white">
       <span className="text-[13px] font-semibold text-white/80">Payé en {exerciseLabel(state.exercise_start)}</span>
       <span className="titre text-[34px] leading-none">{euros(cents)}</span>
       <span className="text-[13px] text-white/85">
@@ -51,7 +51,7 @@ export function Historique() {
   }
 
   return (
-    <div className="flex flex-1 flex-col bg-surface lg:mx-10 lg:my-8 lg:max-w-[720px] lg:rounded-[26px] lg:p-6">
+    <div className="flex flex-1 flex-col bg-surface lg:mx-10 lg:my-8 lg:max-w-[720px] lg:rounded-[12px] lg:p-6">
       <TopBar title="Historique et quittances" fallback="/app/cotisation" />
       <div className="flex flex-col gap-5 px-5 pt-4 pb-6 lg:px-0">
         <ErrorNote error={payments.error ?? dues.error} />
@@ -64,7 +64,7 @@ export function Historique() {
         {groups.map((g) => (
           <section key={g.label} className="flex flex-col gap-2">
             <h2 className="m-0 text-[13px] font-bold tracking-wide text-muted uppercase">{g.label}</h2>
-            <ul className="m-0 flex list-none flex-col overflow-hidden rounded-[18px] border-[1.5px] border-line-soft p-0">
+            <ul className="m-0 flex list-none flex-col overflow-hidden rounded-[12px] border-[1.5px] border-line-soft p-0">
               {g.items.map((p) => {
                 const body = (
                   <>

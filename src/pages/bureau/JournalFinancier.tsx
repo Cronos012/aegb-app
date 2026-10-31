@@ -371,7 +371,7 @@ function ReverseDialog({ entry, onClose }: { entry: LedgerEntry | null; onClose:
 
 function Tile({ label, value, detail, tone = '' }: { label: string; value: string; detail: string; tone?: string }) {
   return (
-    <div className="flex min-w-0 flex-col gap-1 rounded-[20px] bg-surface px-[18px] py-4">
+    <div className="flex min-w-0 flex-col gap-1 rounded-[12px] bg-surface px-[18px] py-4">
       <span className="text-[13px] font-semibold text-muted">{label}</span>
       <span className={`titre truncate text-[24px] leading-tight lg:text-[26px] ${tone}`}>{value}</span>
       <span className="text-[13px] leading-snug text-muted lg:truncate">{detail}</span>

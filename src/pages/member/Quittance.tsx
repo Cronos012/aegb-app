@@ -16,7 +16,7 @@ export function ReceiptPaper({ receipt, address, rna }: { receipt: Receipt; addr
   const l = receiptLines(receipt)
   const footer = [address, rna ? `RNA ${rna}` : null].filter(Boolean).join(' · ')
   return (
-    <article className="relative overflow-hidden rounded-[18px] border border-line-soft bg-white text-[#12162B] shadow-[0_6px_24px_rgba(18,22,43,0.08)]">
+    <article className="relative overflow-hidden rounded-[12px] border border-line-soft bg-white text-[#12162B] shadow-[0_6px_24px_rgba(18,22,43,0.08)]">
       <header className="bg-tisse flex items-center gap-3 px-5 py-4 text-white">
         <Logo size={36} />
         <div className="min-w-0 flex-1">

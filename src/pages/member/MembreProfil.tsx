@@ -101,7 +101,7 @@ export function MembreProfil() {
 
   return (
     <div className="flex flex-1 flex-col lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start lg:gap-6 lg:px-10 lg:py-8">
-      <section className="flex-1 bg-surface lg:overflow-hidden lg:rounded-[26px]">
+      <section className="flex-1 bg-surface lg:overflow-hidden lg:rounded-[12px]">
         <div className="relative">
           <Cover path={p.cover_path} className="h-[150px] pt-[env(safe-area-inset-top)] lg:h-[170px]" />
           <button

@@ -5,7 +5,7 @@ export function Logo({ size = 44, background = '#1A2352' }: { size?: number; bac
       <circle cx="100" cy="100" r="84" fill="none" stroke="#CE1126" strokeWidth="14" strokeDasharray="168 360" transform="rotate(-86 100 100)" />
       <circle cx="100" cy="100" r="84" fill="none" stroke="#FCD116" strokeWidth="14" strokeDasharray="168 360" transform="rotate(34 100 100)" />
       <circle cx="100" cy="100" r="84" fill="none" stroke="#009460" strokeWidth="14" strokeDasharray="168 360" transform="rotate(154 100 100)" />
-      <text x="100" y="117" textAnchor="middle" fontFamily="'Bricolage Grotesque Variable', sans-serif" fontSize="50" fontWeight="800" fill="#FFFFFF">
+      <text x="100" y="117" textAnchor="middle" fontFamily="Arial, Helvetica, sans-serif" fontSize="50" fontWeight="800" fill="#FFFFFF">
         AEGB
       </text>
     </svg>

@@ -20,8 +20,8 @@ export function Notifications() {
     `h-10 rounded-full px-4 text-[15px] font-bold ${active ? 'bg-leppi text-white' : 'border-[1.5px] border-line bg-surface text-ink hover:bg-surface-2'}`
 
   return (
-    <div className="flex flex-1 flex-col bg-surface lg:mx-auto lg:my-8 lg:w-full lg:max-w-[680px] lg:rounded-[26px]">
-      <header className="sticky top-0 z-20 flex h-[calc(60px+env(safe-area-inset-top))] items-center gap-2 border-b border-line-soft bg-surface px-3 pt-[env(safe-area-inset-top)] lg:static lg:rounded-t-[26px] lg:px-5">
+    <div className="flex flex-1 flex-col bg-surface lg:mx-auto lg:my-8 lg:w-full lg:max-w-[680px] lg:rounded-[12px]">
+      <header className="sticky top-0 z-20 flex h-[calc(60px+env(safe-area-inset-top))] items-center gap-2 border-b border-line-soft bg-surface px-3 pt-[env(safe-area-inset-top)] lg:static lg:rounded-t-[12px] lg:px-5">
         <button type="button" onClick={() => navigate(-1)} aria-label="Retour" className="grid size-11 shrink-0 place-items-center rounded-xl hover:bg-surface-2">
           <ChevronLeft className="size-6" strokeWidth={2.2} />
         </button>

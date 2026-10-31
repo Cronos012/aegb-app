@@ -12,7 +12,7 @@ export function FilVote({ className = '' }: { className?: string }) {
   const title = `${b.round === 2 ? 'Second tour de l’AG' : 'AG'} du ${dayMonth(a.held_at)}`
   if (b.voted_at || a.my.right !== 'actif') {
     return (
-      <Link to="/app/votes" className={`flex flex-col gap-2.5 rounded-[22px] bg-surface p-4 text-ink no-underline hover:bg-surface-2 ${className}`}>
+      <Link to="/app/votes" className={`flex flex-col gap-2.5 rounded-[12px] bg-surface p-4 text-ink no-underline hover:bg-surface-2 ${className}`}>
         <span className="flex items-center justify-between gap-3">
           <span className="flex min-w-0 items-center gap-2 text-[15px] font-extrabold">
             {b.voted_at ? <Check className="size-5 shrink-0 text-ok" strokeWidth={2.6} /> : <Vote className="size-5 shrink-0 text-ok" />}
@@ -25,12 +25,12 @@ export function FilVote({ className = '' }: { className?: string }) {
     )
   }
   return (
-    <section className={`flex flex-col gap-3 rounded-[22px] border-2 border-safran bg-safran-pale/45 p-4 ${className}`}>
+    <section className={`flex flex-col gap-3 rounded-[12px] border-2 border-safran bg-safran-pale/45 p-4 ${className}`}>
       <div className="flex items-center justify-between gap-3">
         <Pill tone="ok" icon={<Check className="size-3.5" strokeWidth={3} />}>
           {b.round === 2 ? 'Second tour ouvert' : 'Vote ouvert'}
         </Pill>
-        <span className="inline-flex items-center gap-1.5 text-sm font-bold text-[#6B4A00]">
+        <span className="inline-flex items-center gap-1.5 text-sm font-bold text-[#163F93]">
           <Clock className="size-4" /> Ferme à {hour(b.closes_at)}
         </span>
       </div>

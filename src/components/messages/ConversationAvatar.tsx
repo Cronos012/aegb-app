@@ -55,7 +55,7 @@ export function ConversationAvatar({ kind, title, photoPath, other, faces, size 
     )
   }
   return (
-    <span className="bg-tisse grid shrink-0 place-items-center rounded-full text-safran" style={{ width: size, height: size }} aria-hidden="true" title={title}>
+    <span className="bg-tisse grid shrink-0 place-items-center rounded-full text-ciel" style={{ width: size, height: size }} aria-hidden="true" title={title}>
       <Users style={{ width: size * 0.42, height: size * 0.42 }} />
     </span>
   )

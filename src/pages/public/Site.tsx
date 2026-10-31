@@ -39,14 +39,14 @@ function academicYear(now = new Date()) {
 }
 
 function Kicker({ children, light = false }: { children: string; light?: boolean }) {
-  return <p className={`m-0 text-xs font-extrabold tracking-[0.14em] uppercase ${light ? 'text-safran' : 'text-[#A67000]'}`}>{children}</p>
+  return <p className={`m-0 text-xs font-extrabold tracking-[0.14em] uppercase ${light ? 'text-ciel' : 'text-[#163F93]'}`}>{children}</p>
 }
 
 /** Petit téléphone dessiné, pour montrer l'appli sur le site. Toujours en clair, comme une capture. */
 function PhoneMock({ screen }: { screen: 'fil' | 'messages' }) {
   return (
     <div className="relative w-[280px] shrink-0 rounded-[40px] bg-[#0B0F26] p-2.5 shadow-2xl" aria-hidden="true">
-      <div className="h-[540px] overflow-hidden rounded-[32px] bg-[#F3F4F8] text-[#12162B]">
+      <div className="h-[540px] overflow-hidden rounded-[12px] bg-[#F3F4F8] text-[#12162B]">
         {screen === 'fil' ? (
           <>
             <div className="flex items-center justify-between bg-white px-4 pt-5 pb-3">
@@ -58,7 +58,7 @@ function PhoneMock({ screen }: { screen: 'fil' | 'messages' }) {
             </div>
             <div className="flex flex-col gap-2.5 p-2.5">
               <div className="rounded-2xl bg-white p-3">
-                <p className="m-0 mb-2 inline-flex rounded-full bg-[#FFF3C4] px-2 py-0.5 text-[10px] font-bold text-[#6B4A00]">Info du bureau, épinglée</p>
+                <p className="m-0 mb-2 inline-flex rounded-full bg-[#E7EEFB] px-2 py-0.5 text-[10px] font-bold text-[#163F93]">Info du bureau, épinglée</p>
                 <div className="flex items-center gap-2">
                   <span className="bg-anneau rounded-full p-[2px]">
                     <Logo size={26} />
@@ -108,19 +108,19 @@ function PhoneMock({ screen }: { screen: 'fil' | 'messages' }) {
                       <Logo size={30} />
                     </span>
                   ) : (
-                    <span className={`grid size-[34px] place-items-center rounded-full text-[10px] font-bold ${avatar === 'BOT' ? 'bg-[#F5B800] text-[#12183D]' : 'bg-[#E7EAFB] text-[#253070]'}`}>{avatar}</span>
+                    <span className={`grid size-[34px] place-items-center rounded-full text-[10px] font-bold ${avatar === 'BOT' ? 'bg-[#1B4DB1] text-white' : 'bg-[#E7EAFB] text-[#253070]'}`}>{avatar}</span>
                   )}
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-[12px] font-bold">{name}</span>
                     <span className="block truncate text-[11px] text-[#5A6075]">{text}</span>
                   </span>
-                  {badge ? <span className="grid size-4 place-items-center rounded-full bg-[#1A2352] text-[9px] font-bold text-white">{badge}</span> : null}
+                  {badge ? <span className="grid size-4 place-items-center rounded-full bg-[#1B4DB1] text-[9px] font-bold text-white">{badge}</span> : null}
                 </li>
               ))}
             </ul>
           </>
         )}
-        <div className="absolute inset-x-2.5 bottom-2.5 grid grid-cols-4 rounded-b-[32px] border-t border-[#EEF0F5] bg-white py-2.5 text-center text-[9px] text-[#5A6075]">
+        <div className="absolute inset-x-2.5 bottom-2.5 grid grid-cols-4 rounded-b-[12px] border-t border-[#EEF0F5] bg-white py-2.5 text-center text-[9px] text-[#5A6075]">
           {[
             ['Fil', House],
             ['Messages', MessageSquare],
@@ -130,7 +130,7 @@ function PhoneMock({ screen }: { screen: 'fil' | 'messages' }) {
             const I = Icon as typeof House
             const active = (screen === 'fil' && label === 'Fil') || (screen === 'messages' && label === 'Messages')
             return (
-              <span key={label as string} className={`flex flex-col items-center gap-0.5 ${active ? 'font-bold text-[#1A2352]' : ''}`}>
+              <span key={label as string} className={`flex flex-col items-center gap-0.5 ${active ? 'font-bold text-[#1B4DB1]' : ''}`}>
                 <I className="size-4" />
                 {label as string}
               </span>
@@ -147,7 +147,7 @@ function SiteEvent({ e }: { e: PublicEvent }) {
   const photo = usePhotoUrl(e.photo_path, 'publications')
   const { day, month } = badgeParts(e.starts_at)
   return (
-    <li className="flex flex-col overflow-hidden rounded-[22px] border border-[#E8EAF1] bg-white">
+    <li className="flex flex-col overflow-hidden rounded-[12px] border border-[#E8EAF1] bg-white">
       <div className="bg-tisse relative h-[150px]">
         {photo ? <img src={photo} alt="" className="absolute inset-0 size-full object-cover" /> : null}
         <span className="absolute top-3.5 left-3.5 flex h-[54px] w-[50px] flex-col items-center justify-center rounded-[14px] bg-white shadow-[0_2px_8px_rgba(18,22,43,0.18)]" aria-hidden="true">
@@ -158,10 +158,10 @@ function SiteEvent({ e }: { e: PublicEvent }) {
       <div className="flex flex-1 flex-col gap-1.5 p-5">
         <h3 className="titre m-0 text-[20px] leading-tight">{e.title}</h3>
         <p className="m-0 flex items-start gap-2 text-[14px] text-[#3D4357]">
-          <Calendar className="mt-0.5 size-4 shrink-0 text-[#1A2352]" /> {whenLong(e)}
+          <Calendar className="mt-0.5 size-4 shrink-0 text-[#1B4DB1]" /> {whenLong(e)}
         </p>
         <p className="m-0 flex items-start gap-2 text-[14px] text-[#3D4357]">
-          <MapPin className="mt-0.5 size-4 shrink-0 text-[#1A2352]" /> {e.online ? 'En ligne' : e.place}
+          <MapPin className="mt-0.5 size-4 shrink-0 text-[#1B4DB1]" /> {e.online ? 'En ligne' : e.place}
         </p>
       </div>
     </li>
@@ -172,7 +172,7 @@ const KIND_SITE_TONES: Record<string, string> = {
   PDF: 'bg-[#FDE7EA] text-[#8A0C20]',
   DOC: 'bg-[#E7F1FB] text-[#1D4F86]',
   XLS: 'bg-[#E3F4EC] text-[#075C2C]',
-  PPT: 'bg-[#FFF1C2] text-[#6B5200]',
+  PPT: 'bg-[#FFF1C2] text-[#163F93]',
   IMG: 'bg-[#EFEDFF] text-[#3C2E8F]',
   TXT: 'bg-[#F5F6FB] text-[#5A6075]',
 }
@@ -194,7 +194,7 @@ function SiteDocument({ d }: { d: Doc }) {
             .catch(() => setFailed(true))
             .finally(() => setBusy(false))
         }}
-        className="flex w-full items-center gap-3.5 rounded-[18px] border border-[#E8EAF1] bg-white px-4 py-3 text-left text-[#12162B] hover:bg-[#F5F6FB] disabled:opacity-70"
+        className="flex w-full items-center gap-3.5 rounded-[12px] border border-[#E8EAF1] bg-white px-4 py-3 text-left text-[#12162B] hover:bg-[#F5F6FB] disabled:opacity-70"
       >
         <span className={`grid h-[46px] w-[38px] shrink-0 place-items-center rounded-[7px] text-[10px] font-extrabold ${KIND_SITE_TONES[kind]}`} aria-hidden="true">
           {kind}
@@ -205,7 +205,7 @@ function SiteDocument({ d }: { d: Doc }) {
             {failed ? 'Le téléchargement n’a pas marché, réessaie.' : [d.category, d.file ? sizeLabel(d.file.size_bytes) : null].filter(Boolean).join(' · ')}
           </span>
         </span>
-        <Download className="size-5 shrink-0 text-[#1A2352]" />
+        <Download className="size-5 shrink-0 text-[#1B4DB1]" />
       </button>
     </li>
   )
@@ -221,7 +221,7 @@ const STATS = [
   { value: '150+', label: 'membres', color: '#CE1126' },
   { value: '20', label: 'événements par an', color: '#FCD116' },
   { value: '7', label: 'membres au bureau', color: '#009460' },
-  { value: '1', label: 'grande famille', color: '#1A2352' },
+  { value: '1', label: 'grande famille', color: '#1B4DB1' },
 ]
 
 const APP_PERKS = [
@@ -304,7 +304,7 @@ export default function Site() {
             <ButtonLink to="/connexion" variant="light" size="sm" className="h-10 px-4">
               Se connecter
             </ButtonLink>
-            <ButtonLink to="/inscription" variant="accent" size="sm" className="hidden h-10 px-4 sm:inline-flex">
+            <ButtonLink to="/inscription" variant="onblue" size="sm" className="hidden h-10 px-4 sm:inline-flex">
               Créer mon compte
             </ButtonLink>
           </div>
@@ -313,13 +313,13 @@ export default function Site() {
           <div>
             <Kicker light>Association des Étudiants Guinéens de Brest</Kicker>
             <h1 className="titre mt-5 mb-0 text-[44px] leading-[1.02] lg:text-[64px]">
-              La famille guinéenne de Brest, <span className="text-safran">réunie.</span>
+              La famille guinéenne de Brest, <span className="text-ciel">réunie.</span>
             </h1>
             <p className="mt-6 mb-0 max-w-[560px] text-[17px] leading-[1.55] text-white/85">
               On accueille les nouveaux, on s'entraide pendant les études et on fait vivre la culture guinéenne en Bretagne. Étudiants, anciens ou amis de l'asso : chacun a sa place.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <ButtonLink to="/inscription" variant="accent" size="md" className="h-12 px-5">
+              <ButtonLink to="/inscription" variant="onblue" size="md" className="h-12 px-5">
                 Rejoindre l'AEGB <ArrowRight className="size-4" />
               </ButtonLink>
               <a href="#asso" className="inline-flex h-12 items-center rounded-xl border-[1.5px] border-white/45 px-5 text-[15px] font-bold text-white no-underline hover:bg-white/10">
@@ -339,9 +339,9 @@ export default function Site() {
           </div>
           <div className="relative hidden justify-center lg:flex">
             <PhoneMock screen="fil" />
-            <div className="absolute top-[52%] -left-24 w-[230px] rotate-[-5deg] rounded-2xl border border-white/15 bg-[#2A3470] px-3.5 py-3 shadow-2xl">
+            <div className="absolute top-[52%] -left-24 w-[230px] rotate-[-5deg] rounded-2xl border border-white/15 bg-[#163F93] px-3.5 py-3 shadow-2xl">
               <div className="flex items-start gap-2.5">
-                <span className="grid size-8 shrink-0 place-items-center rounded-full bg-safran text-[10px] font-extrabold text-nuit">BOT</span>
+                <span className="grid size-8 shrink-0 place-items-center rounded-full bg-white text-[10px] font-extrabold text-leppi">BOT</span>
                 <p className="m-0 text-[12px] leading-[1.35]">
                   <span className="block text-white/70">Assistant AEGB</span>
                   Bienvenue ! Je t'explique comment ça marche ici.
@@ -368,7 +368,7 @@ export default function Site() {
           </div>
           <ul className="m-0 flex list-none flex-col gap-4 p-0">
             {PILLARS.map(({ icon: Icon, title, text, tone }) => (
-              <li key={title} className="flex items-start gap-4 rounded-[22px] bg-[#F5F6FB] p-5">
+              <li key={title} className="flex items-start gap-4 rounded-[12px] bg-[#F5F6FB] p-5">
                 <span className={`grid size-12 shrink-0 place-items-center rounded-2xl ${tone}`}>
                   <Icon className="size-6" />
                 </span>
@@ -403,16 +403,16 @@ export default function Site() {
           <p className="m-0 max-w-[340px] text-[15px] leading-[1.5] text-[#5A6075]">Le programme complet et les inscriptions sont dans l'appli, réservés aux membres.</p>
         </div>
         <div className="mt-10 grid gap-4 lg:grid-cols-[1.25fr_1fr_1fr] lg:grid-rows-[220px_220px]">
-          <article className="bg-tisse relative flex min-h-[300px] flex-col justify-end overflow-hidden rounded-[26px] p-7 text-white lg:row-span-2">
+          <article className="bg-tisse relative flex min-h-[300px] flex-col justify-end overflow-hidden rounded-[12px] p-7 text-white lg:row-span-2">
             <div
               className="bg-anneau absolute -top-16 -right-16 size-[230px] rounded-full opacity-90 lg:-top-20 lg:-right-20 lg:size-[300px]"
               style={{ mask: 'radial-gradient(farthest-side, transparent calc(100% - 16px), #000 calc(100% - 15px))' }}
               aria-hidden="true"
             />
-            <span className="absolute top-7 left-7 text-safran">
+            <span className="absolute top-7 left-7 text-ciel">
               <Flag className="size-9" />
             </span>
-            <span className="absolute top-7 right-7 rounded-full bg-safran px-3 py-1 text-xs font-extrabold text-nuit">2 octobre</span>
+            <span className="absolute top-7 right-7 rounded-full bg-white px-3 py-1 text-xs font-extrabold text-leppi">2 octobre</span>
             <h3 className="titre m-0 text-[30px]">Fête de l'indépendance</h3>
             <p className="mt-2 mb-0 max-w-[420px] text-[15px] leading-[1.5] text-white/85">Le grand rendez-vous de l'année : repas, musique, tenues traditionnelles et toute la communauté réunie.</p>
           </article>
@@ -422,7 +422,7 @@ export default function Site() {
             { title: 'Soirées et sorties', text: "Soirées d'intégration, repas partagés, sorties à la mer.", when: "Toute l'année", icon: Music, cls: 'bg-[#FCD116] text-[#12162B]' },
             { title: 'Aide aux démarches', text: 'Titre de séjour, CAF, banque : on partage ce qui marche.', when: "Toute l'année", icon: FileText, cls: 'border border-[#E8EAF1] bg-[#F5F6FB] text-[#12162B]' },
           ].map(({ title, text, when, icon: Icon, cls }) => (
-            <article key={title} className={`relative flex min-h-[200px] flex-col justify-end rounded-[26px] p-6 ${cls}`}>
+            <article key={title} className={`relative flex min-h-[200px] flex-col justify-end rounded-[12px] p-6 ${cls}`}>
               <Icon className="absolute top-6 left-6 size-7" />
               <span className="absolute top-6 right-6 text-xs font-bold opacity-85">{when}</span>
               <h3 className="titre m-0 text-[21px]">{title}</h3>
@@ -440,7 +440,7 @@ export default function Site() {
             </ul>
             <p className="mt-4 mb-0 text-[14px] text-[#5A6075]">
               Les inscriptions se font dans l'appli.{' '}
-              <Link to="/connexion" className="font-bold text-[#1A2352]">
+              <Link to="/connexion" className="font-bold text-[#1B4DB1]">
                 Se connecter
               </Link>
             </p>
@@ -460,7 +460,7 @@ export default function Site() {
           </div>
           <ul className="m-0 mt-10 grid list-none grid-cols-2 gap-4 p-0 lg:grid-cols-4">
             {(bureau.data ?? []).map((r) => (
-              <li key={r.code} className="flex flex-col gap-4 rounded-[22px] bg-white p-5">
+              <li key={r.code} className="flex flex-col gap-4 rounded-[12px] bg-white p-5">
                 <span className="bg-anneau w-fit rounded-full p-[3px]">
                   <span className="grid size-12 place-items-center rounded-full bg-[#F5F6FB] text-[#5A6075]">
                     <User className="size-5" />
@@ -472,8 +472,8 @@ export default function Site() {
                 </span>
               </li>
             ))}
-            <li className="flex flex-col justify-between gap-4 rounded-[22px] bg-leppi p-5 text-white">
-              <span className="grid size-10 place-items-center rounded-xl bg-safran text-nuit">
+            <li className="flex flex-col justify-between gap-4 rounded-[12px] bg-leppi p-5 text-white">
+              <span className="grid size-10 place-items-center rounded-xl bg-white text-leppi">
                 <SquareCheckBig className="size-5" />
               </span>
               <span>
@@ -493,7 +493,7 @@ export default function Site() {
             <h2 className="titre mt-4 mb-0 text-[44px] leading-[1.02] tracking-[-0.01em] lg:text-[60px]">
               Installe l’appli.
               <br />
-              <span className="text-safran">Ne rate plus rien.</span>
+              <span className="text-ciel">Ne rate plus rien.</span>
             </h2>
             <p className="mt-6 mb-0 max-w-[560px] text-[17px] leading-[1.6] text-white/85">
               Messages, votes, rappels d’événements et annonces du bureau arrivent sur ton téléphone, même appli fermée. Tu choisis ce que tu reçois, et rien ne sonne la nuit.
@@ -503,7 +503,7 @@ export default function Site() {
               <StoreButton to="/installer?appareil=iphone" kicker="Sur iPhone" label="Guide Safari" icon={<Share className="size-6" />} />
               <PcInstallButton />
             </div>
-            <div className="mt-8 hidden max-w-[440px] items-center gap-5 rounded-[20px] border border-white/12 bg-white/6 p-4 lg:flex">
+            <div className="mt-8 hidden max-w-[440px] items-center gap-5 rounded-[12px] border border-white/12 bg-white/6 p-4 lg:flex">
               <span className="rounded-xl bg-white p-1.5">
                 <QrCode value={new URL(`${import.meta.env.BASE_URL}installer`, window.location.origin).href} size={96} />
               </span>
@@ -580,7 +580,7 @@ export default function Site() {
             <h3 className="m-0 text-[15px] font-bold">Qui peut adhérer ?</h3>
             <ul className="m-0 mt-4 flex list-none flex-col gap-3 p-0">
               {WHO.map((w) => (
-                <li key={w.title} className="rounded-[18px] border border-[#E8EAF1] border-l-4 px-5 py-4" style={{ borderLeftColor: w.color }}>
+                <li key={w.title} className="rounded-[12px] border border-[#E8EAF1] border-l-4 px-5 py-4" style={{ borderLeftColor: w.color }}>
                   <span className="titre block text-[20px]">{w.title}</span>
                   <span className="mt-1 block text-[15px] text-[#5A6075]">{w.text}</span>
                 </li>
@@ -608,7 +608,7 @@ export default function Site() {
             <p className="mt-4 mb-0 max-w-[320px] text-[14px] leading-[1.6] text-white/70">Association des Étudiants Guinéens de Brest. Accueillir, accompagner, rassembler.</p>
           </div>
           <nav aria-label="L'association">
-            <p className="m-0 text-[13px] font-bold text-safran">L'asso</p>
+            <p className="m-0 text-[13px] font-bold text-ciel">L'asso</p>
             <ul className="m-0 mt-3 flex list-none flex-col gap-2 p-0 text-[14px]">
               <li><a href="#asso" className="text-white/75 no-underline hover:text-white">Qui sommes-nous</a></li>
               <li><a href="#actions" className="text-white/75 no-underline hover:text-white">Nos actions</a></li>
@@ -616,7 +616,7 @@ export default function Site() {
             </ul>
           </nav>
           <nav aria-label="Espace membres">
-            <p className="m-0 text-[13px] font-bold text-safran">Membres</p>
+            <p className="m-0 text-[13px] font-bold text-ciel">Membres</p>
             <ul className="m-0 mt-3 flex list-none flex-col gap-2 p-0 text-[14px]">
               <li><Link to="/connexion" className="text-white/75 no-underline hover:text-white">Se connecter</Link></li>
               <li><Link to="/inscription" className="text-white/75 no-underline hover:text-white">Créer un compte</Link></li>

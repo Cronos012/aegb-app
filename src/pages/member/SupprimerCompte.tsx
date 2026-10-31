@@ -16,7 +16,7 @@ const KEPT = ['Tes messages déjà envoyés, signés « Ancien membre »', 'Tes 
 
 function List({ title, items, gone }: { title: string; items: string[]; gone: boolean }) {
   return (
-    <section className="rounded-[22px] bg-surface px-4 py-4 shadow-[0_4px_14px_rgba(18,24,61,0.06)]">
+    <section className="rounded-[12px] bg-surface px-4 py-4 shadow-[0_4px_14px_rgba(18,24,61,0.06)]">
       <h2 className={`m-0 text-[13px] font-extrabold tracking-[0.06em] uppercase ${gone ? 'text-danger' : 'text-ink/80'}`}>{title}</h2>
       <ul className="m-0 mt-2 flex list-none flex-col gap-2 p-0">
         {items.map((i) => (
@@ -79,7 +79,7 @@ export function SupprimerCompte() {
         <List title="Ce qui reste" items={KEPT} gone={false} />
 
         {me.role ? (
-          <div className="flex items-start gap-3 rounded-[22px] bg-safran-pale px-4 py-4 text-[15px] leading-[1.5] text-[#3D2A00]">
+          <div className="flex items-start gap-3 rounded-[12px] bg-safran-pale px-4 py-4 text-[15px] leading-[1.5] text-[#3D2A00]">
             <Briefcase className="mt-0.5 size-5 shrink-0" />
             <span>
               Tu as le poste <strong>{me.role.label}</strong> au bureau. Quitte d’abord ton poste : la présidence nomme une autre personne, puis tu pourras supprimer ton compte.

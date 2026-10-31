@@ -48,7 +48,7 @@ export function VerifierEmail() {
                 <Mail className="size-12" strokeWidth={1.8} />
               </div>
             </div>
-            <span className="absolute top-2 -right-1 grid size-10 place-items-center rounded-full border-4 border-surface bg-safran text-nuit">
+            <span className="absolute top-2 -right-1 grid size-10 place-items-center rounded-full border-4 border-surface bg-safran text-white">
               <Send className="size-4" />
             </span>
           </div>

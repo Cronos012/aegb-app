@@ -1,11 +1,11 @@
 import { NavLink } from 'react-router'
-import { Briefcase, CreditCard, House, MessageSquare, User, type LucideIcon } from 'lucide-react'
+import { NavIcon, type NavIconName } from '../components/NavIcons'
 import { useMyDues } from '../lib/dues'
 import { useBureauBadge } from '../lib/feed'
 import { useUnreadConversations } from '../lib/messages'
 import { isBureau, useMe } from '../lib/queries'
 
-type Item = { to: string; label: string; icon: LucideIcon; badge?: number | null; alert?: string | null }
+type Item = { to: string; label: string; icon: NavIconName; badge?: number | null; alert?: string | null }
 
 export function BottomNav() {
   const me = useMe().data
@@ -14,33 +14,34 @@ export function BottomNav() {
   const unread = useUnreadConversations()
   const late = useMyDues(me?.profile.status === 'actif').data?.status === 'retard'
   const items: Item[] = [
-    { to: '/app/fil', label: 'Fil', icon: House },
-    { to: '/app/messages', label: 'Messages', icon: MessageSquare, badge: unread },
-    { to: '/app/cotisation', label: 'Cotisation', icon: CreditCard, alert: late ? 'en retard' : null },
-    { to: '/app/profil', label: 'Profil', icon: User },
+    { to: '/app/fil', label: 'Accueil', icon: 'accueil' },
+    { to: '/app/messages', label: 'Messages', icon: 'messages', badge: unread },
+    { to: '/app/cotisation', label: 'Cotisation', icon: 'cotisation', alert: late ? 'en retard' : null },
+    { to: '/app/profil', label: 'Profil', icon: 'profil' },
   ]
-  if (bureau) items.push({ to: '/bureau', label: 'Bureau', icon: Briefcase, badge })
+  if (bureau) items.push({ to: '/bureau', label: 'Bureau', icon: 'bureau', badge })
 
   return (
     <nav
       aria-label="Navigation principale"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-line-soft bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-line-soft bg-surface pb-[env(safe-area-inset-bottom)] lg:hidden"
     >
       <ul className="m-0 grid list-none p-0" style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}>
-        {items.map(({ to, label, icon: Icon, badge, alert }) => (
+        {items.map(({ to, label, icon, badge, alert }) => (
           <li key={to}>
             <NavLink
               to={to}
               className={({ isActive }) =>
-                `relative flex h-[66px] flex-col items-center justify-center gap-1 text-[11px] font-semibold no-underline ${isActive ? 'text-primary' : 'text-muted'}`
+                `relative flex h-[62px] flex-col items-center justify-center gap-[3px] text-[11.5px] font-semibold no-underline ${isActive ? 'text-primary' : 'text-muted'}`
               }
             >
               {({ isActive }) => (
                 <>
+                  {isActive ? <span className="absolute inset-x-[18%] top-0 h-[3px] rounded-b-[3px] bg-primary" aria-hidden="true" /> : null}
                   <span className="relative">
-                    <Icon className="size-6" strokeWidth={isActive ? 2.2 : 1.8} aria-hidden="true" />
+                    <NavIcon name={icon} size={26} mono />
                     {badge ? (
-                      <span className="absolute -top-1.5 -right-2.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-safran px-1 text-[10px] font-extrabold text-nuit">
+                      <span className="absolute -top-1.5 -right-2.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-badge px-1 text-[11px] font-bold text-white ring-2 ring-surface">
                         {badge}
                       </span>
                     ) : null}
@@ -48,7 +49,6 @@ export function BottomNav() {
                   </span>
                   {label}
                   {alert ? <span className="sr-only">, {alert}</span> : null}
-                  <span className={`size-1 rounded-full ${isActive ? 'bg-safran' : 'bg-transparent'}`} aria-hidden="true" />
                 </>
               )}
             </NavLink>

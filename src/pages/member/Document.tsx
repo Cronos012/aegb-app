@@ -40,7 +40,7 @@ function Preview({ d, desktop }: { d: Doc; desktop: boolean }) {
 
   if (!previewable) {
     return (
-      <div className="flex flex-col items-center gap-3 rounded-[18px] bg-surface px-6 py-8 text-center shadow-[0_2px_4px_rgba(18,22,43,0.08),0_14px_34px_rgba(18,22,43,0.14)]">
+      <div className="flex flex-col items-center gap-3 rounded-[12px] bg-surface px-6 py-8 text-center shadow-[0_2px_4px_rgba(18,22,43,0.08),0_14px_34px_rgba(18,22,43,0.14)]">
         <DocIcon kind={kind} width={64} height={78} />
         <p className="m-0 text-[15px] font-bold">{d.title}</p>
         <p className="m-0 text-[13px] text-muted">{d.assembly_id && !d.file ? 'Le procès-verbal se fabrique quand tu l’ouvres.' : 'Ouvre-le pour le lire en entier.'}</p>
@@ -50,7 +50,7 @@ function Preview({ d, desktop }: { d: Doc; desktop: boolean }) {
   if (error) return <ErrorNote error="L’aperçu n’a pas pu s’ouvrir. Tu peux télécharger le document." />
   if (!url) {
     return (
-      <div className="grid h-[420px] place-items-center rounded-[18px] bg-surface">
+      <div className="grid h-[420px] place-items-center rounded-[12px] bg-surface">
         <Spinner />
       </div>
     )
@@ -67,7 +67,7 @@ function Versions({ d }: { d: Doc }) {
   const old = (d.versions ?? []).slice(1)
   if (!old.length) return null
   return (
-    <section className="flex flex-col gap-2 rounded-[18px] bg-surface px-4 py-3.5">
+    <section className="flex flex-col gap-2 rounded-[12px] bg-surface px-4 py-3.5">
       <h2 className="m-0 flex items-center gap-1.5 text-[14px] font-extrabold">
         <Lock className="size-3.5" /> Anciennes versions, pour le bureau
       </h2>
@@ -113,7 +113,7 @@ export function Document() {
   const d = q.data?.documents.find((x) => x.id === id)
   if (!d) {
     return (
-      <div className="flex flex-1 flex-col gap-4 bg-surface px-5 pt-[max(env(safe-area-inset-top),24px)] lg:mx-auto lg:my-10 lg:w-full lg:max-w-[560px] lg:flex-none lg:rounded-[22px] lg:pb-6">
+      <div className="flex flex-1 flex-col gap-4 bg-surface px-5 pt-[max(env(safe-area-inset-top),24px)] lg:mx-auto lg:my-10 lg:w-full lg:max-w-[560px] lg:flex-none lg:rounded-[12px] lg:pb-6">
         <ErrorNote error={q.error ?? 'Ce document n’existe plus, ou il est réservé au bureau.'} />
         <ButtonLink to="/app/documents" variant="outline">
           Retour aux documents
@@ -155,7 +155,7 @@ export function Document() {
   }
 
   const meta = (
-    <section className="flex flex-col gap-[9px] rounded-[18px] bg-surface px-4 py-3.5">
+    <section className="flex flex-col gap-[9px] rounded-[12px] bg-surface px-4 py-3.5">
       <div className="flex items-center gap-3">
         <DocIcon kind={docKind(d.file)} width={34} height={42} />
         <span className="flex min-w-0 flex-col gap-px">

@@ -72,7 +72,7 @@ export function Annuaire() {
         <Chips label="Filtrer" options={filters} value={filter} onChange={setFilter} />
         <ErrorNote error={directory.error} />
         {shown.length ? (
-          <ul className="m-0 list-none divide-y divide-line-soft overflow-hidden rounded-[22px] bg-surface p-0">
+          <ul className="m-0 list-none divide-y divide-line-soft overflow-hidden rounded-[12px] bg-surface p-0">
             {shown.map((m) => (
               <li key={m.id}>
                 <MemberRow m={m} />
@@ -80,7 +80,7 @@ export function Annuaire() {
             ))}
           </ul>
         ) : (
-          <div className="rounded-[22px] bg-surface">
+          <div className="rounded-[12px] bg-surface">
             <EmptyState title="Personne ne correspond" icon={<Users className="size-6" />}>
               Essaie un autre nom, une autre ville ou une autre école.
             </EmptyState>

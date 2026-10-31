@@ -94,7 +94,7 @@ function Receipts({ payments }: { payments: Payment[] }) {
   const done = payments.filter((p) => p.receipt_number)
   const paid = payments.filter((p) => p.status === 'confirme').reduce((sum, p) => sum + p.amount_cents, 0)
   return (
-    <section className="flex flex-col gap-3 rounded-[22px] bg-surface p-5">
+    <section className="flex flex-col gap-3 rounded-[12px] bg-surface p-5">
       <div className="flex items-baseline justify-between">
         <h2 className="m-0 text-base font-extrabold">Quittances</h2>
         <span className="text-[13px] text-muted">Payé en tout : {euros(paid)}</span>
@@ -137,7 +137,7 @@ function Why() {
     { icon: <ShieldCheck className="size-5" />, text: "Une asso qui accueille, oriente et accompagne les nouveaux étudiants" },
   ]
   return (
-    <section className="flex flex-col gap-3 rounded-[22px] bg-surface p-5">
+    <section className="flex flex-col gap-3 rounded-[12px] bg-surface p-5">
       <h2 className="m-0 text-base font-extrabold">Pourquoi cotiser ?</h2>
       <ul className="m-0 flex list-none flex-col gap-3 p-0">
         {items.map((i) => (
@@ -181,7 +181,7 @@ export function Cotisation() {
           </p>
         </div>
         <div className="grid grid-cols-[minmax(0,1fr)_340px] items-start gap-6">
-          <section className="overflow-hidden rounded-[26px] bg-surface">
+          <section className="overflow-hidden rounded-[12px] bg-surface">
             <div className="bg-tisse px-6 py-5 text-white">
               <StatusBox state={s} extra={s.paying && s.votes && summary.tone === 'ok' ? 'droit de vote actif' : undefined} />
             </div>
@@ -228,7 +228,7 @@ export function Cotisation() {
             Une difficulté pour payer ? Écris au bureau dans la <Link to="/app/messages">conversation AEGB</Link>, on trouvera une solution.
           </p>
         ) : null}
-        <div className="overflow-hidden rounded-[18px] border-[1.5px] border-line-soft">
+        <div className="overflow-hidden rounded-[12px] border-[1.5px] border-line-soft">
           <Row to="/app/cotisation/historique" icon={<FileText className="size-[22px]" />} tone="bg-select text-link" title="Historique et quittances" detail={historyLine(payments.data)} />
           {s.paying && s.votes && s.status !== 'pas_encore' ? (
             <div className="border-t border-line-soft">

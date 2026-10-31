@@ -48,15 +48,15 @@ export function ElectionsCard() {
     }
   }
   return (
-    <Link to="/bureau/elections" className="flex items-center gap-3.5 rounded-[22px] bg-surface p-4 text-ink no-underline hover:ring-2 hover:ring-line">
-      <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-safran-pale text-[#6B4A00]">
+    <Link to="/bureau/elections" className="flex items-center gap-3.5 rounded-[12px] bg-surface p-4 text-ink no-underline hover:ring-2 hover:ring-line">
+      <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-safran-pale text-[#163F93]">
         <SquareCheckBig className="size-6" />
       </span>
       <span className="min-w-0 flex-1">
         <span className="block text-[16px] font-bold">{title}</span>
         <span className="block truncate text-[13px] text-muted">{detail}</span>
       </span>
-      {badge ? <span className="grid size-8 place-items-center rounded-full bg-safran text-sm font-extrabold text-nuit">{badge}</span> : <ChevronRight className="size-5 text-muted" />}
+      {badge ? <span className="grid size-8 place-items-center rounded-full bg-safran text-sm font-extrabold text-white">{badge}</span> : <ChevronRight className="size-5 text-muted" />}
     </Link>
   )
 }

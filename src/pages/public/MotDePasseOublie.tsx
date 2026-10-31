@@ -28,7 +28,7 @@ export function MotDePasseOublie() {
 
   return (
     <div className="flex min-h-dvh justify-center bg-page lg:items-center lg:py-10">
-      <div className="flex w-full max-w-[480px] flex-col bg-surface px-5 pt-[max(env(safe-area-inset-top),8px)] pb-[max(env(safe-area-inset-bottom),24px)] lg:rounded-[26px] lg:px-10 lg:py-10 lg:shadow-sm">
+      <div className="flex w-full max-w-[480px] flex-col bg-surface px-5 pt-[max(env(safe-area-inset-top),8px)] pb-[max(env(safe-area-inset-bottom),24px)] lg:rounded-[12px] lg:px-10 lg:py-10 lg:shadow-sm">
         <div className="min-h-11">
           <BackLink to="/connexion" light={false} />
         </div>
@@ -49,7 +49,7 @@ export function MotDePasseOublie() {
           </div>
         ) : (
           <form onSubmit={submit} className="flex flex-1 flex-col" noValidate>
-            <span className="mt-6 grid size-[60px] place-items-center rounded-2xl bg-leppi text-safran">
+            <span className="mt-6 grid size-[60px] place-items-center rounded-2xl bg-leppi text-ciel">
               <KeyRound className="size-7" />
             </span>
             <h1 className="titre mt-6 mb-0 text-[30px] leading-tight">Mot de passe oublié ?</h1>

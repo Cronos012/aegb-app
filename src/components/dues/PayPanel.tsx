@@ -61,7 +61,7 @@ export function PayPanel({ state, footerClass = '' }: { state: DuesState; footer
       <MonthLegend items={legendFor(state.months, true)} />
       {earlier.length ? <Note tone="warn">Le paiement comprend aussi {monthsLabel(earlier).toLowerCase()}, de l'année précédente.</Note> : null}
 
-      <div className="flex flex-col gap-2.5 rounded-[18px] bg-surface-2 p-4">
+      <div className="flex flex-col gap-2.5 rounded-[12px] bg-surface-2 p-4">
         <div className="flex justify-between gap-3 text-[15px]">
           <span>{chosen.length ? monthsLabel(chosen) : 'Aucun mois choisi'}</span>
           <span className="shrink-0 text-muted">
@@ -87,7 +87,7 @@ export function PayPanel({ state, footerClass = '' }: { state: DuesState; footer
       {notReady ? (
         <Note tone="warn">Le paiement par carte n'est pas encore branché. En attendant, tu peux régler en espèces, par virement ou par chèque auprès de la trésorerie.</Note>
       ) : (
-        <div className="flex gap-2.5 rounded-[14px] bg-safran-pale px-3.5 py-3 text-[13px] leading-[1.45] text-[#5C4300]">
+        <div className="flex gap-2.5 rounded-[14px] bg-safran-pale px-3.5 py-3 text-[13px] leading-[1.45] text-[#163F93]">
           <Info className="mt-px size-[18px] shrink-0" />
           <span>HelloAsso te proposera un pourboire pour leur service. Il est facultatif : tu peux le mettre à 0 €.</span>
         </div>

@@ -98,10 +98,10 @@ export default function Pointage() {
 
   return (
     <div className="flex flex-1 flex-col bg-page lg:mx-auto lg:w-full lg:max-w-[560px]">
-      <header className="bg-tisse flex shrink-0 flex-col gap-2 px-5 pt-[max(env(safe-area-inset-top),8px)] pb-10 text-white lg:rounded-t-[26px]">
+      <header className="bg-tisse flex shrink-0 flex-col gap-2 px-5 pt-[max(env(safe-area-inset-top),8px)] pb-10 text-white lg:rounded-t-[12px]">
         <div className="flex items-center justify-between">
           <BackLink to={`/bureau/evenements/${e.id}`} label="Retour à l’événement" />
-          <span className="flex h-6 items-center gap-1 rounded-full bg-safran px-2.5 text-[11px] font-extrabold tracking-[0.5px] text-nuit uppercase">
+          <span className="flex h-6 items-center gap-1 rounded-full bg-white px-2.5 text-[11px] font-extrabold tracking-[0.5px] text-leppi uppercase">
             <Briefcase className="size-3" strokeWidth={2.4} /> Bureau
           </span>
         </div>
@@ -113,7 +113,7 @@ export default function Pointage() {
       </header>
 
       <div className="relative -mt-[26px] flex flex-1 flex-col gap-2.5 px-4 pb-2.5">
-        <div className="flex flex-col gap-2.5 rounded-[20px] bg-surface px-4 py-3.5 shadow-[0_1px_2px_rgba(18,22,43,0.06),0_6px_18px_rgba(18,22,43,0.06)]">
+        <div className="flex flex-col gap-2.5 rounded-[12px] bg-surface px-4 py-3.5 shadow-[0_1px_2px_rgba(18,22,43,0.06),0_6px_18px_rgba(18,22,43,0.06)]">
           <div className="flex items-baseline gap-2">
             <span className="titre text-[40px] leading-none" aria-live="polite">
               {present}
@@ -141,7 +141,7 @@ export default function Pointage() {
         <SearchField value={query} onChange={setQuery} placeholder="Chercher un nom" label="Chercher un nom" className="h-11 border-line-soft" />
 
         {rows.length ? (
-          <ul className="m-0 flex list-none flex-col overflow-hidden rounded-[20px] bg-surface p-0 shadow-[0_1px_2px_rgba(18,22,43,0.06),0_6px_18px_rgba(18,22,43,0.06)]">
+          <ul className="m-0 flex list-none flex-col overflow-hidden rounded-[12px] bg-surface p-0 shadow-[0_1px_2px_rgba(18,22,43,0.06),0_6px_18px_rgba(18,22,43,0.06)]">
             {rows.map((p) => {
               const pay = payLine(e, p)
               return (
@@ -163,7 +163,7 @@ export default function Pointage() {
                           { onSuccess: () => toast(`${euros(e.member_price_cents)} encaissés, notés au journal.`), onError: (err) => toast(errorMessage(err), 'error') },
                         )
                       }
-                      className="h-[34px] shrink-0 rounded-[10px] bg-safran-pale px-3 text-[13px] font-extrabold text-[#4A3A00] disabled:opacity-60"
+                      className="h-[34px] shrink-0 rounded-[10px] bg-safran-pale px-3 text-[13px] font-extrabold text-[#163F93] disabled:opacity-60"
                     >
                       Encaisser
                     </button>
@@ -183,7 +183,7 @@ export default function Pointage() {
             })}
           </ul>
         ) : (
-          <div className="rounded-[20px] bg-surface">
+          <div className="rounded-[12px] bg-surface">
             <EmptyState title={query ? 'Personne à ce nom' : 'Personne d’inscrit'} />
           </div>
         )}

@@ -76,14 +76,14 @@ export function EvenementPaiement() {
   const shown: View = view === 'attente' && abandoned ? 'echec' : view
   const back = `/app/evenements/${p.event}`
   const head = {
-    verif: { icon: <Hourglass className="size-8" />, box: 'bg-safran-pale text-[#6B4A00]', title: 'Paiement en cours de confirmation', text: 'HelloAsso nous confirme ton paiement. Ça prend quelques secondes, tu peux rester sur cette page.' },
-    attente: { icon: <Hourglass className="size-8" />, box: 'bg-safran-pale text-[#6B4A00]', title: 'Paiement en cours de confirmation', text: 'HelloAsso nous confirme ton paiement. Ça prend quelques secondes, tu peux rester sur cette page.' },
+    verif: { icon: <Hourglass className="size-8" />, box: 'bg-safran-pale text-[#163F93]', title: 'Paiement en cours de confirmation', text: 'HelloAsso nous confirme ton paiement. Ça prend quelques secondes, tu peux rester sur cette page.' },
+    attente: { icon: <Hourglass className="size-8" />, box: 'bg-safran-pale text-[#163F93]', title: 'Paiement en cours de confirmation', text: 'HelloAsso nous confirme ton paiement. Ça prend quelques secondes, tu peux rester sur cette page.' },
     echec: { icon: <X className="size-8" strokeWidth={2.6} />, box: 'bg-danger-soft text-danger', title: 'Paiement non terminé', text: 'Rien n’a été débité. Ta place reste à toi : tu peux réessayer, ou payer à l’entrée si c’est possible.' },
     confirme: { icon: <Check className="size-9" strokeWidth={3} />, box: 'bg-gn-vert text-white', title: frenchSpaces(`Merci ${me?.profile.first_name ?? ''} !`), text: 'Ta place est payée. Le reçu est dans ta conversation AEGB.' },
   }[shown]
 
   return (
-    <div className="flex flex-1 flex-col bg-surface lg:mx-auto lg:my-10 lg:w-full lg:max-w-[480px] lg:flex-none lg:rounded-[26px]">
+    <div className="flex flex-1 flex-col bg-surface lg:mx-auto lg:my-10 lg:w-full lg:max-w-[480px] lg:flex-none lg:rounded-[12px]">
       <div className="flex flex-1 flex-col gap-6 px-5 pt-[max(env(safe-area-inset-top),40px)] pb-6 lg:pt-10">
         <div className="flex flex-col items-center gap-4 text-center">
           <span className={`grid size-[76px] place-items-center rounded-full ${head.box} ${shown === 'verif' || shown === 'attente' ? 'animate-pulse' : ''}`} aria-hidden="true">
@@ -96,7 +96,7 @@ export function EvenementPaiement() {
           <p className="m-0 max-w-[340px] text-[15px] leading-[1.5] text-muted">{head.text}</p>
         </div>
 
-        <div className="flex items-center gap-3 rounded-[18px] bg-surface-2 p-4">
+        <div className="flex items-center gap-3 rounded-[12px] bg-surface-2 p-4">
           <span className="flex min-w-0 flex-1 flex-col gap-0.5">
             <span className="truncate text-[15px] font-bold">{p.title}</span>
             <span className="text-[13px] text-muted">{shown === 'confirme' ? 'Ta place · carte bancaire' : shown === 'echec' ? 'Ta place · carte bancaire' : 'En attente de HelloAsso'}</span>
