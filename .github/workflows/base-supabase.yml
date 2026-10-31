@@ -5,6 +5,10 @@
 #   SUPABASE_ACCESS_TOKEN : un jeton d'accès Supabase (Account → Access Tokens)
 #   SUPABASE_DB_PASSWORD  : le mot de passe de la base du projet
 # Sans eux, il ne fait rien et le dit.
+# Il règle aussi les limites de connexion de Supabase (supabase/limites-connexion.json) :
+# le jour de l'AG, toute une salle se connecte depuis le même wifi, donc la même
+# adresse internet, et la limite d'origine (30 d'un coup, puis 30 par minute)
+# bloquerait les suivants.
 # Pour le paiement par carte, il pose aussi les identifiants HelloAsso s'ils
 # sont dans les secrets : HELLOASSO_CLIENT_ID, HELLOASSO_CLIENT_SECRET,
 # HELLOASSO_ORG et, pour les vrais paiements, HELLOASSO_ENV = production.
@@ -17,6 +21,7 @@ on:
       - 'supabase/migrations/**'
       - 'supabase/functions/**'
       - 'supabase/config.toml'
+      - 'supabase/limites-connexion.json'
       - '.github/workflows/base-supabase.yml'
   workflow_dispatch:
 
@@ -79,6 +84,26 @@ jobs:
       - name: Vérifier que la base et les fichiers sont alignés
         if: steps.secrets.outputs.pret == 'oui'
         run: supabase migration list --linked
+
+      - name: Limites de connexion
+        if: steps.secrets.outputs.pret == 'oui'
+        run: |
+          api="https://api.supabase.com/v1/projects/$PROJECT_REF/config/auth"
+          # Seules les limites s'affichent : le reste des réglages contient des secrets.
+          limites() {
+            curl -fsS "$api" -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+              | jq -S 'with_entries(select(.key | startswith("rate_limit_")))'
+          }
+          echo "Avant :"; limites
+          reponse="$(mktemp)"
+          if ! curl -sS --fail-with-body -o "$reponse" -X PATCH "$api" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H "Content-Type: application/json" \
+            --data @supabase/limites-connexion.json; then
+            # En cas de refus, la réponse ne contient que le motif.
+            cat "$reponse"; rm -f "$reponse"; exit 1
+          fi
+          rm -f "$reponse"
+          echo "Après :"; limites
 
       - name: Brancher HelloAsso
         if: steps.secrets.outputs.pret == 'oui' && steps.secrets.outputs.helloasso == 'oui'

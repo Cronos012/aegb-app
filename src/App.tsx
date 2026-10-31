@@ -8,11 +8,13 @@ import { MemberLayout } from './layouts/MemberLayout'
 import { useIsDesktop } from './lib/media'
 import { Annuaire } from './pages/member/Annuaire'
 import { Bientot } from './pages/member/Bientot'
+import { Candidature } from './pages/member/Candidature'
 import { Conversation } from './pages/member/Conversation'
 import { Cotisation } from './pages/member/Cotisation'
 import { Fil } from './pages/member/Fil'
 import { Historique } from './pages/member/Historique'
 import { InfosGroupe } from './pages/member/InfosGroupe'
+import { Isoloir } from './pages/member/Isoloir'
 import { MembreProfil } from './pages/member/MembreProfil'
 import { Menu } from './pages/member/Menu'
 import { Messages } from './pages/member/Messages'
@@ -25,6 +27,7 @@ import { Publication } from './pages/member/Publication'
 import { Publier } from './pages/member/Publier'
 import { Quittance } from './pages/member/Quittance'
 import { Recherche } from './pages/member/Recherche'
+import { Votes } from './pages/member/Votes'
 import { Accueil } from './pages/public/Accueil'
 import { AuthRetour } from './pages/public/AuthRetour'
 import { Charte } from './pages/public/Charte'
@@ -49,6 +52,7 @@ const Cotisations = lazy(() => import('./pages/bureau/Cotisations'))
 const Encaisser = lazy(() => import('./pages/bureau/Encaisser'))
 const ReglagesCotisation = lazy(() => import('./pages/bureau/ReglagesCotisation'))
 const JournalFinancier = lazy(() => import('./pages/bureau/JournalFinancier'))
+const Elections = lazy(() => import('./pages/bureau/Elections'))
 
 /** Sur téléphone, l'accueil de l'appli ; sur ordinateur, le site de l'association. */
 function Home() {
@@ -94,7 +98,9 @@ export function App() {
             <Route path="cotisation/historique" element={<Historique />} />
             <Route path="cotisation/quittances/:numero" element={<Quittance />} />
             <Route path="evenements" element={<Bientot page="evenements" />} />
-            <Route path="votes" element={<Bientot page="votes" />} />
+            <Route path="votes" element={<Votes />} />
+            <Route path="votes/candidature" element={<Candidature />} />
+            <Route path="votes/isoloir" element={<Isoloir />} />
             <Route path="documents" element={<Bientot page="documents" />} />
             <Route path="profil" element={<Profil />} />
             <Route path="profil/modifier" element={<ModifierProfil />} />
@@ -118,6 +124,9 @@ export function App() {
               </Route>
               <Route element={<ScreenGate screen="annonces" />}>
                 <Route path="annonces" element={<Suspense fallback={<PageLoader />}><Annonces /></Suspense>} />
+              </Route>
+              <Route element={<ScreenGate screen="elections" />}>
+                <Route path="elections" element={<Suspense fallback={<PageLoader />}><Elections /></Suspense>} />
               </Route>
               <Route element={<ScreenGate screen="moderation" />}>
                 <Route path="moderation" element={<Suspense fallback={<PageLoader />}><Moderation /></Suspense>} />

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link } from 'react-router'
-import { Ban, BellRing, ChevronDown, CircleCheck, CircleX, EyeOff, Lock, Pause, Play, Sparkles, UserPlus } from 'lucide-react'
+import { Ban, BellRing, CalendarDays, ChevronDown, CircleCheck, CircleX, EyeOff, Lock, MapPin, Megaphone, Pause, Play, Sparkles, UserPlus, Vote } from 'lucide-react'
+import { capitalize, dayMonth, dayYear, hour } from '../../lib/elections'
 import { REACTION, usePost } from '../../lib/feed'
 import { clock, duration, fileBadge, fileSize, type MessageFile, type MessageRow } from '../../lib/messages'
 import { frenchSpaces } from '../../lib/format'
@@ -455,7 +456,7 @@ const DUES_CARDS = {
 
 /** Les cartes de cotisation du compte AEGB : rappel, paiement reçu, paiement annulé. */
 export function DuesCard({ m, staffView }: { m: MessageRow; staffView: boolean }) {
-  const kind = DUES_CARDS[m.meta.type ?? 'recu'] ?? DUES_CARDS.recu
+  const kind = DUES_CARDS[(m.meta.type ?? 'recu') as keyof typeof DUES_CARDS] ?? DUES_CARDS.recu
   const amount = m.meta.amount_cents != null ? new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(m.meta.amount_cents / 100) : null
   return (
     <div className={`mt-2.5 flex flex-col gap-1.5 ${staffView ? 'items-end pl-10' : 'items-start pr-10'}`}>
@@ -482,6 +483,90 @@ export function DuesCard({ m, staffView }: { m: MessageRow; staffView: boolean }
         <span className="block text-right text-[11px] text-muted">{clock(m.created_at)}</span>
       </div>
       {m.meta.type === 'relance' && !staffView ? <p className="m-0 max-w-[340px] text-[12px] text-muted">Une difficulté pour payer ? Réponds ici, le bureau te répondra.</p> : null}
+    </div>
+  )
+}
+
+const ASSEMBLY_CARDS = {
+  convocation: { title: 'Convocation à l’AG', icon: <Megaphone className="size-5" />, tone: 'text-ink' },
+  seconde: { title: 'Convocation à la seconde AG', icon: <Megaphone className="size-5" />, tone: 'text-ink' },
+  ouverture: { title: 'Le vote est ouvert', icon: <Vote className="size-5" />, tone: 'text-ok' },
+  second_tour: { title: 'Second tour ouvert', icon: <Vote className="size-5" />, tone: 'text-ok' },
+  relance: { title: 'Tu n’as pas encore voté', icon: <BellRing className="size-5" />, tone: 'text-[#6B4A00]' },
+  annulation: { title: 'AG annulée', icon: <CircleX className="size-5" />, tone: 'text-danger' },
+  candidature_validee: { title: 'Candidature validée', icon: <CircleCheck className="size-5" />, tone: 'text-ok' },
+  candidature_refusee: { title: 'Candidature refusée', icon: <CircleX className="size-5" />, tone: 'text-danger' },
+  candidature_retiree: { title: 'Candidature retirée', icon: <CircleX className="size-5" />, tone: 'text-danger' },
+}
+
+/** Les cartes de l'assemblée générale du compte AEGB : convocation, ouverture du vote, relance, candidature… */
+export function AssemblyCard({ m, staffView }: { m: MessageRow; staffView: boolean }) {
+  const type = (m.meta.type ?? 'convocation') as keyof typeof ASSEMBLY_CARDS
+  const card = ASSEMBLY_CARDS[type] ?? ASSEMBLY_CARDS.convocation
+  const meta = m.meta
+  const convocation = (type === 'convocation' || type === 'seconde') && meta.held_at && meta.vote_opens_at && meta.vote_closes_at
+  const vote = type === 'ouverture' || type === 'second_tour' || type === 'relance'
+  return (
+    <div className={`mt-2.5 flex flex-col gap-1.5 ${staffView ? 'items-end pl-10' : 'items-start pr-10'}`}>
+      <div className={`flex w-full max-w-[400px] flex-col gap-3 rounded-[18px] bg-surface px-4 py-3.5 shadow-[0_1px_1px_rgba(18,22,43,0.06)] ${staffView ? 'rounded-br-[6px]' : 'rounded-bl-[6px]'}`}>
+        <span className={`flex items-center gap-2 text-[17px] font-extrabold ${card.tone}`}>
+          {card.icon}
+          {frenchSpaces(card.title)}
+        </span>
+        {convocation ? (
+          <>
+            <p className="m-0 text-[15px] leading-[1.5]">
+              Bonjour {meta.first_name ? <strong>{meta.first_name}</strong> : null}
+              {type === 'seconde'
+                ? frenchSpaces(`, la première AG n’a pas réuni assez de votants. Le bureau te convoque à une seconde assemblée générale ${meta.kind ?? ''}, avec le même ordre du jour.`)
+                : frenchSpaces(`, le bureau te convoque à l’assemblée générale ${meta.kind ?? ''} de l’AEGB.`)}
+            </p>
+            <div className="flex flex-col gap-2 rounded-[14px] bg-surface-2 px-3.5 py-3 text-[15px]">
+              <span className="flex items-start gap-2.5">
+                <CalendarDays className="mt-0.5 size-[18px] shrink-0" />
+                <strong>
+                  {capitalize(dayYear(meta.held_at!))}, {hour(meta.held_at!)}
+                </strong>
+              </span>
+              {meta.place ? (
+                <span className="flex items-start gap-2.5">
+                  <MapPin className="mt-0.5 size-[18px] shrink-0" />
+                  {meta.place}
+                </span>
+              ) : null}
+              <span className="flex items-start gap-2.5">
+                <Vote className="mt-0.5 size-[18px] shrink-0" />
+                Vote dans l’appli de {hour(meta.vote_opens_at!)} à {hour(meta.vote_closes_at!)}, en salle ou à distance
+              </span>
+            </div>
+            {meta.items?.length ? (
+              <div className="flex flex-col gap-1">
+                <strong className="text-[15px]">Ordre du jour</strong>
+                <ol className="m-0 flex list-decimal flex-col gap-0.5 pl-6 text-[15px] leading-[1.45]">
+                  {meta.items.map((item, i) => (
+                    <li key={i}>{item}</li>
+                  ))}
+                </ol>
+              </div>
+            ) : null}
+            {meta.candidacy_until && type === 'convocation' ? (
+              <p className="m-0 text-sm text-muted">Candidatures au bureau jusqu’au {dayMonth(meta.candidacy_until)}, dans l’appli.</p>
+            ) : null}
+          </>
+        ) : (
+          <p className="m-0 text-[15px] leading-[1.5]">{frenchSpaces(m.body ?? '')}</p>
+        )}
+        {staffView ? null : vote ? (
+          <Link to="/app/votes/isoloir" className="flex h-12 items-center justify-center gap-2 rounded-[14px] bg-safran text-[16px] font-extrabold text-nuit no-underline hover:brightness-105">
+            <Vote className="size-5" /> Voter
+          </Link>
+        ) : type !== 'annulation' ? (
+          <Link to="/app/votes" className="flex h-11 items-center justify-center rounded-[14px] bg-primary text-[15px] font-bold text-primary-ink no-underline">
+            Voir l’assemblée générale
+          </Link>
+        ) : null}
+        <span className="block text-right text-[11px] text-muted">{clock(m.created_at)}</span>
+      </div>
     </div>
   )
 }

@@ -1466,6 +1466,10 @@ export type Database = {
         }
         Returns: number
       }
+      add_paper_candidacy: {
+        Args: { p_assembly: string; p_member: string; p_role: string; p_statement: string }
+        Returns: string
+      }
       aegb_inbox: {
         Args: never
         Returns: {
@@ -1496,6 +1500,8 @@ export type Database = {
           written_by_name: string
         }[]
       }
+      assembly_admin: { Args: { p_id?: string }; Returns: Json }
+      assembly_view: { Args: { p_id?: string }; Returns: Json }
       assign_role: {
         Args: { p_member: string; p_role: string }
         Returns: undefined
@@ -1531,9 +1537,24 @@ export type Database = {
         }
         Returns: boolean
       }
+      cancel_assembly: { Args: { p_id: string; p_reason?: string }; Returns: undefined }
+      cast_vote: { Args: { p_ballot: string; p_choices: Json }; Returns: string }
+      clear_elections: { Args: never; Returns: number }
       clear_finances: { Args: never; Returns: number }
       clear_journal: { Args: never; Returns: number }
       clear_role: { Args: { p_role: string }; Returns: undefined }
+      close_vote: { Args: { p_ballot: string }; Returns: string }
+      confirm_handover: { Args: { p_assembly: string }; Returns: number }
+      convene_second_assembly: {
+        Args: {
+          p_first: string
+          p_held_at: string
+          p_place: string
+          p_vote_closes_at: string
+          p_vote_opens_at: string
+        }
+        Returns: string
+      }
       conversation_info: { Args: { p_conversation: string }; Returns: Json }
       conversation_messages: {
         Args: { p_before?: string; p_conversation: string; p_limit?: number }
@@ -1565,6 +1586,10 @@ export type Database = {
       }
       create_post: {
         Args: { p_body: string; p_id: string; p_media?: Json }
+        Returns: undefined
+      }
+      decide_candidacy: {
+        Args: { p_id: string; p_reason?: string; p_valid: boolean }
         Returns: undefined
       }
       delete_announcement: { Args: { p_id: string }; Returns: string[] }
@@ -1733,6 +1758,9 @@ export type Database = {
       }
       my_dues: { Args: never; Returns: Json }
       open_private: { Args: { p_member: string }; Returns: string }
+      open_second_round: { Args: { p_assembly: string }; Returns: string }
+      open_vote: { Args: { p_assembly: string }; Returns: string }
+      pending_handovers: { Args: never; Returns: Json }
       public_bureau: {
         Args: never
         Returns: {
@@ -1755,6 +1783,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      publish_results: { Args: { p_assembly: string }; Returns: string }
       react: {
         Args: {
           p_comment: string
@@ -1786,6 +1815,7 @@ export type Database = {
         Args: { p_member: string; p_reason: string }
         Returns: undefined
       }
+      remind_voters: { Args: { p_ballot: string }; Returns: number }
       remove_group_member: {
         Args: { p_conversation: string; p_member: string }
         Returns: undefined
@@ -1814,6 +1844,20 @@ export type Database = {
         }
         Returns: number
       }
+      save_assembly: {
+        Args: {
+          p_candidacy_until: string | null
+          p_held_at: string
+          p_id: string | null
+          p_items: Json
+          p_kind: string
+          p_mandate_start: string | null
+          p_place: string
+          p_vote_closes_at: string
+          p_vote_opens_at: string
+        }
+        Returns: string
+      }
       save_dues_settings: {
         Args: {
           p_monthly_cents: number
@@ -1829,6 +1873,7 @@ export type Database = {
         Args: { p_actions: string[]; p_announce: boolean; p_text: string }
         Returns: undefined
       }
+      send_convocation: { Args: { p_force?: boolean; p_id: string }; Returns: number }
       send_message: {
         Args: {
           p_body: string
@@ -1862,6 +1907,10 @@ export type Database = {
       }
       start_card_payment: { Args: { p_until: string }; Returns: Json }
       storage_used: { Args: never; Returns: number }
+      submit_candidacy: {
+        Args: { p_assembly: string; p_role: string; p_statement: string }
+        Returns: string
+      }
       suspend_member: {
         Args: { p_member: string; p_reason: string }
         Returns: undefined
@@ -1886,6 +1935,7 @@ export type Database = {
         Args: { p_member: string; p_reason: string }
         Returns: undefined
       }
+      withdraw_candidacy: { Args: { p_id: string }; Returns: undefined }
     }
     Enums: {
       access_level: "lecture" | "complet"

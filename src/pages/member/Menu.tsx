@@ -67,7 +67,7 @@ export function Menu() {
       <div className="relative -mt-6 flex flex-1 flex-col gap-4 rounded-t-[26px] bg-surface px-4 pt-6 pb-8 lg:rounded-b-[26px]">
         <div className="grid grid-cols-2 gap-3">
           <Tile to="/app/evenements" icon={<Calendar className="size-6" />} tone="bg-danger-soft text-danger" title="Événements" detail="Soirées, ateliers" soon />
-          <Tile to="/app/votes" icon={<SquareCheckBig className="size-6" />} tone="bg-safran-pale text-[#6B4A00]" title="Votes" detail="Élections du bureau" soon />
+          <Tile to="/app/votes" icon={<SquareCheckBig className="size-6" />} tone="bg-safran-pale text-[#6B4A00]" title="Votes" detail="AG et élections du bureau" />
           <Tile to="/app/documents" icon={<FileText className="size-6" />} tone="bg-select text-ink" title="Documents" detail="Statuts, guides" soon />
           <Tile to="/app/membres" icon={<Users className="size-6" />} tone="bg-ok-soft text-ok" title="Annuaire" detail={members ? `${members} membre${members > 1 ? 's' : ''}` : 'Les membres'} />
         </div>

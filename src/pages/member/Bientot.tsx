@@ -1,12 +1,11 @@
 import { Logo } from '../../components/Logo'
 
 const PLAN = [
-  { title: 'Votes', detail: 'Élections du bureau dans l’appli', when: 'Prochaine mise à jour', next: true },
-  { title: 'Événements et documents', detail: 'Soirées, ateliers, statuts', when: 'Ensuite' },
+  { title: 'Événements et documents', detail: 'Soirées, ateliers, statuts', when: 'Prochaine mise à jour', next: true },
+  { title: 'Notifications et appli Android', detail: 'Alertes sur le téléphone', when: 'Ensuite' },
 ]
 
 const PAGES = {
-  votes: { title: 'Votes', heading: 'Les votes arrivent bientôt', text: "Tu pourras t'inscrire sur la liste électorale et voter pour le bureau, dans l'appli." },
   evenements: { title: 'Événements', heading: 'Les événements arrivent bientôt', text: "Tu verras les soirées et les ateliers de l'AEGB, et tu pourras dire que tu participes." },
   documents: { title: 'Documents', heading: 'Les documents arrivent bientôt', text: "Tu trouveras ici les statuts, le règlement et les guides de l'association." },
 }
