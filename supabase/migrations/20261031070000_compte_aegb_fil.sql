@@ -6,6 +6,7 @@
 -- part et ne se lit qu'avec le droit « Annonces », comme pour les annonces.
 -- Une publication AEGB sans titre est une publication ordinaire : pas
 -- d'épingle, pas de notification. Les annonces ne changent pas.
+-- Un écrit AEGB ne se signale pas : on écrit au compte AEGB dans Messages.
 
 -- ---------------------------------------------------------------------------
 -- Tables
