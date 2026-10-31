@@ -2,6 +2,8 @@
 
 L'appli de l'Association des Étudiants Guinéens de Brest : un réseau privé pour les membres (fil, messages, cotisation, votes) et un mode bureau pour gérer l'association. Sur ordinateur, l'adresse principale montre aussi le site de présentation de l'asso.
 
+Pour reprendre le travail, lire d'abord `AGENTS.md` (méthode et règles).
+
 Le travail avance par lots. Le lot 1 pose le socle : comptes et inscription, validation par le bureau, profils, postes et droits du bureau, journal d'activité, site de présentation. Le lot 2 ouvre le fil d'actu : publications avec photos ou vidéo, réactions, commentaires, signalements, modération, annonces officielles du bureau, profils des membres, annuaire et recherche.
 
 ## Lancer l'appli sur son ordinateur
@@ -21,6 +23,7 @@ L'appli s'ouvre sur http://localhost:5173.
 | `npm run dev` | Lance l'appli en local |
 | `npm run build` | Vérifie les types et prépare la version en ligne dans `dist/` |
 | `npm run build:pages` | Même chose pour GitHub Pages (adresse en `/aegb-app/`) |
+| `npm run build:domaine` | Même chose pour l'adresse des essais, app.aegb.fr |
 | `npm test` | Tests des fonctions d'affichage et de mot de passe |
 | `npm run lint` | Relecture automatique du code |
 
@@ -54,7 +57,8 @@ Toute la sécurité est dans la base : chaque table a des règles d'accès (RLS)
 - Seuls les membres validés voient le fil et y publient : du texte (2 000 caractères au plus), jusqu'à 4 photos ou une vidéo seule (15 Mo). Les photos sont réduites dans le téléphone avant l'envoi et rangées dans l'espace privé `publications`, dans le dossier de leur auteur.
 - Chacun réagit une fois par publication ou commentaire (six réactions, pas de « je n'aime pas »). Les réponses aux commentaires restent sur un seul niveau.
 - Un signalement est anonyme : le bureau voit le nombre et les motifs, jamais qui a signalé. La modération garde, masque, ou masque et avertit l'auteur ; elle peut aussi masquer sans signalement. L'auteur voit toujours ce qui a été masqué, avec le motif. Chaque décision va au journal.
-- Les annonces officielles sont signées « Bureau de l'AEGB », s'adressent à tous, aux étudiants, aux alumni ou au bureau, et restent épinglées 7 jours. Elles peuvent être programmées (jusqu'à 90 jours). Le bureau des annonces voit qui les a écrites et combien de membres les ont vues.
+- Les annonces officielles sont signées « AEGB » avec la pastille Bureau, s'adressent à tous, aux étudiants, aux alumni ou au bureau, et restent épinglées 7 jours. Elles peuvent être programmées (jusqu'à 90 jours). Le bureau des annonces voit qui les a écrites et combien de membres les ont vues.
+- Ceux qui ont le droit « Annonces » peuvent aussi publier, commenter et réagir au nom de l'AEGB, depuis le fil (choix « Moi / AEGB », qui revient sur « Moi » à chaque fois). Les membres voient « AEGB » ; le bureau des annonces voit qui a écrit. Une publication AEGB sans titre ne prévient personne, et un écrit AEGB ne se signale pas.
 
 ### Les messages (lot 3)
 
