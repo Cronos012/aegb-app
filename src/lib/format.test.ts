@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { fullName, initials, longDate, shortDate, time } from './format'
+import { fullName, initials, longDate, relative, shortDate, time } from './format'
 
 describe('affichage', () => {
   it('écrit les noms et les initiales', () => {
@@ -15,5 +15,14 @@ describe('affichage', () => {
     expect(shortDate(d)).toBe('29 oct.')
     expect(longDate(d)).toBe('29 octobre 2026')
     expect(time(d)).toBe('00 h 30')
+  })
+
+  it('dit depuis quand, puis la date', () => {
+    const now = new Date('2026-10-29T15:00:00Z')
+    expect(relative('2026-10-29T14:58:00Z', now)).toBe('il y a 2 min')
+    expect(relative('2026-10-29T09:00:00Z', now)).toBe('il y a 6 h')
+    expect(relative('2026-10-28T09:00:00Z', now)).toBe('hier')
+    expect(relative('2026-10-26T09:00:00Z', now)).toBe('il y a 3 jours')
+    expect(relative('2026-10-20T09:00:00Z', now)).toBe('20 oct.')
   })
 })

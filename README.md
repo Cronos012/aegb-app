@@ -2,7 +2,7 @@
 
 L'appli de l'Association des Étudiants Guinéens de Brest : un réseau privé pour les membres (fil, messages, cotisation, votes) et un mode bureau pour gérer l'association. Sur ordinateur, l'adresse principale montre aussi le site de présentation de l'asso.
 
-Le travail avance par lots. Le lot 1 pose le socle : comptes et inscription, validation par le bureau, profils, postes et droits du bureau, journal d'activité, site de présentation.
+Le travail avance par lots. Le lot 1 pose le socle : comptes et inscription, validation par le bureau, profils, postes et droits du bureau, journal d'activité, site de présentation. Le lot 2 ouvre le fil d'actu : publications avec photos ou vidéo, réactions, commentaires, signalements, modération, annonces officielles du bureau, profils des membres, annuaire et recherche.
 
 ## Lancer l'appli sur son ordinateur
 
@@ -27,11 +27,12 @@ L'appli s'ouvre sur http://localhost:5173.
 ## Organisation
 
 - `src/pages/public` : site, connexion, inscription, charte.
-- `src/pages/member` : écrans des membres (attente, bienvenue, profil).
-- `src/pages/bureau` : mode bureau (tableau de bord, comptes, membres, postes, journal).
+- `src/pages/member` : écrans des membres (fil, publier, profils, annuaire, recherche, menu).
+- `src/pages/bureau` : mode bureau (tableau de bord, comptes, membres, annonces, modération, postes, journal).
+- `src/components/feed` : les morceaux du fil (carte de publication, réactions, commentaires, photos).
 - `src/lib` : accès à Supabase, requêtes, mise en forme.
 - `supabase/migrations` : la structure de la base, ses règles d'accès et ses fonctions.
-- `supabase/tests` : un script qui vérifie les règles d'accès.
+- `supabase/tests` : les scripts qui vérifient les règles d'accès.
 
 ## La base Supabase
 
@@ -45,7 +46,14 @@ Toute la sécurité est dans la base : chaque table a des règles d'accès (RLS)
 - Tout le monde doit donner un prénom et un nom, sauf le titulaire de ce poste, qui peut n'avoir qu'un prénom.
 - Le journal d'activité ne peut pas être modifié. Pendant les essais, le titulaire du poste d'admin numérique peut le vider (« Vider le journal », fonction `clear_journal`). Au lancement officiel, il le rend ineffaçable (« Rendre ineffaçable », fonction `lock_journal`) : ce verrou est définitif.
 
-Pour vérifier les règles d'accès, colle `supabase/tests/socle_test.sql` dans l'éditeur SQL de Supabase. Le script se termine toujours par une erreur volontaire qui annule tout : le message doit commencer par « TESTS OK ».
+### Le fil d'actu (lot 2)
+
+- Seuls les membres validés voient le fil et y publient : du texte (2 000 caractères au plus), jusqu'à 4 photos ou une vidéo seule (15 Mo). Les photos sont réduites dans le téléphone avant l'envoi et rangées dans l'espace privé `publications`, dans le dossier de leur auteur.
+- Chacun réagit une fois par publication ou commentaire (six réactions, pas de « je n'aime pas »). Les réponses aux commentaires restent sur un seul niveau.
+- Un signalement est anonyme : le bureau voit le nombre et les motifs, jamais qui a signalé. La modération garde, masque, ou masque et avertit l'auteur ; elle peut aussi masquer sans signalement. L'auteur voit toujours ce qui a été masqué, avec le motif. Chaque décision va au journal.
+- Les annonces officielles sont signées « Bureau de l'AEGB », s'adressent à tous, aux étudiants, aux alumni ou au bureau, et restent épinglées 7 jours. Elles peuvent être programmées (jusqu'à 90 jours). Le bureau des annonces voit qui les a écrites et combien de membres les ont vues.
+
+Pour vérifier les règles d'accès, colle `supabase/tests/socle_test.sql`, puis `supabase/tests/fil_test.sql`, dans l'éditeur SQL de Supabase. Chaque script se termine par une erreur volontaire qui annule tout : le message doit commencer par « TESTS OK ».
 
 ### Réglages à faire dans Supabase
 

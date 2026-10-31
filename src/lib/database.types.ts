@@ -9,6 +9,8 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "14.18"
   }
@@ -52,6 +54,39 @@ export type Database = {
           summary?: string
         }
         Relationships: []
+      }
+      announcement_authors: {
+        Row: {
+          post_id: string
+          written_by: string | null
+          written_by_name: string
+        }
+        Insert: {
+          post_id: string
+          written_by?: string | null
+          written_by_name: string
+        }
+        Update: {
+          post_id?: string
+          written_by?: string | null
+          written_by_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "announcement_authors_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: true
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "announcement_authors_written_by_fkey"
+            columns: ["written_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       bureau_roles: {
         Row: {
@@ -140,6 +175,64 @@ export type Database = {
         }
         Relationships: []
       }
+      comments: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          edited_at: string | null
+          hidden_at: string | null
+          hidden_reason: string | null
+          id: string
+          parent_id: string | null
+          post_id: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          edited_at?: string | null
+          hidden_at?: string | null
+          hidden_reason?: string | null
+          id?: string
+          parent_id?: string | null
+          post_id: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          edited_at?: string | null
+          hidden_at?: string | null
+          hidden_reason?: string | null
+          id?: string
+          parent_id?: string | null
+          post_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       member_contacts: {
         Row: {
           email: string
@@ -202,6 +295,201 @@ export type Database = {
           {
             foreignKeyName: "member_warnings_member_id_fkey"
             columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      moderation_decisions: {
+        Row: {
+          author_id: string | null
+          author_name: string
+          comment_id: string | null
+          created_at: string
+          decided_by: string | null
+          decided_by_name: string
+          decision: Database["public"]["Enums"]["moderation_decision"]
+          excerpt: string
+          id: number
+          post_id: string | null
+          reason: Database["public"]["Enums"]["report_reason"] | null
+          reports: number
+        }
+        Insert: {
+          author_id?: string | null
+          author_name: string
+          comment_id?: string | null
+          created_at?: string
+          decided_by?: string | null
+          decided_by_name: string
+          decision: Database["public"]["Enums"]["moderation_decision"]
+          excerpt: string
+          id?: never
+          post_id?: string | null
+          reason?: Database["public"]["Enums"]["report_reason"] | null
+          reports?: number
+        }
+        Update: {
+          author_id?: string | null
+          author_name?: string
+          comment_id?: string | null
+          created_at?: string
+          decided_by?: string | null
+          decided_by_name?: string
+          decision?: Database["public"]["Enums"]["moderation_decision"]
+          excerpt?: string
+          id?: never
+          post_id?: string | null
+          reason?: Database["public"]["Enums"]["report_reason"] | null
+          reports?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "moderation_decisions_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "moderation_decisions_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "moderation_decisions_decided_by_fkey"
+            columns: ["decided_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "moderation_decisions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_media: {
+        Row: {
+          height: number | null
+          kind: string
+          path: string
+          position: number
+          post_id: string
+          width: number | null
+        }
+        Insert: {
+          height?: number | null
+          kind: string
+          path: string
+          position: number
+          post_id: string
+          width?: number | null
+        }
+        Update: {
+          height?: number | null
+          kind?: string
+          path?: string
+          position?: number
+          post_id?: string
+          width?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_media_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_views: {
+        Row: {
+          member_id: string
+          post_id: string
+          seen_at: string
+        }
+        Insert: {
+          member_id: string
+          post_id: string
+          seen_at?: string
+        }
+        Update: {
+          member_id?: string
+          post_id?: string
+          seen_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_views_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_views_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts: {
+        Row: {
+          audience: Database["public"]["Enums"]["post_audience"]
+          author_id: string | null
+          body: string
+          created_at: string
+          edited_at: string | null
+          hidden_at: string | null
+          hidden_reason: string | null
+          id: string
+          official: boolean
+          pinned_until: string | null
+          published_at: string
+          title: string | null
+        }
+        Insert: {
+          audience?: Database["public"]["Enums"]["post_audience"]
+          author_id?: string | null
+          body?: string
+          created_at?: string
+          edited_at?: string | null
+          hidden_at?: string | null
+          hidden_reason?: string | null
+          id: string
+          official?: boolean
+          pinned_until?: string | null
+          published_at?: string
+          title?: string | null
+        }
+        Update: {
+          audience?: Database["public"]["Enums"]["post_audience"]
+          author_id?: string | null
+          body?: string
+          created_at?: string
+          edited_at?: string | null
+          hidden_at?: string | null
+          hidden_reason?: string | null
+          id?: string
+          official?: boolean
+          pinned_until?: string | null
+          published_at?: string
+          title?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_author_id_fkey"
+            columns: ["author_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -321,6 +609,107 @@ export type Database = {
           },
         ]
       }
+      reactions: {
+        Row: {
+          comment_id: string | null
+          created_at: string
+          id: number
+          kind: Database["public"]["Enums"]["reaction_kind"]
+          member_id: string
+          post_id: string | null
+        }
+        Insert: {
+          comment_id?: string | null
+          created_at?: string
+          id?: never
+          kind: Database["public"]["Enums"]["reaction_kind"]
+          member_id: string
+          post_id?: string | null
+        }
+        Update: {
+          comment_id?: string | null
+          created_at?: string
+          id?: never
+          kind?: Database["public"]["Enums"]["reaction_kind"]
+          member_id?: string
+          post_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reactions_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reactions_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reactions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reports: {
+        Row: {
+          comment_id: string | null
+          created_at: string
+          id: number
+          post_id: string | null
+          reason: Database["public"]["Enums"]["report_reason"]
+          reporter_id: string
+          resolved_at: string | null
+        }
+        Insert: {
+          comment_id?: string | null
+          created_at?: string
+          id?: never
+          post_id?: string | null
+          reason: Database["public"]["Enums"]["report_reason"]
+          reporter_id: string
+          resolved_at?: string | null
+        }
+        Update: {
+          comment_id?: string | null
+          created_at?: string
+          id?: never
+          post_id?: string | null
+          reason?: Database["public"]["Enums"]["report_reason"]
+          reporter_id?: string
+          resolved_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       role_permissions: {
         Row: {
           level: Database["public"]["Enums"]["access_level"]
@@ -360,6 +749,22 @@ export type Database = {
     }
     Functions: {
       accept_charter: { Args: { p_version: number }; Returns: undefined }
+      add_comment: {
+        Args: { p_body: string; p_parent?: string; p_post: string }
+        Returns: string
+      }
+      announcements_overview: {
+        Args: never
+        Returns: {
+          audience: Database["public"]["Enums"]["post_audience"]
+          id: string
+          pinned_until: string
+          published_at: string
+          title: string
+          views: number
+          written_by_name: string
+        }[]
+      }
       assign_role: {
         Args: { p_member: string; p_role: string }
         Returns: undefined
@@ -382,8 +787,25 @@ export type Database = {
         }
         Returns: boolean
       }
+      can_read_post: {
+        Args: {
+          p_audience: Database["public"]["Enums"]["post_audience"]
+          p_author: string
+          p_hidden: string
+          p_official: boolean
+          p_published: string
+        }
+        Returns: boolean
+      }
       clear_journal: { Args: never; Returns: number }
       clear_role: { Args: { p_role: string }; Returns: undefined }
+      create_post: {
+        Args: { p_body: string; p_id: string; p_media?: Json }
+        Returns: undefined
+      }
+      delete_announcement: { Args: { p_id: string }; Returns: string[] }
+      delete_comment: { Args: { p_id: string }; Returns: undefined }
+      delete_post: { Args: { p_id: string }; Returns: string[] }
       discreet_authors: {
         Args: { p_ids: number[] }
         Returns: {
@@ -395,6 +817,7 @@ export type Database = {
       is_bureau: { Args: never; Returns: boolean }
       journal_locked: { Args: never; Returns: boolean }
       lock_journal: { Args: never; Returns: undefined }
+      mark_seen: { Args: { p_ids: string[] }; Returns: undefined }
       mark_welcomed: { Args: never; Returns: undefined }
       member_history: {
         Args: { p_member: string }
@@ -417,6 +840,40 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      moderate: {
+        Args: {
+          p_comment: string
+          p_decision: Database["public"]["Enums"]["moderation_decision"]
+          p_post: string
+          p_reason?: Database["public"]["Enums"]["report_reason"]
+        }
+        Returns: undefined
+      }
+      moderation_pending: { Args: never; Returns: number }
+      moderation_queue: {
+        Args: never
+        Returns: {
+          author_avatar_path: string
+          author_first_name: string
+          author_id: string
+          author_last_name: string
+          body: string
+          comment_id: string
+          created_at: string
+          hidden: boolean
+          last_reported_at: string
+          last_warning_at: string
+          last_warning_reason: string
+          media_kind: string
+          media_path: string
+          parent_author_name: string
+          parent_post_id: string
+          post_id: string
+          reasons: Json
+          reports: number
+          warnings: number
+        }[]
+      }
       my_access: {
         Args: { p_screen: string }
         Returns: Database["public"]["Enums"]["access_level"]
@@ -432,10 +889,38 @@ export type Database = {
           sort_order: number
         }[]
       }
+      publish_announcement: {
+        Args: {
+          p_audience: Database["public"]["Enums"]["post_audience"]
+          p_body: string
+          p_id: string
+          p_media?: Json
+          p_pin: boolean
+          p_publish_at?: string
+          p_title: string
+        }
+        Returns: undefined
+      }
+      react: {
+        Args: {
+          p_comment: string
+          p_kind: Database["public"]["Enums"]["reaction_kind"]
+          p_post: string
+        }
+        Returns: undefined
+      }
       reactivate_member: { Args: { p_member: string }; Returns: undefined }
       refuse_member: {
         Args: { p_member: string; p_reason: string }
         Returns: undefined
+      }
+      report_content: {
+        Args: {
+          p_comment: string
+          p_post: string
+          p_reason: Database["public"]["Enums"]["report_reason"]
+        }
+        Returns: boolean
       }
       set_member_type: {
         Args: {
@@ -446,17 +931,27 @@ export type Database = {
       }
       set_role_permission: {
         Args: {
-          p_level: Database["public"]["Enums"]["access_level"] | null
+          p_level: Database["public"]["Enums"]["access_level"]
           p_role: string
           p_screen: string
         }
         Returns: undefined
       }
+      storage_used: { Args: never; Returns: number }
       suspend_member: {
         Args: { p_member: string; p_reason: string }
         Returns: undefined
       }
       transfer_guarantor: { Args: { p_member: string }; Returns: undefined }
+      unpin_announcement: { Args: { p_id: string }; Returns: undefined }
+      update_comment: {
+        Args: { p_body: string; p_id: string }
+        Returns: undefined
+      }
+      update_post: {
+        Args: { p_body: string; p_id: string }
+        Returns: undefined
+      }
       validate_member: { Args: { p_member: string }; Returns: undefined }
       warn_member: {
         Args: { p_member: string; p_reason: string }
@@ -467,6 +962,16 @@ export type Database = {
       access_level: "lecture" | "complet"
       member_status: "en_attente" | "actif" | "refuse" | "suspendu"
       member_type: "etudiant" | "alumni" | "sympathisant" | "honneur"
+      moderation_decision: "garder" | "masquer" | "masquer_avertir"
+      post_audience: "tous" | "etudiants" | "alumni" | "bureau"
+      reaction_kind:
+        | "jaime"
+        | "jadore"
+        | "rire"
+        | "wouah"
+        | "triste"
+        | "soutien"
+      report_reason: "irrespect" | "fausse_info" | "spam" | "choquant" | "autre"
     }
     CompositeTypes: {
       [_ in never]: never

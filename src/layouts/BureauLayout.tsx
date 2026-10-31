@@ -1,7 +1,8 @@
 import { NavLink, Outlet, useNavigate } from 'react-router'
-import { ChevronLeft, LayoutDashboard, ScrollText, Star, UserCheck, Users, type LucideIcon } from 'lucide-react'
+import { ChevronLeft, LayoutDashboard, Megaphone, ScrollText, ShieldAlert, Star, UserCheck, Users, type LucideIcon } from 'lucide-react'
 import { Avatar } from '../components/Avatar'
 import { Logo } from '../components/Logo'
+import { useModerationPending } from '../lib/feed'
 import { can, useBureauCounts, useMe, type ScreenCode } from '../lib/queries'
 import { BottomNav } from './BottomNav'
 
@@ -32,6 +33,7 @@ export function BureauLayout() {
   const me = useMe().data
   const navigate = useNavigate()
   const counts = useBureauCounts(can(me, 'comptes', 'lecture')).data
+  const reports = useModerationPending(can(me, 'moderation', 'lecture')).data
   const full = me?.guarantor || ['presidence', 'vice_presidence'].includes(me?.role?.code ?? '')
 
   const groups: { title: string; items: Item[] }[] = [
@@ -41,6 +43,13 @@ export function BureauLayout() {
         { to: '/bureau', label: 'Tableau de bord', icon: LayoutDashboard, end: true },
         { to: '/bureau/comptes', label: 'Comptes en attente', icon: UserCheck, screen: 'comptes', badge: counts?.pending },
         { to: '/bureau/membres', label: 'Membres', icon: Users, screen: 'membres' },
+      ],
+    },
+    {
+      title: "Vie de l'asso",
+      items: [
+        { to: '/bureau/annonces', label: 'Annonces', icon: Megaphone, screen: 'annonces' },
+        { to: '/bureau/moderation', label: 'Modération', icon: ShieldAlert, screen: 'moderation', badge: reports },
       ],
     },
     {
