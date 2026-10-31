@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { ChevronLeft, ChevronRight, Play, X } from 'lucide-react'
 import type { Media } from '../../lib/feed'
 import { usePhotoUrl, type Bucket } from '../../lib/photos'
@@ -33,27 +33,37 @@ export function MediaGrid({ media, onOpen }: { media: Media[]; onOpen: (index: n
   if (first.kind === 'video') {
     return <Video media={first} className="block max-h-[calc(75dvh/var(--zoom,1))] w-full" />
   }
+  // Sur PC, les photos gardent leurs proportions et ne dépassent pas 620 px
+  // de haut : moins larges que la carte, elles se centrent sur une bande grise
+  // au lieu d'être coupées en haut et en bas.
   if (media.length === 1) {
+    const r = ratio(first)
     return (
-      <div style={{ aspectRatio: ratio(first) }} className="w-full lg:max-h-[620px]">
-        <Photo media={first} onClick={() => onOpen(0)} className="h-full w-full" />
+      <div className="bg-surface-2">
+        <div style={{ aspectRatio: r, '--photo-w': `${Math.round(620 * r)}px` } as CSSProperties} className="mx-auto w-full lg:w-[min(100%,var(--photo-w))]">
+          <Photo media={first} onClick={() => onOpen(0)} className="h-full w-full" />
+        </div>
       </div>
     )
   }
   if (media.length === 3) {
     return (
-      <div className="grid aspect-square w-full grid-cols-2 grid-rows-2 gap-0.5">
-        <Photo media={media[0]} onClick={() => onOpen(0)} className="row-span-2 h-full w-full" label="Agrandir la photo 1 sur 3" />
-        <Photo media={media[1]} onClick={() => onOpen(1)} className="h-full w-full" label="Agrandir la photo 2 sur 3" />
-        <Photo media={media[2]} onClick={() => onOpen(2)} className="h-full w-full" label="Agrandir la photo 3 sur 3" />
+      <div className="bg-surface-2">
+        <div className="mx-auto grid aspect-square w-full grid-cols-2 grid-rows-2 gap-0.5 lg:max-w-[620px]">
+          <Photo media={media[0]} onClick={() => onOpen(0)} className="row-span-2 h-full w-full" label="Agrandir la photo 1 sur 3" />
+          <Photo media={media[1]} onClick={() => onOpen(1)} className="h-full w-full" label="Agrandir la photo 2 sur 3" />
+          <Photo media={media[2]} onClick={() => onOpen(2)} className="h-full w-full" label="Agrandir la photo 3 sur 3" />
+        </div>
       </div>
     )
   }
   return (
-    <div className={`grid w-full grid-cols-2 gap-0.5 ${media.length === 2 ? 'aspect-[2/1]' : 'aspect-square'}`}>
-      {media.map((m, i) => (
-        <Photo key={m.path} media={m} onClick={() => onOpen(i)} className="h-full w-full" label={`Agrandir la photo ${i + 1} sur ${media.length}`} />
-      ))}
+    <div className="bg-surface-2">
+      <div className={`mx-auto grid w-full grid-cols-2 gap-0.5 ${media.length === 2 ? 'aspect-[2/1]' : 'aspect-square lg:max-w-[620px]'}`}>
+        {media.map((m, i) => (
+          <Photo key={m.path} media={m} onClick={() => onOpen(i)} className="h-full w-full" label={`Agrandir la photo ${i + 1} sur ${media.length}`} />
+        ))}
+      </div>
     </div>
   )
 }
