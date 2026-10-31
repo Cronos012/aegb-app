@@ -111,6 +111,20 @@ function AegbConversation({ id, back }: { id: string; back: boolean }) {
   const o = c?.other
 
   if (info.isPending) return <PageLoader />
+  // Sa propre conversation avec AEGB : on ne se répond pas à soi-même.
+  if (c && !c.as_aegb) {
+    return (
+      <div className="grid flex-1 place-items-center px-6">
+        <EmptyState title="C’est ta conversation avec AEGB" icon={<MessageSquare className="size-6" />}>
+          Un autre membre du bureau te répondra au nom de l’AEGB. Tu la retrouves dans{' '}
+          <Link to={`/app/messages/${c.id}`} className="font-bold">
+            Messages
+          </Link>
+          .
+        </EmptyState>
+      </div>
+    )
+  }
   if (!c || !o) {
     return (
       <div className="grid flex-1 place-items-center">
