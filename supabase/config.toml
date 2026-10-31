@@ -1,0 +1,5 @@
+# Réglages lus par l'outil Supabase, que GitHub utilise pour mettre la base à jour.
+project_id = "aegb-app"
+
+[db]
+major_version = 17
