@@ -9,3 +9,13 @@ major_version = 17
 # elle-même qui l'appelle.
 [functions.helloasso]
 verify_jwt = false
+
+# Les notifications : la base appelle cette fonction quand des notifications
+# attendent, sans être connectée. La fonction ne prend que la file d'envoi.
+[functions.push]
+verify_jwt = false
+
+# Chaque nuit, la base appelle cette fonction pour effacer les comptes fermés
+# depuis 30 jours. Elle n'efface que ceux-là.
+[functions.comptes]
+verify_jwt = false
