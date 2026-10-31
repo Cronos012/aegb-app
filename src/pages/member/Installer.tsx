@@ -63,6 +63,10 @@ export function Installer({ open = false }: { open?: boolean }) {
   const asked = params.get('appareil')
   const device: Platform = asked === 'iphone' || asked === 'android' || asked === 'ordinateur' ? asked : platform()
   const back = open ? '/' : '/app/reglages'
+  // Seul Chrome installe une vraie appli sur Android (notifications au nom d'AEGB).
+  const ua = navigator.userAgent
+  const otherAndroidBrowser =
+    device === 'android' && platform() === 'android' && ('brave' in navigator || /firefox|opr\/|edga\//i.test(ua) || !/chrome/i.test(ua))
 
   if (isStandalone() && !asked) {
     return (
@@ -93,6 +97,11 @@ export function Installer({ open = false }: { open?: boolean }) {
           </div>
         </div>
         <InstallPerks />
+        {otherAndroidBrowser ? (
+          <Note tone="warn">
+            Sur Android, ouvre {window.location.host} dans <strong>Chrome</strong> pour installer l’appli. Depuis un autre navigateur (Brave, Firefox…), elle s’installe comme un simple raccourci : les notifications s’affichent au nom du navigateur et ouvrent une page du navigateur au lieu de l’appli.
+          </Note>
+        ) : null}
         {canInstall && device === platform() ? <InstallButton className="w-full" /> : <Note>{manualSteps(device)}</Note>}
       </section>
       <Note>

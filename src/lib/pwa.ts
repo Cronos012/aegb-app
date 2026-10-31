@@ -150,6 +150,9 @@ export type Platform = 'android' | 'iphone' | 'ordinateur' | 'autre'
 
 export function platform(ua = navigator.userAgent, touch = navigator.maxTouchPoints): Platform {
   if (/android/i.test(ua)) return 'android'
+  // Un téléphone Android en « version pour ordinateur » se présente comme un PC Linux,
+  // mais il a un écran tactile.
+  if (/linux/i.test(ua) && !/cros/i.test(ua) && touch > 0) return 'android'
   // Un iPad récent se présente comme un Mac, mais il a un écran tactile.
   if (/iphone|ipad|ipod/i.test(ua) || (/macintosh/i.test(ua) && touch > 1)) return 'iphone'
   if (/windows|macintosh|linux|cros/i.test(ua)) return 'ordinateur'
@@ -161,7 +164,11 @@ export function deviceLabel(ua = navigator.userAgent, touch = navigator.maxTouch
   const p = platform(ua, touch)
   const system =
     p === 'android' ? 'Android' : p === 'iphone' ? (/ipad/i.test(ua) || /macintosh/i.test(ua) ? 'iPad' : 'iPhone') : /windows/i.test(ua) ? 'Windows' : /macintosh/i.test(ua) ? 'Mac' : /cros/i.test(ua) ? 'Chromebook' : /linux/i.test(ua) ? 'Linux' : 'Appareil'
-  const browser = /edg\//i.test(ua)
+  // Brave se présente comme Chrome : il se reconnaît à navigator.brave.
+  const brave = typeof navigator !== 'undefined' && 'brave' in navigator && ua === navigator.userAgent
+  const browser = brave
+    ? 'Brave'
+    : /edg\//i.test(ua)
     ? 'Edge'
     : /samsungbrowser/i.test(ua)
       ? 'Samsung Internet'
