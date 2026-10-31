@@ -402,7 +402,7 @@ function Detail({ e, uid, desktop, cardReady, paying, payError, onBack, onShare,
   }
 
   return (
-    <div className="flex min-h-dvh flex-1 flex-col bg-surface">
+    <div className="flex min-h-app flex-1 flex-col bg-surface">
       <div className="relative shrink-0">
         <EventCover event={e} className={ag ? 'h-[196px]' : 'h-[228px]'} muted={e.status === 'annule'} />
         <button type="button" onClick={onBack} aria-label="Retour aux événements" className="absolute top-[max(env(safe-area-inset-top),10px)] left-3 grid size-[42px] place-items-center rounded-full bg-nuit/50 text-white">

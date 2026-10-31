@@ -6,7 +6,7 @@ import { Brand } from '../../components/Logo'
 /** Premier écran de l'appli sur téléphone. */
 export function Accueil() {
   return (
-    <div className="bg-tisse relative flex min-h-dvh flex-col px-5 pt-[max(env(safe-area-inset-top),20px)] pb-[max(env(safe-area-inset-bottom),28px)] text-white">
+    <div className="bg-tisse relative flex min-h-app flex-col px-5 pt-[max(env(safe-area-inset-top),20px)] pb-[max(env(safe-area-inset-bottom),28px)] text-white">
       <Brand size={44} />
       <div className="flex flex-1 items-center justify-center py-6">
         <FloatingCards compact />

@@ -225,7 +225,7 @@ export function InfosGroupe() {
 
   if (info.isPending) {
     return (
-      <div className="flex h-dvh flex-col bg-page lg:h-full">
+      <div className="flex h-app flex-col bg-page lg:h-full">
         {header}
         <PageLoader />
       </div>
@@ -235,7 +235,7 @@ export function InfosGroupe() {
   const c = info.data
   if (!c || !id || (c.kind !== 'groupe' && c.kind !== 'grand_groupe')) {
     return (
-      <div className="flex h-dvh flex-col bg-page lg:h-full">
+      <div className="flex h-app flex-col bg-page lg:h-full">
         {header}
         <EmptyState title="Ce groupe n’est plus disponible" icon={<Users className="size-6" />}>
           Tu as peut-être quitté ce groupe.
@@ -262,7 +262,7 @@ export function InfosGroupe() {
 
   if (c.kind === 'grand_groupe') {
     return (
-      <div className="flex h-dvh flex-col bg-page lg:h-full">
+      <div className="flex h-app flex-col bg-page lg:h-full">
         {header}
         <div className="flex flex-1 flex-col items-center gap-3 overflow-y-auto px-5 py-8 text-center">
           <ConversationAvatar kind="grand_groupe" title={c.title} size={112} />
@@ -292,7 +292,7 @@ export function InfosGroupe() {
         : 'Tu es la dernière personne du groupe : il restera vide.'
 
   return (
-    <div className="flex h-dvh flex-col bg-page lg:h-full">
+    <div className="flex h-app flex-col bg-page lg:h-full">
       {header}
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
         <section className="flex flex-col items-center gap-2 bg-surface px-5 pt-6 pb-5 text-center">

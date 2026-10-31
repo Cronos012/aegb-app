@@ -56,9 +56,9 @@ function Preview({ d, desktop }: { d: Doc; desktop: boolean }) {
     )
   }
   return kind === 'IMG' ? (
-    <img src={url} alt={d.title} className="max-h-[70dvh] w-full rounded-[12px] bg-surface object-contain shadow-[0_2px_4px_rgba(18,22,43,0.08),0_14px_34px_rgba(18,22,43,0.14)]" />
+    <img src={url} alt={d.title} className="max-h-[calc(70dvh/var(--zoom,1))] w-full rounded-[12px] bg-surface object-contain shadow-[0_2px_4px_rgba(18,22,43,0.08),0_14px_34px_rgba(18,22,43,0.14)]" />
   ) : (
-    <iframe src={url} title={d.title} className="h-[72dvh] w-full rounded-[12px] border-0 bg-surface shadow-[0_2px_4px_rgba(18,22,43,0.08),0_14px_34px_rgba(18,22,43,0.14)]" />
+    <iframe src={url} title={d.title} className="h-[calc(72dvh/var(--zoom,1))] w-full rounded-[12px] border-0 bg-surface shadow-[0_2px_4px_rgba(18,22,43,0.08),0_14px_34px_rgba(18,22,43,0.14)]" />
   )
 }
 
@@ -210,7 +210,7 @@ export function Document() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-1 flex-col bg-[#E9EBF2]">
+    <div className="flex min-h-app flex-1 flex-col bg-[#E9EBF2]">
       <header className="sticky top-0 z-10 flex items-center gap-2 border-b border-line-soft bg-surface py-2 pr-3 pl-2 pt-[max(env(safe-area-inset-top),8px)]">
         <Link to="/app/documents" aria-label="Retour aux documents" className="grid size-11 place-items-center rounded-xl text-ink hover:bg-surface-2">
           <ChevronLeft className="size-6" strokeWidth={2.2} />

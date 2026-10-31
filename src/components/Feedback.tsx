@@ -8,7 +8,7 @@ export function Spinner({ className = 'size-6' }: { className?: string }) {
 
 export function PageLoader() {
   return (
-    <div className="grid min-h-[50dvh] flex-1 place-items-center" role="status">
+    <div className="grid min-h-[calc(50dvh/var(--zoom,1))] flex-1 place-items-center" role="status">
       <Spinner className="size-8" />
     </div>
   )
@@ -16,7 +16,7 @@ export function PageLoader() {
 
 export function FullScreenLoader() {
   return (
-    <div className="bg-tisse grid min-h-dvh place-items-center" role="status">
+    <div className="bg-tisse grid min-h-app place-items-center" role="status">
       <LoaderCircle className="size-9 animate-spin text-white/80" aria-label="Chargement" />
     </div>
   )

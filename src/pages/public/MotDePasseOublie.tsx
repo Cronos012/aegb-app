@@ -27,7 +27,7 @@ export function MotDePasseOublie() {
   }
 
   return (
-    <div className="flex min-h-dvh justify-center bg-page lg:items-center lg:py-10">
+    <div className="flex min-h-app justify-center bg-page lg:items-center lg:py-10">
       <div className="flex w-full max-w-[480px] flex-col bg-surface px-5 pt-[max(env(safe-area-inset-top),8px)] pb-[max(env(safe-area-inset-bottom),24px)] lg:rounded-[12px] lg:px-10 lg:py-10 lg:shadow-sm">
         <div className="min-h-11">
           <BackLink to="/connexion" light={false} />

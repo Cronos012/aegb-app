@@ -65,7 +65,7 @@ export function Attente({ me }: { me: Me }) {
   ]
 
   return (
-    <div className="flex min-h-dvh justify-center bg-page lg:items-center lg:py-10">
+    <div className="flex min-h-app justify-center bg-page lg:items-center lg:py-10">
       <div className="flex w-full max-w-[480px] flex-col overflow-hidden bg-surface lg:rounded-[12px] lg:shadow-sm">
         <header className="bg-tisse px-5 pt-[max(env(safe-area-inset-top),20px)] pb-12 text-white">
           <Logo size={34} />

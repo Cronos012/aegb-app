@@ -79,7 +79,7 @@ export function Publication() {
   const closed = !!p.hidden_at
 
   return (
-    <div className="flex min-h-dvh flex-1 flex-col bg-surface lg:min-h-0 lg:bg-transparent lg:px-10 lg:py-8">
+    <div className="flex min-h-app flex-1 flex-col bg-surface lg:min-h-0 lg:bg-transparent lg:px-10 lg:py-8">
       <div className="mx-auto flex w-full max-w-[680px] flex-1 flex-col">
         {header}
         <div className="flex flex-1 flex-col lg:overflow-hidden lg:rounded-[12px] lg:bg-surface">

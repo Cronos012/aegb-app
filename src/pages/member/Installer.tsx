@@ -19,7 +19,7 @@ function IphoneInstaller({ back }: { back: string }) {
   const navigate = useNavigate()
   const iphone = /iphone|ipod/i.test(navigator.userAgent)
   return (
-    <div className="flex min-h-dvh flex-col lg:mx-auto lg:min-h-0 lg:w-full lg:max-w-[560px] lg:py-8">
+    <div className="flex min-h-app flex-col lg:mx-auto lg:min-h-0 lg:w-full lg:max-w-[560px] lg:py-8">
       <Hero back={back} className="lg:rounded-t-[12px]" title="Installer l’appli sur iPhone" subtitle="Pas besoin de l’App Store : 3 gestes dans Safari." />
       <Sheet className="gap-5">
         <div className="flex items-start gap-3 rounded-[12px] bg-[#E4EEFB] px-4 py-3.5 text-[15px] leading-[1.45] text-[#173B6B]">
@@ -40,7 +40,7 @@ function IphoneInstaller({ back }: { back: string }) {
 /** Hors de l'appli (lien du site public, code QR) : la page a son propre cadre. */
 function PublicFrame({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-dvh flex-col bg-page">
+    <div className="flex min-h-app flex-col bg-page">
       <header className="flex h-[calc(64px+env(safe-area-inset-top))] items-center gap-3 border-b border-line-soft bg-surface px-3 pt-[env(safe-area-inset-top)] lg:px-10">
         <Link to="/" aria-label="Retour au site" className="grid size-11 place-items-center rounded-xl text-ink hover:bg-surface-2">
           <ChevronLeft className="size-6" strokeWidth={2.2} />

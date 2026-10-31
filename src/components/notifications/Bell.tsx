@@ -74,7 +74,7 @@ export function Bell({ scope = 'membre', onDark = false, className = '' }: Props
         <Count n={unread} />
       </button>
       {open ? (
-        <div role="dialog" aria-label={scope === 'bureau' ? 'Notifications du bureau' : 'Notifications'} className="absolute top-[54px] right-0 z-50 flex max-h-[min(640px,calc(100dvh-120px))] w-[430px] flex-col overflow-hidden rounded-[12px] border border-line-soft bg-surface shadow-[0_24px_60px_rgba(18,24,61,0.22)]">
+        <div role="dialog" aria-label={scope === 'bureau' ? 'Notifications du bureau' : 'Notifications'} className="absolute top-[54px] right-0 z-50 flex max-h-[min(640px,calc(100dvh/var(--zoom,1)-120px))] w-[430px] flex-col overflow-hidden rounded-[12px] border border-line-soft bg-surface shadow-[0_24px_60px_rgba(18,24,61,0.22)]">
           <div className="flex items-center justify-between px-[18px] pt-4 pb-2">
             <h2 className="titre m-0 text-[19px]">{scope === 'bureau' ? 'Notifications du bureau' : 'Notifications'}</h2>
             {ids.length ? (

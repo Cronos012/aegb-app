@@ -98,7 +98,7 @@ export default function Confidentialite() {
   )
 
   return (
-    <div className="flex min-h-dvh flex-col bg-[#FFFFFF] text-[#12162B] [color-scheme:light]">
+    <div className="flex min-h-app flex-col bg-[#FFFFFF] text-[#12162B] [color-scheme:light]">
       <section className="bg-tisse text-white">
         <header className="mx-auto flex max-w-[1200px] items-center gap-6 px-5 py-5 lg:px-10">
           <Link to="/" className="text-white no-underline">

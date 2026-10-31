@@ -382,7 +382,7 @@ export default function CompteAegb() {
   // Sur téléphone, une conversation prend tout l'écran.
   if (!desktop && id) {
     return (
-      <div className="flex h-dvh flex-col bg-page">
+      <div className="flex h-app flex-col bg-page">
         <AegbConversation id={id} back />
       </div>
     )
@@ -413,7 +413,7 @@ export default function CompteAegb() {
       {tab === 'bienvenue' ? (
         <Welcome />
       ) : desktop ? (
-        <div className="grid h-[calc(100dvh-236px)] min-h-[520px] grid-cols-[360px_minmax(0,1fr)] gap-6">
+        <div className="grid h-[calc(100dvh/var(--zoom,1)-236px)] min-h-[520px] grid-cols-[360px_minmax(0,1fr)] gap-6">
           <Card className="flex min-h-0 flex-col p-4">
             <InboxList selected={id} />
           </Card>

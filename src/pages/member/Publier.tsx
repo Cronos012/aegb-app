@@ -85,7 +85,7 @@ export function Publier() {
   )
 
   return (
-    <div className="flex min-h-dvh flex-1 flex-col bg-surface lg:min-h-0 lg:bg-transparent lg:px-10 lg:py-8">
+    <div className="flex min-h-app flex-1 flex-col bg-surface lg:min-h-0 lg:bg-transparent lg:px-10 lg:py-8">
       <header className="sticky top-0 z-20 flex h-[calc(64px+env(safe-area-inset-top))] items-center gap-2 border-b border-line-soft bg-surface px-3 pt-[env(safe-area-inset-top)] lg:hidden">
         <button type="button" onClick={back} aria-label="Retour au fil" className="grid size-11 place-items-center rounded-xl hover:bg-surface-2">
           <ChevronLeft className="size-6" strokeWidth={2.2} />
