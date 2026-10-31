@@ -1,14 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router'
 import { useQueryClient } from '@tanstack/react-query'
-import { EyeOff, Flag, MoreHorizontal, Pencil, SendHorizontal, Trash2, X } from 'lucide-react'
+import { EyeOff, Flag, Lock, MoreHorizontal, Pencil, SendHorizontal, Trash2, X } from 'lucide-react'
 import { useSession } from '../../auth/session'
 import { errorMessage } from '../../lib/errors'
-import { COMMENT_MAX, react, summarize, type Comment, type ReactionKind } from '../../lib/feed'
+import { COMMENT_MAX, OFFICIAL_NAME, react, summarize, type Comment, type ReactionKind, type Voice } from '../../lib/feed'
 import { relative } from '../../lib/format'
 import { can, useMe } from '../../lib/queries'
 import { supabase } from '../../lib/supabase'
 import { Avatar } from '../Avatar'
+import { Logo } from '../Logo'
+import { OfficialBadge } from './OfficialBadge'
+import { VoiceChooser } from './VoiceChooser'
 import { useToast } from '../Toast'
 import { ActionSheet, ConfirmDialog, EditTextDialog, HideDialog, ReportDialog, SheetAction, type Target } from './Dialogs'
 import { ReactionButton, ReactionCount, ReactorsDialog } from './Reactions'
@@ -33,7 +36,7 @@ export function CommentList({ comments, onReply }: { comments: Comment[]; onRepl
             <ul className="m-0 mt-3 flex list-none flex-col gap-3 p-0 pl-11">
               {replies(c.id).map((r) => (
                 <li key={r.id}>
-                  <CommentItem comment={r} onReply={() => onReply({ id: c.id, firstName: r.author?.first_name ?? '' })} small />
+                  <CommentItem comment={r} onReply={() => onReply({ id: c.id, firstName: r.official ? OFFICIAL_NAME : (r.author?.first_name ?? '') })} small />
                 </li>
               ))}
             </ul>
@@ -48,34 +51,44 @@ function CommentItem({ comment: c, onReply, small = false }: { comment: Comment;
   const uid = useSession().session?.user.id
   const toast = useToast()
   const queryClient = useQueryClient()
+  const me = useMe().data
   const [pending, setPending] = useState<ReactionKind | null | undefined>(undefined)
+  const [pendingAegb, setPendingAegb] = useState<ReactionKind | null | undefined>(undefined)
   const [reactors, setReactors] = useState(false)
-  const summary = summarize(c.reactions, uid, pending)
-  const a = c.author
+  const summary = summarize(c.reactions, uid, pending, pendingAegb)
+  const a = c.official ? null : c.author
+  const name = c.official ? OFFICIAL_NAME : (a?.first_name ?? '')
 
-  async function pick(kind: ReactionKind | null) {
-    setPending(kind)
+  async function pick(kind: ReactionKind | null, asAegb = false) {
+    const set = asAegb ? setPendingAegb : setPending
+    set(kind)
     try {
-      await react({ comment: c.id }, kind)
+      await react({ comment: c.id }, kind, asAegb)
       await queryClient.invalidateQueries({ queryKey: ['fil', 'commentaires', c.post_id] })
     } catch (e) {
       toast(errorMessage(e), 'error')
     } finally {
-      setPending(undefined)
+      set(undefined)
     }
   }
 
   return (
     <div className="flex items-start gap-2.5">
-      {a ? (
+      {c.official ? (
+        <Logo size={small ? 30 : 36} alt="" />
+      ) : a ? (
         <Link to={`/app/membres/${a.id}`} aria-label={`Profil de ${a.first_name} ${a.last_name}`} className="shrink-0">
           <Avatar person={a} size={small ? 30 : 36} />
         </Link>
       ) : null}
       <div className="min-w-0 flex-1">
         <div className={`w-fit max-w-full rounded-[12px] bg-surface-2 px-3.5 py-2.5 ${c.hidden_at ? 'opacity-70' : ''}`}>
-          <p className="m-0 text-[14px] font-bold">
-            {a ? (
+          <p className="m-0 flex items-center gap-1.5 text-[14px] font-bold">
+            {c.official ? (
+              <>
+                {OFFICIAL_NAME} <OfficialBadge small />
+              </>
+            ) : a ? (
               <Link to={`/app/membres/${a.id}`} className="text-ink no-underline hover:underline">
                 {a.first_name} {a.last_name}
               </Link>
@@ -95,8 +108,8 @@ function CommentItem({ comment: c, onReply, small = false }: { comment: Comment;
               {relative(c.created_at).replace('il y a ', '')}
               {c.edited_at ? ' · modifié' : ''}
             </span>
-            <ReactionButton variant="text" mine={summary.mine} onPick={pick} />
-            <button type="button" onClick={() => onReply({ id: c.id, firstName: a?.first_name ?? '' })} className="font-bold hover:underline">
+            <ReactionButton variant="text" mine={summary.mine} onPick={pick} aegb={can(me, 'annonces') ? { mine: summary.aegb, onPick: (k) => pick(k, true) } : undefined} />
+            <button type="button" onClick={() => onReply({ id: c.id, firstName: name })} className="font-bold hover:underline">
               Répondre
             </button>
             <CommentMenu comment={c} />
@@ -105,6 +118,11 @@ function CommentItem({ comment: c, onReply, small = false }: { comment: Comment;
             ) : null}
           </div>
         )}
+        {c.official && c.comment_authors ? (
+          <p className="m-0 mt-0.5 flex items-center gap-1 pl-3.5 text-[12px] text-muted">
+            <Lock className="size-3" /> Écrit par {c.comment_authors.written_by_name} · visible par le bureau
+          </p>
+        ) : null}
       </div>
       <ReactorsDialog target={reactors ? { comment: c.id } : null} onClose={() => setReactors(false)} />
     </div>
@@ -119,7 +137,8 @@ function CommentMenu({ comment: c }: { comment: Comment }) {
   const queryClient = useQueryClient()
   const [sheet, setSheet] = useState<Sheet>(null)
   const [report, setReport] = useState<Target | null>(null)
-  const mine = c.author_id === me.profile.id
+  // Un commentaire AEGB se gère par ceux qui ont le droit Annonces, et ne se signale pas.
+  const mine = c.official ? can(me, 'annonces') : c.author_id === me.profile.id
   const firstName = c.author?.first_name ?? 'Le membre'
   const refresh = () => queryClient.invalidateQueries({ queryKey: ['fil'] })
 
@@ -138,6 +157,8 @@ function CommentMenu({ comment: c }: { comment: Comment }) {
               Supprimer
             </SheetAction>
           </>
+        ) : c.official ? (
+          <p className="m-0 px-1 py-2 text-[14px] text-muted">Un commentaire du compte AEGB. Pour une remarque, écris au compte AEGB dans Messages.</p>
         ) : (
           <>
             <SheetAction
@@ -199,7 +220,9 @@ export function CommentInput({ postId, replyTo, onCancelReply, focusKey }: { pos
   const queryClient = useQueryClient()
   const [text, setText] = useState('')
   const [busy, setBusy] = useState(false)
+  const [voice, setVoice] = useState<Voice>('moi')
   const field = useRef<HTMLTextAreaElement>(null)
+  const aegb = voice === 'aegb'
 
   useEffect(() => {
     if (focusKey) field.current?.focus()
@@ -217,16 +240,19 @@ export function CommentInput({ postId, replyTo, onCancelReply, focusKey }: { pos
     const body = text.trim()
     if (!body || busy) return
     setBusy(true)
-    const { error } = await supabase.rpc('add_comment', { p_post: postId, p_body: body, p_parent: replyTo?.id })
+    const args = { p_post: postId, p_body: body, p_parent: replyTo?.id }
+    const { error } = aegb ? await supabase.rpc('comment_as_aegb', args) : await supabase.rpc('add_comment', args)
     setBusy(false)
     if (error) return toast(errorMessage(error), 'error')
     setText('')
+    setVoice('moi')
     onCancelReply()
     await queryClient.invalidateQueries({ queryKey: ['fil'] })
   }
 
   return (
     <div className="flex flex-col gap-2">
+      {can(me, 'annonces') ? <VoiceChooser label={replyTo ? 'Répondre en tant que' : 'Commenter en tant que'} value={voice} onChange={setVoice} size="sm" /> : null}
       {replyTo ? (
         <p className="m-0 flex items-center gap-2 pl-14 text-[13px] text-muted">
           Réponse à <strong className="text-ink">{replyTo.firstName}</strong>
@@ -242,7 +268,7 @@ export function CommentInput({ postId, replyTo, onCancelReply, focusKey }: { pos
           send()
         }}
       >
-        <Avatar person={me.profile} size={40} />
+        {aegb ? <Logo size={40} alt="" /> : <Avatar person={me.profile} size={40} />}
         <div className="flex min-h-12 min-w-0 flex-1 items-end gap-1 rounded-[12px] bg-surface-2 py-1 pr-1 pl-4 focus-within:ring-[3px] focus-within:ring-safran/45">
           <label htmlFor="commentaire" className="sr-only">
             {replyTo ? `Répondre à ${replyTo.firstName}` : 'Écrire un commentaire'}
@@ -260,7 +286,7 @@ export function CommentInput({ postId, replyTo, onCancelReply, focusKey }: { pos
                 send()
               }
             }}
-            placeholder={replyTo ? `Répondre à ${replyTo.firstName}…` : 'Écrire un commentaire…'}
+            placeholder={aegb ? "Répondre au nom de l'AEGB…" : replyTo ? `Répondre à ${replyTo.firstName}…` : 'Écrire un commentaire…'}
             className="min-w-0 flex-1 resize-none bg-transparent py-2.5 text-[16px] leading-[1.4] text-ink outline-none placeholder:text-muted"
           />
           <button type="submit" disabled={!text.trim() || busy} aria-label="Envoyer" className="grid size-10 shrink-0 place-items-center rounded-full bg-primary text-primary-ink disabled:opacity-40">

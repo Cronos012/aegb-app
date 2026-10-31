@@ -171,7 +171,7 @@ function SharedPost({ id, mine }: { id: string; mine: boolean }) {
   if (post.isPending) return <span className={`${cls} h-16 animate-pulse`} />
   if (!p) return <span className={`${cls} text-[13px] italic opacity-80`}>Publication indisponible</span>
   const media = p.post_media[0]
-  const author = p.official ? "Bureau de l'AEGB" : p.author ? `${p.author.first_name} ${p.author.last_name}` : 'Ancien membre'
+  const author = p.official ? 'AEGB' : p.author ? `${p.author.first_name} ${p.author.last_name}` : 'Ancien membre'
   return (
     <Link to={`/app/fil/${p.id}`} className={cls}>
       <span className="min-w-0 flex-1">

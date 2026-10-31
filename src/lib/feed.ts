@@ -44,14 +44,15 @@ export const AUDIENCES: { value: Audience; label: string; short: string }[] = [
 
 export const POST_MAX = 2000
 export const COMMENT_MAX = 1000
-export const OFFICIAL_NAME = "Bureau de l'AEGB"
+export const OFFICIAL_NAME = 'AEGB'
 const PAGE = 10
 
 export type Person = Pick<Profile, 'id' | 'first_name' | 'last_name' | 'avatar_path' | 'member_type' | 'city'> & {
   role: { label: string } | null
 }
 
-type ReactionRow = { kind: ReactionKind; member_id: string }
+/** official : la réaction du compte AEGB, sans membre. */
+type ReactionRow = { kind: ReactionKind; member_id: string | null; official?: boolean }
 
 export type FeedPost = Post & {
   author: Person | null
@@ -65,10 +66,12 @@ export type FeedPost = Post & {
 export type Comment = Tables<'comments'> & {
   author: Person | null
   reactions: ReactionRow[]
+  /** Qui a écrit un commentaire AEGB : seul le bureau des annonces le voit. */
+  comment_authors: { written_by_name: string } | null
 }
 
 const PERSON = 'id, first_name, last_name, avatar_path, member_type, city, role:bureau_roles!bureau_roles_holder_id_fkey(label)'
-const POST_SELECT = `*, author:profiles!posts_author_id_fkey(${PERSON}), post_media(*), reactions(kind, member_id), comments(count), announcement_authors(written_by_name)`
+const POST_SELECT = `*, author:profiles!posts_author_id_fkey(${PERSON}), post_media(*), reactions(kind, member_id, official), comments(count), announcement_authors(written_by_name)`
 
 function tidy(rows: unknown): FeedPost[] {
   return (rows as FeedPost[]).map((p) => ({ ...p, post_media: [...p.post_media].sort((a, b) => a.position - b.position) }))
@@ -177,7 +180,7 @@ export function useComments(postId: string | undefined) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('comments')
-        .select(`*, author:profiles!comments_author_id_fkey(${PERSON}), reactions(kind, member_id)`)
+        .select(`*, author:profiles!comments_author_id_fkey(${PERSON}), reactions(kind, member_id, official), comment_authors(written_by_name)`)
         .eq('post_id', postId!)
         .order('created_at', { ascending: true })
       if (error) throw error
@@ -186,14 +189,14 @@ export function useComments(postId: string | undefined) {
   })
 }
 
-export type Reactor = { kind: ReactionKind; member: Pick<Profile, 'id' | 'first_name' | 'last_name' | 'avatar_path' | 'member_type'> | null }
+export type Reactor = { kind: ReactionKind; official: boolean; member: Pick<Profile, 'id' | 'first_name' | 'last_name' | 'avatar_path' | 'member_type'> | null }
 
 export function useReactors(target: { post?: string; comment?: string } | null) {
   return useQuery({
     queryKey: ['fil', 'reactions', target?.post ?? null, target?.comment ?? null],
     enabled: !!target,
     queryFn: async () => {
-      let q = supabase.from('reactions').select('kind, member:profiles!reactions_member_id_fkey(id, first_name, last_name, avatar_path, member_type)').order('created_at', { ascending: false })
+      let q = supabase.from('reactions').select('kind, official, member:profiles!reactions_member_id_fkey(id, first_name, last_name, avatar_path, member_type)').order('created_at', { ascending: false })
       q = target!.post ? q.eq('post_id', target!.post) : q.eq('comment_id', target!.comment!)
       const { data, error } = await q
       if (error) throw error
@@ -231,15 +234,33 @@ export function useSearchPosts(text: string) {
    Réactions
 ---------------------------------------------------------------------------- */
 
-export type ReactionSummary = { total: number; top: ReactionKind[]; mine: ReactionKind | null; counts: Partial<Record<ReactionKind, number>> }
+export type ReactionSummary = {
+  total: number
+  top: ReactionKind[]
+  mine: ReactionKind | null
+  /** La réaction du compte AEGB. */
+  aegb: ReactionKind | null
+  counts: Partial<Record<ReactionKind, number>>
+}
 
-/** Compte les réactions. mine : ce que je viens de choisir, avant que la base réponde. */
-export function summarize(rows: ReactionRow[], uid: string | undefined, mine?: ReactionKind | null): ReactionSummary {
-  const list = mine === undefined ? rows : [...rows.filter((r) => r.member_id !== uid), ...(mine && uid ? [{ kind: mine, member_id: uid }] : [])]
+/**
+ * Compte les réactions. mine et aegb : ce que je viens de choisir, pour moi
+ * ou au nom de l'AEGB, avant que la base réponde.
+ */
+export function summarize(rows: ReactionRow[], uid: string | undefined, mine?: ReactionKind | null, aegb?: ReactionKind | null): ReactionSummary {
+  let list = rows
+  if (mine !== undefined) list = [...list.filter((r) => r.official || r.member_id !== uid), ...(mine && uid ? [{ kind: mine, member_id: uid }] : [])]
+  if (aegb !== undefined) list = [...list.filter((r) => !r.official), ...(aegb ? [{ kind: aegb, member_id: null, official: true }] : [])]
   const counts: Partial<Record<ReactionKind, number>> = {}
   for (const r of list) counts[r.kind] = (counts[r.kind] ?? 0) + 1
   const top = (Object.keys(counts) as ReactionKind[]).sort((a, b) => counts[b]! - counts[a]!).slice(0, 3)
-  return { total: list.length, top, mine: list.find((r) => r.member_id === uid)?.kind ?? null, counts }
+  return {
+    total: list.length,
+    top,
+    mine: list.find((r) => !r.official && r.member_id === uid)?.kind ?? null,
+    aegb: list.find((r) => r.official)?.kind ?? null,
+    counts,
+  }
 }
 
 /** Les fonctions de la base veulent null, pas un champ absent. Les types générés ne le disent pas. */
@@ -247,10 +268,14 @@ export function orNull<T>(value: T | null | undefined): T {
   return (value ?? null) as T
 }
 
-export async function react(target: { post?: string; comment?: string }, kind: ReactionKind | null) {
-  const { error } = await supabase.rpc('react', { p_post: orNull(target.post), p_comment: orNull(target.comment), p_kind: orNull(kind) })
+export async function react(target: { post?: string; comment?: string }, kind: ReactionKind | null, asAegb = false) {
+  const args = { p_post: orNull(target.post), p_comment: orNull(target.comment), p_kind: orNull(kind) }
+  const { error } = await supabase.rpc(asAegb ? 'react_as_aegb' : 'react', args)
   if (error) throw error
 }
+
+/** Au nom de qui on écrit : soi, ou le compte AEGB (droit Annonces). */
+export type Voice = 'moi' | 'aegb'
 
 /** Rafraîchit le fil et les écrans qui montrent des publications. */
 export function useRefreshFeed() {

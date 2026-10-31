@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router'
 import { useQueryClient } from '@tanstack/react-query'
 import { ChevronLeft, Info, Megaphone, Users } from 'lucide-react'
 import { Avatar } from '../../components/Avatar'
+import { Logo } from '../../components/Logo'
+import { OfficialBadge } from '../../components/feed/OfficialBadge'
 import { Button } from '../../components/Button'
 import { ErrorNote } from '../../components/Feedback'
 import { useToast } from '../../components/Toast'
@@ -10,7 +12,7 @@ import { AttachButton, AttachmentPreviews } from '../../components/feed/Composer
 import { ConfirmDialog } from '../../components/feed/Dialogs'
 import { discardUploads, takeHandedOffFiles, uploadAttachments, useAttachments } from '../../lib/attachments'
 import { errorMessage } from '../../lib/errors'
-import { POST_MAX } from '../../lib/feed'
+import { OFFICIAL_NAME, POST_MAX, type Voice } from '../../lib/feed'
 import { can, useMe } from '../../lib/queries'
 import { supabase } from '../../lib/supabase'
 
@@ -25,6 +27,9 @@ export function Publier() {
   const [progress, setProgress] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [leaving, setLeaving] = useState(false)
+  // Au nom de l'AEGB : seulement avec le droit Annonces, et jamais par défaut.
+  const [voice, setVoice] = useState<Voice>('moi')
+  const aegb = voice === 'aegb' && can(me, 'annonces')
   const field = useRef<HTMLTextAreaElement>(null)
   const { add } = media
 
@@ -57,14 +62,15 @@ export function Publier() {
     const n = media.list.length
     setProgress(n ? `Envoi ${n > 1 ? 'des photos' : media.list[0].kind === 'video' ? 'de la vidéo' : 'de la photo'}…` : 'Publication…')
     try {
-      const files = await uploadAttachments(me.profile.id, id, media.list, (done) => n > 1 && setProgress(`Envoi des photos… ${done} sur ${n}`))
-      const { error } = await supabase.rpc('create_post', { p_id: id, p_body: text, p_media: files })
+      const files = await uploadAttachments(aegb ? 'bureau' : me.profile.id, id, media.list, (done) => n > 1 && setProgress(`Envoi des photos… ${done} sur ${n}`))
+      const args = { p_id: id, p_body: text, p_media: files }
+      const { error } = aegb ? await supabase.rpc('publish_as_aegb', args) : await supabase.rpc('create_post', args)
       if (error) {
         await discardUploads(files)
         throw error
       }
       await queryClient.invalidateQueries({ queryKey: ['fil'] })
-      toast('Publié ! Ta publication est dans le fil.')
+      toast(aegb ? "Publié au nom de l'AEGB." : 'Publié ! Ta publication est dans le fil.')
       navigate('/app/fil')
     } catch (e) {
       setError(errorMessage(e))
@@ -98,16 +104,38 @@ export function Publier() {
 
         <div className="flex flex-1 flex-col gap-4 px-4 pt-4 pb-6 lg:p-0">
           <div className="flex items-center gap-3">
-            <Avatar person={me.profile} size={48} />
-            <div className="min-w-0">
-              <p className="m-0 text-[16px] font-bold">
-                {me.profile.first_name} {me.profile.last_name}
+            {aegb ? <Logo size={48} alt="" /> : <Avatar person={me.profile} size={48} />}
+            <div className="min-w-0 flex-1">
+              <p className="m-0 flex items-center gap-1.5 text-[16px] font-bold">
+                {aegb ? (
+                  <>
+                    {OFFICIAL_NAME} <OfficialBadge />
+                  </>
+                ) : (
+                  `${me.profile.first_name} ${me.profile.last_name}`
+                )}
               </p>
               <span className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-select px-2.5 py-1 text-[12px] font-bold text-ink">
                 <Users className="size-3.5" /> Tous les membres de l'AEGB
               </span>
             </div>
+            {can(me, 'annonces') ? (
+              <button
+                type="button"
+                onClick={() => setVoice(aegb ? 'moi' : 'aegb')}
+                aria-label={aegb ? 'Publier en mon nom' : "Publier au nom de l'AEGB"}
+                className="h-8 shrink-0 rounded-md bg-line-soft px-2.5 text-[13.5px] font-semibold text-ink hover:bg-line"
+              >
+                Changer
+              </button>
+            ) : null}
           </div>
+          {aegb ? (
+            <p className="m-0 flex items-start gap-2 rounded-lg bg-select px-3 py-2.5 text-[14px] text-[#163F93] dark:text-ink">
+              <Info className="mt-0.5 size-4 shrink-0" />
+              <span>Tu publies au nom de l'AEGB. Les membres ne verront pas ton nom, seul le bureau le verra.</span>
+            </p>
+          ) : null}
 
           <label htmlFor="texte" className="sr-only">
             Ton message
@@ -119,7 +147,7 @@ export function Publier() {
             onChange={(e) => setText(e.target.value)}
             maxLength={POST_MAX}
             autoFocus
-            placeholder={`Quoi de neuf, ${me.profile.first_name} ?`}
+            placeholder={aegb ? "Écrire au nom de l'AEGB…" : `Quoi de neuf, ${me.profile.first_name} ?`}
             className="min-h-[120px] w-full resize-none bg-transparent text-[18px] leading-[1.5] text-ink outline-none placeholder:text-muted"
           />
           {text.length > POST_MAX - 200 ? (
@@ -137,7 +165,9 @@ export function Publier() {
             <p className="m-0 flex items-start gap-2 text-[13px] leading-[1.45] text-muted">
               <Info className="mt-px size-4 shrink-0" />
               <span>
-                Ta publication apparaît tout de suite dans le fil. Les annonces officielles restent réservées au bureau.
+                {aegb
+                  ? 'Pour une annonce épinglée ou programmée, passe par Mode bureau › Annonces.'
+                  : 'Ta publication apparaît tout de suite dans le fil. Les annonces officielles restent réservées au bureau.'}
                 {can(me, 'annonces') ? (
                   <>
                     {' '}
