@@ -2,7 +2,8 @@
 # Il lui faut un secret GitHub (Settings → Secrets and variables → Actions) :
 #   HOSTINGER_API_TOKEN : un jeton de l'API Hostinger (hPanel → Profil → API).
 # Sans lui, il ne fait rien et le dit. Le jeton n'est jamais affiché.
-# Ce qu'il pose : une ligne CNAME « app » vers cronos012.github.io (GitHub Pages).
+# Ce qu'il pose : une ligne CNAME « app » vers cronos012.github.io (GitHub Pages),
+# qui sert la version d'essai.
 # Il n'efface rien : les autres lignes de la zone, dont celles de l'ancienne appli
 # sur aegb.fr, ne changent pas.
 name: Domaine
