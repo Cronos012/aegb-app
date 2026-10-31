@@ -99,9 +99,9 @@ function ReachableKpi({ r, className = '' }: { r: Reachable; className?: string 
         </span>
       </span>
       <span className="titre mt-3 block text-[30px] leading-none">{r.reachable}</span>
-      <span className="mt-2 block text-[14px] font-semibold">Membres joignables</span>
+      <span className="mt-2 block text-[14px] font-semibold">{r.reachable > 1 ? 'Membres joignables' : 'Membre joignable'}</span>
       <span className="mt-0.5 block text-[13px] text-muted">
-        sur {r.total} {r.reachable > 1 ? 'ont' : 'a'} activé les notifications
+        Notifications activées, sur {r.total} membre{r.total > 1 ? 's' : ''}
       </span>
       <span className="mt-3 block h-2 overflow-hidden rounded-full bg-line-soft">
         <span className="block h-full rounded-full bg-ok" style={{ width: `${Math.max(percent, r.reachable ? 2 : 0)}%` }} />

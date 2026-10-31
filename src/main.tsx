@@ -53,6 +53,8 @@ createRoot(document.getElementById('root')!).render(
           shouldDehydrateQuery: (q) => q.state.status === 'success' && KEEP.has(String(q.queryKey[0])),
         },
       }}
+      // Les pages gardées s'affichent tout de suite, puis se mettent à jour.
+      onSuccess={() => queryClient.invalidateQueries()}
     >
       <BrowserRouter basename={import.meta.env.BASE_URL}>
         <SessionProvider>
