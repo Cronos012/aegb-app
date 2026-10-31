@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "build:pages": "BASE_PATH=/aegb-app/ npm run build && cp dist/index.html dist/404.html && touch dist/.nojekyll",
+    "build:domaine": "BASE_PATH=/ npm run build && cp dist/index.html dist/404.html && touch dist/.nojekyll && echo app.aegb.fr > dist/CNAME",
     "lint": "oxlint",
     "preview": "vite preview",
     "typecheck": "tsc -b",
