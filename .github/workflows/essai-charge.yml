@@ -1,0 +1,87 @@
+# Essai de charge de l'AG d'essai : dès que le vote est ouvert, les membres de
+# test votent tous à la même seconde, pendant que d'autres rafraîchissent
+# l'onglet Votes. Ne se lance qu'à la main : onglet Actions, « Essai de charge
+# du vote », « Run workflow ». Déjà réussi le 30/10/2026 ; à refaire avant la
+# vraie AG, une fois le vote de l'AG d'essai ouvert.
+name: Essai de charge du vote
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  charge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      PGPASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      PROJECT_REF: lahllstfpmjfcavptlmt
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Relier le projet
+        run: supabase link --project-ref "$PROJECT_REF"
+      - name: Préparer la connexion
+        run: |
+          ls supabase/.temp || true
+          url="$(cat supabase/.temp/pooler-url 2>/dev/null || true)"
+          host="$(echo "$url" | sed -E 's#^.*@([^:/]+).*$#\1#')"
+          [ -n "$host" ] || host="aws-0-eu-west-3.pooler.supabase.com"
+          echo "Serveur : $host"
+          {
+            echo "PGHOST=$host"
+            echo "PGPORT=6543"
+            echo "PGUSER=postgres.$PROJECT_REF"
+            echo "PGDATABASE=postgres"
+            echo "PGSSLMODE=require"
+          } >> "$GITHUB_ENV"
+          PGB="$(command -v pgbench || ls /usr/lib/postgresql/*/bin/pgbench 2>/dev/null | tail -1)"
+          if [ -z "$PGB" ]; then sudo apt-get update -q && sudo apt-get install -y -q postgresql-contrib >/dev/null; PGB="$(ls /usr/lib/postgresql/*/bin/pgbench | tail -1)"; fi
+          echo "PGB=$PGB" >> "$GITHUB_ENV"
+      - name: Attendre l'ouverture du vote
+        run: |
+          for i in $(seq 1 450); do
+            n="$(psql -Atc "select count(*) from public.ballots where status = 'ouvert'")"
+            [ "$n" = "1" ] && { echo "Vote ouvert."; exit 0; }
+            sleep 10
+          done
+          echo "Le vote ne s'est pas ouvert."; exit 1
+      - name: Avant
+        run: |
+          psql -c "select (select count(*) from public.ballot_electors e join public.ballots b on b.id = e.ballot_id where b.status = 'ouvert') as inscrits, (select count(*) from public.ballot_voters v join public.ballots b on b.id = v.ballot_id where b.status = 'ouvert') as votants"
+      - name: Tous les membres de test votent à la même seconde
+        run: |
+          cat > vote.sql <<'SQL'
+          \set i :client_id + 1
+          begin;
+          select set_config('request.jwt.claims', json_build_object('sub', (select id from (select u.id, row_number() over (order by u.email) as n from auth.users u join public.profiles p on p.id = u.id where u.email like '%@aegb-test.invalid' and private.vote_right(p.id) = 'actif') x where n = :i), 'role', 'authenticated')::text, true);
+          select set_config('essai.b', (select id::text from public.ballots where status = 'ouvert'), true);
+          select set_config('essai.c', (select jsonb_object_agg(q.id, case when q.kind = 'resolution' then case when :i % 5 = 0 then 'contre' else 'pour' end when array_length(q.candidates, 1) = 1 then case when :i % 7 = 0 then 'contre' else 'pour' end else q.candidates[1 + :i % 2]::text end) from public.ballot_questions q where q.ballot_id = current_setting('essai.b')::uuid)::text, true);
+          set local role authenticated;
+          select public.cast_vote(current_setting('essai.b')::uuid, current_setting('essai.c')::jsonb);
+          commit;
+          SQL
+          cat > vue.sql <<'SQL'
+          \set i random(1, 20)
+          begin;
+          select set_config('request.jwt.claims', json_build_object('sub', (select id from (select u.id, row_number() over (order by u.email) as n from auth.users u where u.email like '%@aegb-test.invalid') x where n = :i), 'role', 'authenticated')::text, true);
+          set local role authenticated;
+          select length(public.assembly_view()::text);
+          commit;
+          SQL
+          n="$(psql -Atc "select count(*) from auth.users u join public.profiles p on p.id = u.id where u.email like '%@aegb-test.invalid' and private.vote_right(p.id) = 'actif'")"
+          echo "Membres de test qui votent : $n"
+          "$PGB" -n -c 20 -j 4 -T 25 -f vue.sql > vue.txt 2>&1 &
+          sleep 3
+          "$PGB" -n -c "$n" -j "$n" -t 1 -r -f vote.sql 2>&1 | grep -vE "^ +[0-9.]+ +[0-9]+ +(begin|commit|set local|select set_config)" || true
+          wait
+          echo "--- Pendant ce temps, onglet Votes rafraîchi par 20 membres :"
+          grep -E "processed|failed|latency average|tps" vue.txt
+      - name: Après
+        run: |
+          psql -c "select (select count(*) from public.ballot_voters v join public.ballots b on b.id = v.ballot_id where b.status = 'ouvert') as votants, (select string_agg(q.title || ' = ' || (select sum(c.votes) from private.ballot_counts c where c.question_id = q.id), ', ' order by q.position) from public.ballot_questions q join public.ballots b on b.id = q.ballot_id where b.status = 'ouvert') as bulletins_par_question"
