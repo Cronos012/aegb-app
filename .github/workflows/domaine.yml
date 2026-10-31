@@ -1,0 +1,65 @@
+# Crée l'adresse des essais (app.aegb.fr) chez Hostinger, sans passer par le panneau.
+# Il lui faut un secret GitHub (Settings → Secrets and variables → Actions) :
+#   HOSTINGER_API_TOKEN : un jeton de l'API Hostinger (hPanel → Profil → API).
+# Sans lui, il ne fait rien et le dit. Le jeton n'est jamais affiché.
+# Ce qu'il pose : une ligne CNAME « app » vers cronos012.github.io (GitHub Pages).
+# Il n'efface rien : les autres lignes de la zone, dont celles de l'ancienne appli
+# sur aegb.fr, ne changent pas.
+name: Domaine
+
+on:
+  push:
+    paths:
+      - '.github/workflows/domaine.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dns:
+    runs-on: ubuntu-latest
+    env:
+      DOMAINE: aegb.fr
+      SOUS_DOMAINE: app
+      CIBLE: cronos012.github.io.
+      HOSTINGER_API_TOKEN: ${{ secrets.HOSTINGER_API_TOKEN }}
+    steps:
+      - name: Vérifier le jeton
+        id: jeton
+        run: |
+          if [ -z "$HOSTINGER_API_TOKEN" ]; then
+            echo "Le secret HOSTINGER_API_TOKEN manque : rien n'est fait."
+            echo "ok=non" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=oui" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Zone avant
+        if: steps.jeton.outputs.ok == 'oui'
+        run: |
+          curl -fsS "https://developers.hostinger.com/api/dns/v1/zones/$DOMAINE" \
+            -H "Authorization: Bearer $HOSTINGER_API_TOKEN" -H "Accept: application/json" \
+            | jq -r '.[] | "\(.type)\t\(.name)\t\([.records[].content] | join(", "))"'
+
+      - name: Poser app.aegb.fr
+        if: steps.jeton.outputs.ok == 'oui'
+        run: |
+          corps=$(jq -n --arg n "$SOUS_DOMAINE" --arg c "$CIBLE" \
+            '{overwrite: true, zone: [{name: $n, type: "CNAME", ttl: 3600, records: [{content: $c}]}]}')
+          reponse=$(mktemp)
+          if ! curl -sS --fail-with-body -o "$reponse" -X PUT \
+            "https://developers.hostinger.com/api/dns/v1/zones/$DOMAINE" \
+            -H "Authorization: Bearer $HOSTINGER_API_TOKEN" \
+            -H "Content-Type: application/json" -H "Accept: application/json" \
+            --data "$corps"; then
+            echo "Hostinger a refusé :"; cat "$reponse"; exit 1
+          fi
+          echo "Ligne posée."
+
+      - name: Zone après
+        if: steps.jeton.outputs.ok == 'oui'
+        run: |
+          curl -fsS "https://developers.hostinger.com/api/dns/v1/zones/$DOMAINE" \
+            -H "Authorization: Bearer $HOSTINGER_API_TOKEN" -H "Accept: application/json" \
+            | jq -r '.[] | "\(.type)\t\(.name)\t\([.records[].content] | join(", "))"'
