@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useMatch } from 'react-router'
-import { Briefcase, Calendar, CreditCard, FileText, House, LogOut, MessageSquare, SquareCheckBig, User, Users, type LucideIcon } from 'lucide-react'
+import { Briefcase, Calendar, CreditCard, FileText, House, LogOut, MessageSquare, Settings, SquareCheckBig, User, Users, type LucideIcon } from 'lucide-react'
 import { signOut } from '../auth/session'
 import { Avatar } from '../components/Avatar'
 import { Brand } from '../components/Logo'
@@ -61,6 +61,7 @@ export function MemberLayout() {
     useMatch('/app/evenements/:id'),
     useMatch('/app/evenements/paiement/:id'),
     useMatch('/app/documents/:id'),
+    useMatch('/app/reglages/:page'),
   ].some(Boolean)
 
   return (
@@ -76,6 +77,7 @@ export function MemberLayout() {
           <SideLink to="/app/documents" label="Documents" icon={FileText} />
           <SideLink to="/app/membres" label="Membres" icon={Users} />
           <SideLink to="/app/profil" label="Mon profil" icon={User} />
+          <SideLink to="/app/reglages" label="Réglages" icon={Settings} />
           {bureau ? (
             <>
               <div className="mx-3 my-3 h-px bg-white/12" />
