@@ -1,11 +1,13 @@
 import { useState, type FormEvent } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router'
+import { useQueryClient } from '@tanstack/react-query'
 import { Smartphone } from 'lucide-react'
 import { useSession } from '../../auth/session'
 import { Button } from '../../components/Button'
 import { ErrorNote } from '../../components/Feedback'
 import { PasswordField, TextField } from '../../components/Field'
 import { Brand } from '../../components/Logo'
+import { useToast } from '../../components/Toast'
 import { AuthFrame } from '../../layouts/AuthFrame'
 import { errorMessage, isEmail } from '../../lib/errors'
 import { setRememberMe, supabase } from '../../lib/supabase'
@@ -14,6 +16,8 @@ export function Connexion() {
   const { session } = useSession()
   const location = useLocation()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const toast = useToast()
   const initialEmail = (location.state as { email?: string } | null)?.email ?? ''
   const [email, setEmail] = useState(initialEmail)
   const [password, setPassword] = useState('')
@@ -21,7 +25,8 @@ export function Connexion() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  if (session) return <Navigate to="/app" replace />
+  // Pendant la connexion, on attend de savoir si le compte était fermé.
+  if (session && !busy) return <Navigate to="/app" replace />
 
   async function submit(e: FormEvent) {
     e.preventDefault()
@@ -31,14 +36,21 @@ export function Connexion() {
     setBusy(true)
     setRememberMe(remember)
     const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password })
-    setBusy(false)
     if (error) {
+      setBusy(false)
       if (error.code === 'email_not_confirmed') {
         navigate('/verifier-email', { state: { email: email.trim() } })
         return
       }
       return setError(errorMessage(error))
     }
+    // Se reconnecter avant l'effacement annule la suppression du compte.
+    const { data: reopened } = await supabase.rpc('cancel_account_deletion')
+    if (reopened) {
+      await queryClient.invalidateQueries({ queryKey: ['me'] })
+      toast('Ton compte est rouvert. Content de te revoir !')
+    }
+    setBusy(false)
     navigate('/app', { replace: true })
   }
 

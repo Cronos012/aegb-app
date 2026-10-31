@@ -80,7 +80,7 @@ function CommentItem({ comment: c, onReply, small = false }: { comment: Comment;
                 {a.first_name} {a.last_name}
               </Link>
             ) : (
-              'Membre parti'
+              'Ancien membre'
             )}
           </p>
           <RichText text={c.body} className="text-[15px] leading-[1.45]" />

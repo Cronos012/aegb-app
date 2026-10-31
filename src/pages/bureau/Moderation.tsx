@@ -35,7 +35,7 @@ function QueueCard({ item, manage }: { item: QueueItem; manage: boolean }) {
   const reasons = reasonsByCount(item)
   const isPost = !!item.post_id
   const first = item.author_first_name ?? 'Le membre'
-  const name = item.author_first_name ? `${item.author_first_name} ${item.author_last_name ?? ''}`.trim() : 'Membre parti'
+  const name = item.author_first_name ? `${item.author_first_name} ${item.author_last_name ?? ''}`.trim() : 'Ancien membre'
   const postLink = `/app/fil/${item.post_id ?? item.parent_post_id}`
 
   async function keep() {
@@ -130,7 +130,7 @@ function MessageCard({ item, manage }: { item: ModerationMessage; manage: boolea
   const [keeping, setKeeping] = useState(false)
   const reasons = (Object.keys(item.reasons) as ReportReason[]).sort((a, b) => (item.reasons[b] ?? 0) - (item.reasons[a] ?? 0))
   const first = item.author_first_name ?? 'Le membre'
-  const name = item.author_first_name ? `${item.author_first_name} ${item.author_last_name ?? ''}`.trim() : 'Membre parti'
+  const name = item.author_first_name ? `${item.author_first_name} ${item.author_last_name ?? ''}`.trim() : 'Ancien membre'
   const kind = item.media_kind === 'vocal' ? 'Message vocal' : item.media_kind === 'photo' ? 'Photo' : item.media_kind === 'document' ? 'Document' : 'Message'
 
   async function keep() {

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router'
 import { useQueryClient } from '@tanstack/react-query'
-import { Ban, Calendar, ChevronLeft, ClipboardList, GraduationCap, MapPin, MessageSquare, MoreHorizontal, Star, UserX } from 'lucide-react'
+import { Ban, Calendar, ChevronLeft, ClipboardList, GraduationCap, MapPin, MessageSquare, MoreHorizontal, Phone, Star, UserX } from 'lucide-react'
 import { Avatar } from '../../components/Avatar'
 import { Button } from '../../components/Button'
 import { Cover } from '../../components/Cover'
@@ -16,10 +16,13 @@ import { errorMessage } from '../../lib/errors'
 import { useMemberPosts, useProfile, type PublicProfile } from '../../lib/feed'
 import { monthYear, TYPE_LABELS } from '../../lib/format'
 import { openPrivate, setBlocked, useBlocks } from '../../lib/messages'
+import { useMemberContact } from '../../lib/notifications'
+import { OnlineDot, useOnline } from '../../lib/presence'
 import { can, useMe } from '../../lib/queries'
 
-function About({ p }: { p: PublicProfile }) {
+function About({ p, phone }: { p: PublicProfile; phone: string | null | undefined }) {
   const rows: [string, string | null | undefined][] = [
+    ['Téléphone', phone],
     ['École', p.school],
     ['Formation', p.formation],
     ['Ville', p.city],
@@ -51,6 +54,8 @@ export function MembreProfil() {
   const [opening, setOpening] = useState(false)
   const queryClient = useQueryClient()
   const blocked = useBlocks().data?.has(id ?? '') ?? false
+  const contact = useMemberContact(id === me.profile.id ? undefined : id).data
+  const online = useOnline(id)
 
   if (id === me.profile.id) return <Navigate to="/app/profil" replace />
   if (profile.isPending) return <PageLoader />
@@ -112,11 +117,14 @@ export function MembreProfil() {
           <div className="flex items-end justify-between gap-3">
             <div className="relative z-10 -mt-[56px] lg:-mt-[64px]">
               <Avatar person={p} size={104} ring />
+              {online ? <OnlineDot size={104} /> : null}
             </div>
             <div className="flex items-center gap-2 pb-1">
-              <Button size="md" icon={<MessageSquare className="size-5" />} busy={opening} onClick={write}>
-                Écrire
-              </Button>
+              {contact?.can_write === false ? null : (
+                <Button size="md" icon={<MessageSquare className="size-5" />} busy={opening} onClick={write}>
+                  Écrire
+                </Button>
+              )}
               <button type="button" onClick={() => setMenu(true)} aria-label="Plus d'options" className="grid size-11 place-items-center rounded-xl border-[1.5px] border-line bg-surface text-ink hover:bg-surface-2">
                 <MoreHorizontal className="size-5" />
               </button>
@@ -150,6 +158,15 @@ export function MembreProfil() {
                 <Calendar className="size-3.5" /> Membre depuis {monthYear(p.validated_at)}
               </li>
             ) : null}
+            {contact?.phone ? (
+              <li className="flex items-center gap-1.5">
+                <Phone className="size-3.5" />
+                <a href={`tel:${contact.phone.replace(/\s/g, '')}`} className="text-muted">
+                  {contact.phone}
+                </a>
+              </li>
+            ) : null}
+            {online ? <li className="font-bold text-ok">En ligne</li> : null}
           </ul>
         </div>
         <div className="mt-5 flex gap-6 border-b border-line-soft px-5 lg:px-6" role="tablist">
@@ -185,7 +202,7 @@ export function MembreProfil() {
             )}
           </div>
         ) : (
-          <About p={p} />
+          <About p={p} phone={contact?.phone} />
         )}
       </section>
 

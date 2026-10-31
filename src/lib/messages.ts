@@ -134,7 +134,10 @@ export type OtherMember = {
   member_type: Enums<'member_type'>
   status: Enums<'member_status'>
   validated_at: string | null
-  last_read_at: string
+  /** Vide quand l'un des deux a caché « Vu ». */
+  last_read_at: string | null
+  /** A demandé la suppression de son compte. */
+  closed: boolean
   blocked: boolean
 }
 
@@ -502,7 +505,7 @@ export function previewLine(c: ConversationRow, uid: string | undefined): string
 
 /** Le nom affiché d'une conversation privée : celui de l'autre membre. */
 export function conversationName(c: Pick<ConversationRow, 'kind' | 'title' | 'other_first_name' | 'other_last_name'>): string {
-  if (c.kind === 'prive') return c.other_first_name ? `${c.other_first_name} ${c.other_last_name ?? ''}`.trim() : 'Membre parti'
+  if (c.kind === 'prive') return c.other_first_name ? `${c.other_first_name} ${c.other_last_name ?? ''}`.trim() : 'Ancien membre'
   return c.title
 }
 

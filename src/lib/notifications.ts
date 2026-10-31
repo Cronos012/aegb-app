@@ -123,6 +123,9 @@ export function useMarkLinkRead(link: string | null | undefined) {
   const pending = useBadge().data?.notifications
   useEffect(() => {
     if (!link || !uid || done.current === link || pending === 0) return
+    // La liste déjà chargée dit s'il y a quelque chose à marquer ici.
+    const list = queryClient.getQueryData<Notification[]>(['notifications', 'liste', uid])
+    if (list && !list.some((n) => !n.read && n.link === link)) return
     done.current = link
     supabase.rpc('mark_link_read', { p_link: link }).then(({ data }) => {
       if (data) queryClient.invalidateQueries({ queryKey: ['notifications'] })
