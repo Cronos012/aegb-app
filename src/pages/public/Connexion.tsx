@@ -95,7 +95,7 @@ export function Connexion() {
           Rester connecté sur cet ordinateur
         </label>
         <ErrorNote error={error} />
-        <div className="mt-auto flex flex-col gap-4 pt-4 lg:mt-2 lg:pt-0">
+        <div className="mt-4 flex flex-col gap-4 lg:mt-2">
           <Button type="submit" busy={busy}>
             Se connecter
           </Button>
