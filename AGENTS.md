@@ -11,7 +11,7 @@ Ce fichier explique comment le travail se fait sur ce dépôt, pour qu'un nouvel
 
 ## Règles de Cronos (à respecter sans exception)
 
-1. **Tout est signé Cronos.** Auteur des commits : `Cronos <163435331+Cronos012@users.noreply.github.com>`. Aucune mention d'un assistant ou d'une IA dans les commits, les PR, le code, les commentaires ou la version en ligne : pas de `Co-Authored-By`, pas de lien de session, pas de « Generated with… », pas de bloc « Requested by… » en tête de PR. Si un outil ajoute un pied de page à une PR, retire-le aussitôt en remettant la description sans lui.
+1. **Tout est signé Cronos.** Auteur et committer des commits : `Cronos <163435331+Cronos012@users.noreply.github.com>`. Dans les commits, les PR, le code et la version en ligne : pas de ligne `Co-Authored-By`, pas de lien de session, pas de pied de page ajouté par un outil (« Generated with… »), pas de bloc « Requested by… » en tête de PR. Si un outil ajoute un pied de page à une PR, retire-le aussitôt en remettant la description sans lui.
 2. **Méthode par lots.** Pour chaque nouvelle partie : plan du lot, réflexion sur l'interface, maquette soignée (écrans téléphone 390×844, et PC quand il faut), validation explicite de Cronos, et **seulement ensuite** le code. Ne jamais coder avant son « ok ».
 3. **Messages courts.** Pas de message « je commence » ni « j'ai fini l'étape ». Un message seulement pour un résultat, une question ou une action qu'il doit faire. Tenir une liste de suivi à jour pour qu'il voie où on en est.
 4. **Jamais de SQL à coller.** La base se met à jour par GitHub (voir plus bas). Ne lui donner du SQL qu'en tout dernier recours, en expliquant pourquoi.
@@ -22,8 +22,9 @@ Ce fichier explique comment le travail se fait sur ce dépôt, pour qu'un nouvel
 
 ## Branches et PR
 
-- Chaque lot a sa branche, partie de la précédente : `lot-1-socle` (fusionné) → `lot-2-fil` → `lot-3-messages` → `lot-4-cotisations` → `lot-5-elections` → `lot-6-evenements` → `lot-7-notifications` → branche de travail suivante (style sobre, logo, compte AEGB dans le fil).
-- Une PR par lot, dont la base est la branche du lot précédent. Elles se fusionnent dans l'ordre. C'est Cronos qui fusionne.
+- Les lots 1 à 8 sont tous fusionnés dans `main` (31/10/2026). Il ne reste que deux branches : `main` (le code) et `gh-pages` (la version d'essai publiée).
+- Pour une nouvelle partie : une branche `lot-N-nom` partie de `main`, et une PR vers `main`. On fusionne quand Cronos le demande.
+- Le préfixe `lot-` compte : c'est lui qui déclenche la mise à jour de la base (voir plus bas).
 - Messages de commit en français, qui disent ce que l'utilisateur gagne (« Compte AEGB dans le fil : publier, commenter et réagir au nom de l'AEGB »).
 - Description de PR : ce qui change, comment l'essayer, ce qui reste. Pas de pied de page.
 
@@ -44,6 +45,7 @@ Puis un essai à l'écran : l'appli en local avec des réponses de Supabase simu
 - Une migration sur une autre branche ne s'applique pas : il faut l'accord de Cronos pour la mettre en ligne (pousser sur une branche `lot-*`).
 - Ne jamais publier une version d'essai dont le code lit des colonnes ou des fonctions qui ne sont pas encore en ligne : le fil casserait pour tout le monde.
 - Toute la sécurité est dans la base (RLS et fonctions qui vérifient le poste avec `private.require('écran')` ou `public.can('écran', 'lecture')`). L'interface ne fait que cacher ce qu'on ne peut pas faire.
+- Essai de charge du vote (toute une salle vote à la même seconde) : workflow manuel « Essai de charge du vote » dans l'onglet Actions. Réussi le 30/10 ; à relancer avant la vraie AG, le vote de l'AG d'essai ouvert.
 - Les réglages d'authentification de Supabase (adresses de retour, SMTP) se font dans le tableau de bord Supabase ou par le workflow (fichier `supabase/limites-connexion.json`).
 
 ## La version d'essai
@@ -59,8 +61,6 @@ Sobre, façon réseau social : fond gris uni, cartes blanches, un seul bleu (`#1
 
 ## Ce qui reste à faire avant le lancement
 
-- Fusionner les PR dans l'ordre (Cronos).
-- Réécrire au nom de Cronos les premiers commits qui ne sont pas signés par lui (envoi forcé de toutes les branches, avec son accord), et retirer de `main` le dossier de réglages locaux d'autorisation.
 - Brancher HelloAsso (secrets GitHub) ; le paiement de 1 € de test est reporté.
 - Vrai domaine, SMTP (emails), publication Android (Play Store) et guide iPhone.
 - Effacer les comptes d'essai et rendre le journal ineffaçable.
