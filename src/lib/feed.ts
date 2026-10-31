@@ -428,6 +428,17 @@ export function memberLine(m: DirectoryMember): string {
   return [m.role?.label ?? TYPE_LABELS[m.member_type], place].filter(Boolean).join(' · ')
 }
 
+const SHORT_ROLES: Record<string, string> = {
+  'Admin numérique': 'Admin',
+  'Secrétariat général': 'Secrétariat',
+  'Projets et intégration': 'Intégration',
+}
+
+/** Le poste en un mot, pour la pastille à côté du nom. « Bureau » est réservé au compte AEGB. */
+export function shortRole(label: string): string {
+  return SHORT_ROLES[label] ?? label
+}
+
 /** « Vice-présidence », ou « Étudiant à Brest ». */
 export function personLine(p: Person): string {
   if (p.role) return p.role.label

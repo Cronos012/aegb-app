@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { Check, EyeOff, Flag, MessageCircle, MoreHorizontal, Pencil, Pin, PinOff, Send, Trash2, User } from 'lucide-react'
 import { useSession } from '../../auth/session'
 import { errorMessage } from '../../lib/errors'
-import { AUDIENCES, markSeen, OFFICIAL_NAME, personLine, POST_MAX, react, summarize, useNow, type FeedPost, type ReactionKind } from '../../lib/feed'
+import { AUDIENCES, markSeen, OFFICIAL_NAME, personLine, POST_MAX, shortRole, react, summarize, useNow, type FeedPost, type ReactionKind } from '../../lib/feed'
 import { relative } from '../../lib/format'
 import { removeFiles } from '../../lib/photos'
 import { can, useMe } from '../../lib/queries'
@@ -74,7 +74,7 @@ function Header({ post, menu }: { post: FeedPost; menu: React.ReactNode }) {
           ) : (
             'Ancien membre'
           )}
-          {a?.role ? <span className="rounded-full bg-safran-pale px-2 py-0.5 text-[11px] font-extrabold text-[#163F93]">Bureau</span> : null}
+          {a?.role ? <span className="rounded-full bg-safran-pale px-2 py-0.5 text-[11px] font-extrabold text-[#163F93]">{shortRole(a.role.label)}</span> : null}
         </p>
         <p className="m-0 truncate text-[13px] text-muted">
           {a ? `${personLine(a)} · ` : ''}
