@@ -118,3 +118,8 @@ export function avatarTone(seed: string) {
   for (const ch of seed) h = (h * 31 + ch.charCodeAt(0)) | 0
   return AVATAR_TONES[Math.abs(h) % AVATAR_TONES.length]
 }
+
+/** Les espaces insécables du français : jamais de « ! » ou de « ? » seul en début de ligne. */
+export function frenchSpaces(text: string) {
+  return text.replace(/ ([!?:;»])/g, ' $1').replace(/« /g, '« ')
+}

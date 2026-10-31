@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router'
-import { Calendar, ChevronLeft, ClipboardList, GraduationCap, MapPin, MessageSquare, MoreHorizontal, Star, UserX } from 'lucide-react'
+import { useQueryClient } from '@tanstack/react-query'
+import { Ban, Calendar, ChevronLeft, ClipboardList, GraduationCap, MapPin, MessageSquare, MoreHorizontal, Star, UserX } from 'lucide-react'
 import { Avatar } from '../../components/Avatar'
 import { Button } from '../../components/Button'
 import { Cover } from '../../components/Cover'
@@ -10,8 +11,11 @@ import { useToast } from '../../components/Toast'
 import { ActionSheet, SheetAction } from '../../components/feed/Dialogs'
 import { NewMembers } from '../../components/feed/NewMembers'
 import { PostsGrid } from '../../components/feed/PostsGrid'
+import { BlockDialog } from '../../components/messages/BlockDialog'
+import { errorMessage } from '../../lib/errors'
 import { useMemberPosts, useProfile, type PublicProfile } from '../../lib/feed'
 import { monthYear, TYPE_LABELS } from '../../lib/format'
+import { openPrivate, setBlocked, useBlocks } from '../../lib/messages'
 import { can, useMe } from '../../lib/queries'
 
 function About({ p }: { p: PublicProfile }) {
@@ -43,6 +47,10 @@ export function MembreProfil() {
   const posts = useMemberPosts(id)
   const [tab, setTab] = useState<'publications' | 'apropos'>('publications')
   const [menu, setMenu] = useState(false)
+  const [block, setBlock] = useState<{ id: string; first_name: string } | null>(null)
+  const [opening, setOpening] = useState(false)
+  const queryClient = useQueryClient()
+  const blocked = useBlocks().data?.has(id ?? '') ?? false
 
   if (id === me.profile.id) return <Navigate to="/app/profil" replace />
   if (profile.isPending) return <PageLoader />
@@ -64,6 +72,26 @@ export function MembreProfil() {
   }
 
   const school = [p.school, p.formation].filter(Boolean).join(' · ')
+
+  async function write() {
+    setOpening(true)
+    try {
+      navigate(`/app/messages/${await openPrivate(p!.id)}`)
+    } catch (e) {
+      toast(errorMessage(e), 'error')
+      setOpening(false)
+    }
+  }
+
+  async function unblock() {
+    try {
+      await setBlocked(p!.id, false)
+      await queryClient.invalidateQueries({ queryKey: ['messages'] })
+      toast(`Tu as débloqué ${p!.first_name}.`)
+    } catch (e) {
+      toast(errorMessage(e), 'error')
+    }
+  }
   const count = posts.data?.count ?? 0
 
   return (
@@ -86,14 +114,12 @@ export function MembreProfil() {
               <Avatar person={p} size={104} ring />
             </div>
             <div className="flex items-center gap-2 pb-1">
-              <Button size="md" icon={<MessageSquare className="size-5" />} onClick={() => toast('Les messages arrivent à la prochaine mise à jour.')}>
+              <Button size="md" icon={<MessageSquare className="size-5" />} busy={opening} onClick={write}>
                 Écrire
               </Button>
-              {seesFile ? (
-                <button type="button" onClick={() => setMenu(true)} aria-label="Plus d'options" className="grid size-11 place-items-center rounded-xl border-[1.5px] border-line bg-surface text-ink hover:bg-surface-2">
-                  <MoreHorizontal className="size-5" />
-                </button>
-              ) : null}
+              <button type="button" onClick={() => setMenu(true)} aria-label="Plus d'options" className="grid size-11 place-items-center rounded-xl border-[1.5px] border-line bg-surface text-ink hover:bg-surface-2">
+                <MoreHorizontal className="size-5" />
+              </button>
             </div>
           </div>
           <h1 className="titre mt-3.5 mb-0 text-[28px] leading-tight">
@@ -168,10 +194,37 @@ export function MembreProfil() {
       </aside>
 
       <ActionSheet open={menu} onClose={() => setMenu(false)} title={`${p.first_name} ${p.last_name}`}>
-        <SheetAction icon={<ClipboardList className="size-5" />} onClick={() => navigate(`/bureau/membres/${p.id}`)} hint="Coordonnées, historique et avertissements. Pour le bureau.">
-          Voir sa fiche
-        </SheetAction>
+        {seesFile ? (
+          <SheetAction icon={<ClipboardList className="size-5" />} onClick={() => navigate(`/bureau/membres/${p.id}`)} hint="Coordonnées, historique et avertissements. Pour le bureau.">
+            Voir sa fiche
+          </SheetAction>
+        ) : null}
+        {blocked ? (
+          <SheetAction
+            icon={<Ban className="size-5" />}
+            hint="Ses messages privés t’arriveront de nouveau"
+            onClick={() => {
+              setMenu(false)
+              unblock()
+            }}
+          >
+            Débloquer {p.first_name}
+          </SheetAction>
+        ) : (
+          <SheetAction
+            icon={<Ban className="size-5" />}
+            danger
+            hint="Tu ne recevras plus ses messages privés"
+            onClick={() => {
+              setMenu(false)
+              setBlock({ id: p.id, first_name: p.first_name })
+            }}
+          >
+            Bloquer {p.first_name}
+          </SheetAction>
+        )}
       </ActionSheet>
+      <BlockDialog member={block} onClose={() => setBlock(null)} />
     </div>
   )
 }

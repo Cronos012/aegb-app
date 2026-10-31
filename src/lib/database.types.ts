@@ -55,6 +55,66 @@ export type Database = {
         }
         Relationships: []
       }
+      aegb_replies: {
+        Row: {
+          message_id: string
+          written_by: string | null
+          written_by_name: string
+        }
+        Insert: {
+          message_id: string
+          written_by?: string | null
+          written_by_name: string
+        }
+        Update: {
+          message_id?: string
+          written_by?: string | null
+          written_by_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aegb_replies_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: true
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aegb_replies_written_by_fkey"
+            columns: ["written_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      aegb_settings: {
+        Row: {
+          announce_arrival: boolean
+          id: boolean
+          updated_at: string | null
+          updated_by_name: string | null
+          welcome_actions: string[]
+          welcome_text: string
+        }
+        Insert: {
+          announce_arrival?: boolean
+          id?: boolean
+          updated_at?: string | null
+          updated_by_name?: string | null
+          welcome_actions?: string[]
+          welcome_text: string
+        }
+        Update: {
+          announce_arrival?: boolean
+          id?: boolean
+          updated_at?: string | null
+          updated_by_name?: string | null
+          welcome_actions?: string[]
+          welcome_text?: string
+        }
+        Relationships: []
+      }
       announcement_authors: {
         Row: {
           post_id: string
@@ -82,6 +142,39 @@ export type Database = {
           {
             foreignKeyName: "announcement_authors_written_by_fkey"
             columns: ["written_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      blocks: {
+        Row: {
+          blocked_id: string
+          blocker_id: string
+          created_at: string
+        }
+        Insert: {
+          blocked_id: string
+          blocker_id: string
+          created_at?: string
+        }
+        Update: {
+          blocked_id?: string
+          blocker_id?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blocks_blocked_id_fkey"
+            columns: ["blocked_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "blocks_blocker_id_fkey"
+            columns: ["blocker_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -233,6 +326,99 @@ export type Database = {
           },
         ]
       }
+      conversation_members: {
+        Row: {
+          conversation_id: string
+          is_manager: boolean
+          joined_at: string
+          last_read_at: string
+          member_id: string
+        }
+        Insert: {
+          conversation_id: string
+          is_manager?: boolean
+          joined_at?: string
+          last_read_at?: string
+          member_id: string
+        }
+        Update: {
+          conversation_id?: string
+          is_manager?: boolean
+          joined_at?: string
+          last_read_at?: string
+          member_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_members_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversation_members_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversations: {
+        Row: {
+          changed_at: string
+          created_at: string
+          created_by: string | null
+          id: string
+          kind: Database["public"]["Enums"]["conversation_kind"]
+          last_message_at: string | null
+          member_id: string | null
+          pair_key: string | null
+          photo_path: string | null
+          title: string | null
+        }
+        Insert: {
+          changed_at?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          kind: Database["public"]["Enums"]["conversation_kind"]
+          last_message_at?: string | null
+          member_id?: string | null
+          pair_key?: string | null
+          photo_path?: string | null
+          title?: string | null
+        }
+        Update: {
+          changed_at?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          kind?: Database["public"]["Enums"]["conversation_kind"]
+          last_message_at?: string | null
+          member_id?: string | null
+          pair_key?: string | null
+          photo_path?: string | null
+          title?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       member_contacts: {
         Row: {
           email: string
@@ -301,6 +487,218 @@ export type Database = {
           },
         ]
       }
+      message_files: {
+        Row: {
+          duration: number | null
+          height: number | null
+          kind: string
+          message_id: string
+          mime: string | null
+          name: string | null
+          path: string
+          position: number
+          size: number | null
+          width: number | null
+        }
+        Insert: {
+          duration?: number | null
+          height?: number | null
+          kind: string
+          message_id: string
+          mime?: string | null
+          name?: string | null
+          path: string
+          position: number
+          size?: number | null
+          width?: number | null
+        }
+        Update: {
+          duration?: number | null
+          height?: number | null
+          kind?: string
+          message_id?: string
+          mime?: string | null
+          name?: string | null
+          path?: string
+          position?: number
+          size?: number | null
+          width?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_files_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      message_reactions: {
+        Row: {
+          created_at: string
+          kind: Database["public"]["Enums"]["reaction_kind"]
+          member_id: string
+          message_id: string
+        }
+        Insert: {
+          created_at?: string
+          kind: Database["public"]["Enums"]["reaction_kind"]
+          member_id: string
+          message_id: string
+        }
+        Update: {
+          created_at?: string
+          kind?: Database["public"]["Enums"]["reaction_kind"]
+          member_id?: string
+          message_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_reactions_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_reactions_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      message_reports: {
+        Row: {
+          created_at: string
+          id: number
+          message_id: string
+          reason: Database["public"]["Enums"]["report_reason"]
+          reporter_id: string
+          resolved_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: never
+          message_id: string
+          reason: Database["public"]["Enums"]["report_reason"]
+          reporter_id: string
+          resolved_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: never
+          message_id?: string
+          reason?: Database["public"]["Enums"]["report_reason"]
+          reporter_id?: string
+          resolved_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_reports_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          as_aegb: boolean
+          blocked_for: string | null
+          body: string | null
+          conversation_id: string
+          created_at: string
+          deleted_at: string | null
+          hidden_at: string | null
+          hidden_reason: string | null
+          id: string
+          kind: string
+          meta: Json
+          post_id: string | null
+          reply_to: string | null
+          sender_id: string | null
+        }
+        Insert: {
+          as_aegb?: boolean
+          blocked_for?: string | null
+          body?: string | null
+          conversation_id: string
+          created_at?: string
+          deleted_at?: string | null
+          hidden_at?: string | null
+          hidden_reason?: string | null
+          id?: string
+          kind?: string
+          meta?: Json
+          post_id?: string | null
+          reply_to?: string | null
+          sender_id?: string | null
+        }
+        Update: {
+          as_aegb?: boolean
+          blocked_for?: string | null
+          body?: string | null
+          conversation_id?: string
+          created_at?: string
+          deleted_at?: string | null
+          hidden_at?: string | null
+          hidden_reason?: string | null
+          id?: string
+          kind?: string
+          meta?: Json
+          post_id?: string | null
+          reply_to?: string | null
+          sender_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_blocked_for_fkey"
+            columns: ["blocked_for"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_reply_to_fkey"
+            columns: ["reply_to"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       moderation_decisions: {
         Row: {
           author_id: string | null
@@ -312,6 +710,7 @@ export type Database = {
           decision: Database["public"]["Enums"]["moderation_decision"]
           excerpt: string
           id: number
+          message_id: string | null
           post_id: string | null
           reason: Database["public"]["Enums"]["report_reason"] | null
           reports: number
@@ -326,6 +725,7 @@ export type Database = {
           decision: Database["public"]["Enums"]["moderation_decision"]
           excerpt: string
           id?: never
+          message_id?: string | null
           post_id?: string | null
           reason?: Database["public"]["Enums"]["report_reason"] | null
           reports?: number
@@ -340,6 +740,7 @@ export type Database = {
           decision?: Database["public"]["Enums"]["moderation_decision"]
           excerpt?: string
           id?: never
+          message_id?: string | null
           post_id?: string | null
           reason?: Database["public"]["Enums"]["report_reason"] | null
           reports?: number
@@ -364,6 +765,13 @@ export type Database = {
             columns: ["decided_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "moderation_decisions_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
             referencedColumns: ["id"]
           },
           {
@@ -753,6 +1161,28 @@ export type Database = {
         Args: { p_body: string; p_parent?: string; p_post: string }
         Returns: string
       }
+      add_group_members: {
+        Args: { p_conversation: string; p_members: string[] }
+        Returns: undefined
+      }
+      aegb_inbox: {
+        Args: never
+        Returns: {
+          avatar_path: string
+          city: string
+          first_name: string
+          id: string
+          last_at: string
+          last_from_member: boolean
+          last_name: string
+          last_preview: string
+          member_id: string
+          member_type: Database["public"]["Enums"]["member_type"]
+          replied_by_name: string
+          validated_at: string
+        }[]
+      }
+      aegb_pending: { Args: never; Returns: number }
       announcements_overview: {
         Args: never
         Returns: {
@@ -769,6 +1199,7 @@ export type Database = {
         Args: { p_member: string; p_role: string }
         Returns: undefined
       }
+      block_member: { Args: { p_member: string }; Returns: undefined }
       bureau_counts: {
         Args: never
         Returns: {
@@ -787,6 +1218,8 @@ export type Database = {
         }
         Returns: boolean
       }
+      can_read_conversation: { Args: { p_conv: string }; Returns: boolean }
+      can_read_message_file: { Args: { p_name: string }; Returns: boolean }
       can_read_post: {
         Args: {
           p_audience: Database["public"]["Enums"]["post_audience"]
@@ -799,12 +1232,42 @@ export type Database = {
       }
       clear_journal: { Args: never; Returns: number }
       clear_role: { Args: { p_role: string }; Returns: undefined }
+      conversation_info: { Args: { p_conversation: string }; Returns: Json }
+      conversation_messages: {
+        Args: { p_before?: string; p_conversation: string; p_limit?: number }
+        Returns: {
+          as_aegb: boolean
+          body: string
+          created_at: string
+          deleted: boolean
+          files: Json
+          hidden: boolean
+          hidden_reason: string
+          id: string
+          kind: string
+          meta: Json
+          post_id: string
+          reactions: Json
+          reply: Json
+          reported: boolean
+          sender_avatar_path: string
+          sender_first_name: string
+          sender_id: string
+          sender_last_name: string
+          written_by_name: string
+        }[]
+      }
+      create_group: {
+        Args: { p_members: string[]; p_title: string }
+        Returns: string
+      }
       create_post: {
         Args: { p_body: string; p_id: string; p_media?: Json }
         Returns: undefined
       }
       delete_announcement: { Args: { p_id: string }; Returns: string[] }
       delete_comment: { Args: { p_id: string }; Returns: undefined }
+      delete_message: { Args: { p_id: string }; Returns: string[] }
       delete_post: { Args: { p_id: string }; Returns: string[] }
       discreet_authors: {
         Args: { p_ids: number[] }
@@ -816,7 +1279,9 @@ export type Database = {
       is_active_member: { Args: never; Returns: boolean }
       is_bureau: { Args: never; Returns: boolean }
       journal_locked: { Args: never; Returns: boolean }
+      leave_group: { Args: { p_conversation: string }; Returns: undefined }
       lock_journal: { Args: never; Returns: undefined }
+      mark_read: { Args: { p_conversation: string }; Returns: undefined }
       mark_seen: { Args: { p_ids: string[] }; Returns: undefined }
       mark_welcomed: { Args: never; Returns: undefined }
       member_history: {
@@ -849,6 +1314,37 @@ export type Database = {
         }
         Returns: undefined
       }
+      moderate_message: {
+        Args: {
+          p_decision: Database["public"]["Enums"]["moderation_decision"]
+          p_id: string
+          p_reason?: Database["public"]["Enums"]["report_reason"]
+        }
+        Returns: undefined
+      }
+      moderation_messages: {
+        Args: never
+        Returns: {
+          author_avatar_path: string
+          author_first_name: string
+          author_id: string
+          author_last_name: string
+          body: string
+          created_at: string
+          hidden: boolean
+          last_reported_at: string
+          last_warning_at: string
+          last_warning_reason: string
+          media_duration: number
+          media_kind: string
+          media_path: string
+          message_id: string
+          place: string
+          reasons: Json
+          reports: number
+          warnings: number
+        }[]
+      }
       moderation_pending: { Args: never; Returns: number }
       moderation_queue: {
         Args: never
@@ -878,7 +1374,32 @@ export type Database = {
         Args: { p_screen: string }
         Returns: Database["public"]["Enums"]["access_level"]
       }
+      my_aegb: { Args: never; Returns: string }
       my_bureau: { Args: never; Returns: Json }
+      my_conversations: {
+        Args: never
+        Returns: {
+          blocked: boolean
+          faces: Json
+          id: string
+          kind: Database["public"]["Enums"]["conversation_kind"]
+          last_as_aegb: boolean
+          last_at: string
+          last_kind: string
+          last_preview: string
+          last_sender_id: string
+          last_sender_name: string
+          members: number
+          other_avatar_path: string
+          other_first_name: string
+          other_id: string
+          other_last_name: string
+          photo_path: string
+          title: string
+          unread: number
+        }[]
+      }
+      open_private: { Args: { p_member: string }; Returns: string }
       public_bureau: {
         Args: never
         Returns: {
@@ -909,9 +1430,20 @@ export type Database = {
         }
         Returns: undefined
       }
+      react_message: {
+        Args: {
+          p_id: string
+          p_kind: Database["public"]["Enums"]["reaction_kind"]
+        }
+        Returns: undefined
+      }
       reactivate_member: { Args: { p_member: string }; Returns: undefined }
       refuse_member: {
         Args: { p_member: string; p_reason: string }
+        Returns: undefined
+      }
+      remove_group_member: {
+        Args: { p_conversation: string; p_member: string }
         Returns: undefined
       }
       report_content: {
@@ -921,6 +1453,33 @@ export type Database = {
           p_reason: Database["public"]["Enums"]["report_reason"]
         }
         Returns: boolean
+      }
+      report_message: {
+        Args: {
+          p_id: string
+          p_reason: Database["public"]["Enums"]["report_reason"]
+        }
+        Returns: boolean
+      }
+      save_welcome: {
+        Args: { p_actions: string[]; p_announce: boolean; p_text: string }
+        Returns: undefined
+      }
+      send_message: {
+        Args: {
+          p_body: string
+          p_conversation: string
+          p_files?: Json
+          p_id: string
+          p_post?: string
+          p_reply_to?: string
+        }
+        Returns: undefined
+      }
+      send_welcome_test: { Args: never; Returns: string }
+      set_group_manager: {
+        Args: { p_conversation: string; p_manager: boolean; p_member: string }
+        Returns: undefined
       }
       set_member_type: {
         Args: {
@@ -943,10 +1502,15 @@ export type Database = {
         Returns: undefined
       }
       transfer_guarantor: { Args: { p_member: string }; Returns: undefined }
+      unblock_member: { Args: { p_member: string }; Returns: undefined }
       unpin_announcement: { Args: { p_id: string }; Returns: undefined }
       update_comment: {
         Args: { p_body: string; p_id: string }
         Returns: undefined
+      }
+      update_group: {
+        Args: { p_conversation: string; p_photo?: string; p_title: string }
+        Returns: string
       }
       update_post: {
         Args: { p_body: string; p_id: string }
@@ -960,6 +1524,7 @@ export type Database = {
     }
     Enums: {
       access_level: "lecture" | "complet"
+      conversation_kind: "prive" | "groupe" | "grand_groupe" | "aegb"
       member_status: "en_attente" | "actif" | "refuse" | "suspendu"
       member_type: "etudiant" | "alumni" | "sympathisant" | "honneur"
       moderation_decision: "garder" | "masquer" | "masquer_avertir"

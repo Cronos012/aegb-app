@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
 import { useQueryClient } from '@tanstack/react-query'
-import { Check, EyeOff, ShieldCheck, TriangleAlert } from 'lucide-react'
+import { Check, EyeOff, Lock, ShieldCheck, TriangleAlert } from 'lucide-react'
 import { Avatar } from '../../components/Avatar'
 import { Button } from '../../components/Button'
 import { EmptyState, ErrorNote, Note, PageLoader } from '../../components/Feedback'
@@ -10,9 +10,11 @@ import { useToast } from '../../components/Toast'
 import { HideDialog } from '../../components/feed/Dialogs'
 import { MediaThumb } from '../../components/feed/Media'
 import { RichText } from '../../components/feed/RichText'
+import { DocumentChip, VoicePlayer } from '../../components/messages/Bubble'
 import { errorMessage } from '../../lib/errors'
 import { orNull, REASON_LABELS, useModerationDecisions, useModerationQueue, type QueueItem, type ReportReason } from '../../lib/feed'
 import { longDate, relative, shortDate } from '../../lib/format'
+import { PLACE_LABELS, useModerationMessages, type ModerationMessage } from '../../lib/messages'
 import { can, useCharter, useMe } from '../../lib/queries'
 import { supabase } from '../../lib/supabase'
 import { BureauPage, Card, Chips } from './BureauPage'
@@ -79,13 +81,7 @@ function QueueCard({ item, manage }: { item: QueueItem; manage: boolean }) {
         </Link>
       </div>
 
-      {item.warnings ? (
-        <Note>
-          {first} a déjà reçu {item.warnings} avertissement{item.warnings > 1 ? 's' : ''}
-          {item.last_warning_at ? `, le dernier le ${longDate(item.last_warning_at)}` : ''}
-          {item.last_warning_reason ? ` : « ${item.last_warning_reason.trim().replace(/[.\s]+$/, '')} »` : ''}.
-        </Note>
-      ) : null}
+      <WarningsNote first={first} warnings={item.warnings} at={item.last_warning_at} reason={item.last_warning_reason} />
 
       {manage ? (
         <div className="flex flex-wrap gap-2.5">
@@ -115,16 +111,115 @@ function QueueCard({ item, manage }: { item: QueueItem; manage: boolean }) {
   )
 }
 
+function WarningsNote({ first, warnings, at, reason }: { first: string; warnings: number; at: string | null; reason: string | null }) {
+  if (!warnings) return null
+  return (
+    <Note>
+      {first} a déjà reçu {warnings} avertissement{warnings > 1 ? 's' : ''}
+      {at ? `, le dernier le ${longDate(at)}` : ''}
+      {reason ? ` : « ${reason.trim().replace(/[.\s]+$/, '')} »` : ''}.
+    </Note>
+  )
+}
+
+/** Un message signalé : le bureau voit ce message seulement, jamais le reste de la conversation. */
+function MessageCard({ item, manage }: { item: ModerationMessage; manage: boolean }) {
+  const toast = useToast()
+  const queryClient = useQueryClient()
+  const [hide, setHide] = useState<null | { warn: boolean }>(null)
+  const [keeping, setKeeping] = useState(false)
+  const reasons = (Object.keys(item.reasons) as ReportReason[]).sort((a, b) => (item.reasons[b] ?? 0) - (item.reasons[a] ?? 0))
+  const first = item.author_first_name ?? 'Le membre'
+  const name = item.author_first_name ? `${item.author_first_name} ${item.author_last_name ?? ''}`.trim() : 'Membre parti'
+  const kind = item.media_kind === 'vocal' ? 'Message vocal' : item.media_kind === 'photo' ? 'Photo' : item.media_kind === 'document' ? 'Document' : 'Message'
+
+  async function keep() {
+    setKeeping(true)
+    const { error } = await supabase.rpc('moderate_message', { p_id: item.message_id, p_decision: 'garder' })
+    setKeeping(false)
+    if (error) return toast(errorMessage(error), 'error')
+    await queryClient.invalidateQueries({ queryKey: ['bureau'] })
+    toast('Message gardé. Les signalements sont classés.')
+  }
+
+  return (
+    <Card className="flex flex-col gap-3.5 p-4 lg:p-5">
+      <div className="flex flex-wrap items-center gap-2">
+        <Pill tone="danger">
+          Signalé par {item.reports} membre{item.reports > 1 ? 's' : ''}
+        </Pill>
+        {reasons.map((r) => (
+          <Pill key={r}>
+            {REASON_LABELS[r]}
+            {reasons.length > 1 ? ` · ${item.reasons[r]}` : ''}
+          </Pill>
+        ))}
+        <span className="ml-auto text-[13px] text-muted">{PLACE_LABELS[item.place]}</span>
+      </div>
+
+      <div className="rounded-2xl border border-line-soft p-4">
+        <div className="flex items-center gap-3">
+          <Avatar person={{ id: item.author_id ?? undefined, first_name: item.author_first_name ?? '?', last_name: item.author_last_name ?? '', avatar_path: item.author_avatar_path }} size={36} />
+          <div className="min-w-0">
+            <p className="m-0 truncate text-[15px] font-bold">{name}</p>
+            <p className="m-0 truncate text-[13px] text-muted">
+              {kind} · {relative(item.created_at)}
+            </p>
+          </div>
+        </div>
+        <div className="mt-3 flex flex-col items-start gap-2.5">
+          {item.media_path && item.media_kind === 'vocal' ? <VoicePlayer file={{ path: item.media_path, duration: item.media_duration }} className="rounded-2xl bg-surface-2 px-3 py-2.5" /> : null}
+          {item.media_path && item.media_kind === 'photo' ? <MediaThumb media={{ path: item.media_path, kind: 'photo' }} bucket="messages" className="size-28 rounded-xl" /> : null}
+          {item.media_path && item.media_kind === 'document' ? (
+            <DocumentChip file={{ path: item.media_path, kind: 'document', name: 'Document joint', size: null, mime: null, width: null, height: null, duration: null }} />
+          ) : null}
+          {item.body ? <p className="m-0 text-[15px] leading-[1.5] break-words whitespace-pre-line">{item.body}</p> : null}
+          {!item.body && !item.media_path ? <span className="text-[14px] text-muted">Une publication partagée.</span> : null}
+        </div>
+      </div>
+
+      <WarningsNote first={first} warnings={item.warnings} at={item.last_warning_at} reason={item.last_warning_reason} />
+
+      {manage ? (
+        <div className="flex flex-wrap gap-2.5">
+          <Button variant="outline" size="md" icon={<Check className="size-5" />} onClick={keep} busy={keeping}>
+            Garder le message
+          </Button>
+          <Button variant="outline" size="md" icon={<EyeOff className="size-5" />} onClick={() => setHide({ warn: false })}>
+            Masquer
+          </Button>
+          <Button variant="danger-outline" size="md" icon={<TriangleAlert className="size-5" />} onClick={() => setHide({ warn: true })} disabled={!item.author_id}>
+            Masquer et avertir
+          </Button>
+        </div>
+      ) : null}
+
+      {hide ? (
+        <HideDialog
+          target={{ message: item.message_id }}
+          firstName={first}
+          initialReason={reasons[0] ?? null}
+          warn={hide.warn}
+          canWarn={!!item.author_id}
+          onClose={() => setHide(null)}
+        />
+      ) : null}
+    </Card>
+  )
+}
+
 export default function Moderation() {
   const me = useMe().data!
   const manage = can(me, 'moderation')
   const queue = useModerationQueue()
+  const messages = useModerationMessages()
   const decisions = useModerationDecisions()
   const charter = useCharter()
   const [tab, setTab] = useState<Tab>('examiner')
 
   if (queue.isPending) return <PageLoader />
   const items = queue.data ?? []
+  const reported = messages.data ?? []
   const done = decisions.data ?? []
 
   const decisionLine = (d: (typeof done)[number]) =>
@@ -133,12 +228,12 @@ export default function Moderation() {
   return (
     <BureauPage
       title="Modération"
-      subtitle="Les publications signalées par les membres. Rien n'est masqué sans une décision du bureau."
+      subtitle="Les publications, commentaires et messages signalés par les membres. Rien n'est masqué sans une décision du bureau."
       controls={(onDark) => (
         <Chips
           label="Afficher"
           options={[
-            { value: 'examiner', label: 'À examiner', count: items.length },
+            { value: 'examiner', label: 'À examiner', count: items.length + reported.length },
             { value: 'traites', label: 'Traités', count: done.length },
           ]}
           value={tab}
@@ -150,14 +245,22 @@ export default function Moderation() {
       <div className="flex flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start lg:gap-6">
         <div className="flex flex-col gap-3 lg:gap-4">
           <ErrorNote error={queue.error} />
+          <ErrorNote error={messages.error} />
           {!manage ? <Note>Ton poste peut consulter la modération, pas décider.</Note> : null}
           {tab === 'examiner' ? (
-            items.length ? (
-              items.map((item) => <QueueCard key={item.post_id ?? item.comment_id} item={item} manage={manage} />)
+            items.length || reported.length ? (
+              <>
+                {items.map((item) => (
+                  <QueueCard key={item.post_id ?? item.comment_id} item={item} manage={manage} />
+                ))}
+                {reported.map((item) => (
+                  <MessageCard key={item.message_id} item={item} manage={manage} />
+                ))}
+              </>
             ) : (
               <Card>
                 <EmptyState title="Rien à examiner" icon={<ShieldCheck className="size-6" />}>
-                  Quand un membre signale une publication ou un commentaire, il arrive ici. Le bureau décide de le garder ou de le masquer.
+                  Quand un membre signale une publication, un commentaire ou un message, il arrive ici. Le bureau décide de le garder ou de le masquer.
                 </EmptyState>
               </Card>
             )
@@ -170,7 +273,7 @@ export default function Moderation() {
                     <li key={d.id} className="py-3">
                       <p className="m-0 truncate text-[15px] font-bold">{d.excerpt}</p>
                       <p className="m-0 text-[13px] text-muted">
-                        {d.comment_id ? 'Commentaire de ' : d.post_id ? 'Publication de ' : 'Supprimé depuis · '}
+                        {d.comment_id ? 'Commentaire de ' : d.post_id ? 'Publication de ' : d.message_id ? 'Message de ' : 'Supprimé depuis · '}
                         {d.author_name} · {decisionLine(d)}
                       </p>
                     </li>
@@ -184,6 +287,24 @@ export default function Moderation() {
         </div>
 
         <aside className="hidden flex-col gap-6 lg:flex">
+          <div className="flex items-start gap-3.5 rounded-[22px] bg-nuit p-5 text-white">
+            <span className="grid size-9 shrink-0 place-items-center rounded-full bg-safran/20 text-safran">
+              <Lock className="size-4" />
+            </span>
+            <span>
+              <span className="block text-[15px] font-bold">Les messages restent privés</span>
+              <span className="mt-0.5 block text-[13px] leading-[1.45] text-white/80">Le bureau voit seulement le message signalé, jamais le reste de la conversation.</span>
+            </span>
+          </div>
+          <Card className="p-5">
+            <h2 className="titre m-0 text-[19px]">Ce que voient les membres</h2>
+            <span className="mt-3 inline-flex items-center gap-2 rounded-full border border-line px-3.5 py-1.5 text-[14px] text-muted italic">
+              <EyeOff className="size-4" /> Message masqué par le bureau
+            </span>
+            <p className="m-0 mt-3 text-[13px] leading-[1.5] text-muted">
+              Le message masqué est remplacé par cette mention dans la conversation. Seul son auteur le voit encore, avec le motif. Avec un avertissement, l’auteur le reçoit comme pour une publication.
+            </p>
+          </Card>
           {charter.data ? (
             <Card className="p-5">
               <h2 className="titre m-0 text-[19px]">La charte</h2>

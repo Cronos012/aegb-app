@@ -27,9 +27,10 @@ L'appli s'ouvre sur http://localhost:5173.
 ## Organisation
 
 - `src/pages/public` : site, connexion, inscription, charte.
-- `src/pages/member` : écrans des membres (fil, publier, profils, annuaire, recherche, menu).
-- `src/pages/bureau` : mode bureau (tableau de bord, comptes, membres, annonces, modération, postes, journal).
+- `src/pages/member` : écrans des membres (fil, publier, profils, annuaire, recherche, menu, messages).
+- `src/pages/bureau` : mode bureau (tableau de bord, comptes, membres, annonces, modération, compte AEGB, postes, journal).
 - `src/components/feed` : les morceaux du fil (carte de publication, réactions, commentaires, photos).
+- `src/components/messages` : les morceaux de la messagerie (liste, bulles, saisie, vocal).
 - `src/lib` : accès à Supabase, requêtes, mise en forme.
 - `supabase/migrations` : la structure de la base, ses règles d'accès et ses fonctions.
 - `supabase/tests` : les scripts qui vérifient les règles d'accès.
@@ -53,7 +54,16 @@ Toute la sécurité est dans la base : chaque table a des règles d'accès (RLS)
 - Un signalement est anonyme : le bureau voit le nombre et les motifs, jamais qui a signalé. La modération garde, masque, ou masque et avertit l'auteur ; elle peut aussi masquer sans signalement. L'auteur voit toujours ce qui a été masqué, avec le motif. Chaque décision va au journal.
 - Les annonces officielles sont signées « Bureau de l'AEGB », s'adressent à tous, aux étudiants, aux alumni ou au bureau, et restent épinglées 7 jours. Elles peuvent être programmées (jusqu'à 90 jours). Le bureau des annonces voit qui les a écrites et combien de membres les ont vues.
 
-Pour vérifier les règles d'accès, colle `supabase/tests/socle_test.sql`, puis `supabase/tests/fil_test.sql`, dans l'éditeur SQL de Supabase. Chaque script se termine par une erreur volontaire qui annule tout : le message doit commencer par « TESTS OK ».
+### Les messages (lot 3)
+
+- Messages privés entre membres validés, petits groupes (100 membres au plus) et grand groupe AEGB : chaque membre validé y entre tout seul et ne peut pas le quitter.
+- Dans un message : du texte (4 000 caractères), jusqu'à 10 photos réduites avant l'envoi, un vocal (2 minutes) ou un document (PDF, Word, Excel, PowerPoint ou texte, 10 Mo). Les fichiers sont rangés dans l'espace privé `messages`, dans le dossier de la conversation : seuls ses membres les ouvrent.
+- On réagit, on répond en citant, on supprime pour tous. « Vu » apparaît dans les conversations privées.
+- Bloquer un membre : ses messages privés n'arrivent plus, sans qu'il le sache.
+- Le compte officiel AEGB : chaque membre a une conversation avec lui. Le bureau y répond au nom d'AEGB ; le membre ne voit jamais qui a répondu, le bureau si. À la validation d'un compte, AEGB envoie le message de bienvenue (modifiable dans « Compte AEGB ») et annonce l'arrivée dans le grand groupe.
+- Un message signalé arrive en modération seul : le bureau ne voit jamais le reste de la conversation.
+
+Pour vérifier les règles d'accès, colle `supabase/tests/socle_test.sql`, puis `supabase/tests/fil_test.sql`, puis `supabase/tests/messages_test.sql`, dans l'éditeur SQL de Supabase. Chaque script se termine par une erreur volontaire qui annule tout : le message doit commencer par « TESTS OK ».
 
 ### Réglages à faire dans Supabase
 

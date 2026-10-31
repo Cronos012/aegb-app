@@ -7,7 +7,7 @@ import { supabase } from './supabase'
   fichier, donc un lien en cache ne montre jamais une ancienne photo.
 */
 
-export type Bucket = 'profils' | 'publications'
+export type Bucket = 'profils' | 'publications' | 'messages'
 
 const BUCKET: Bucket = 'profils'
 const LIFETIME_S = 60 * 60 * 12
