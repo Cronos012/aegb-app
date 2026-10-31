@@ -12,6 +12,8 @@
 # Pour le paiement par carte, il pose aussi les identifiants HelloAsso s'ils
 # sont dans les secrets : HELLOASSO_CLIENT_ID, HELLOASSO_CLIENT_SECRET,
 # HELLOASSO_ORG et, pour les vrais paiements, HELLOASSO_ENV = production.
+# Pour les notifications, il crée une seule fois les clés d'envoi (VAPID) et
+# les range dans les secrets de Supabase. Elles ne sont jamais affichées.
 name: Base Supabase
 
 on:
@@ -23,6 +25,7 @@ on:
       - 'supabase/config.toml'
       - 'supabase/limites-connexion.json'
       - '.github/workflows/base-supabase.yml'
+      - '.github/scripts/cles-notifications.mjs'
   workflow_dispatch:
 
 concurrency:
@@ -122,6 +125,22 @@ jobs:
           } > "$fichier"
           supabase secrets set --project-ref "$PROJECT_REF" --env-file "$fichier"
           rm -f "$fichier"
+
+      - name: Clés des notifications
+        if: steps.secrets.outputs.pret == 'oui'
+        run: |
+          # Une seule fois : de nouvelles clés couperaient les appareils déjà abonnés.
+          # La liste ne montre que les noms des secrets, jamais leur valeur.
+          liste="$(supabase secrets list --project-ref "$PROJECT_REF")"
+          if grep -q 'VAPID_PRIVATE_KEY' <<< "$liste" && grep -q 'VAPID_PUBLIC_KEY' <<< "$liste"; then
+            echo "Clés des notifications déjà en place."
+          else
+            fichier="$(mktemp)"
+            node .github/scripts/cles-notifications.mjs > "$fichier"
+            supabase secrets set --project-ref "$PROJECT_REF" --env-file "$fichier"
+            rm -f "$fichier"
+            echo "Clés des notifications créées."
+          fi
 
       - name: Publier les fonctions serveur
         if: steps.secrets.outputs.pret == 'oui'
