@@ -2,8 +2,11 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router'
 import { ThumbsUp } from 'lucide-react'
 import { TYPE_LABELS } from '../../lib/format'
-import { REACTION, REACTIONS, useReactors, type ReactionKind, type ReactionSummary } from '../../lib/feed'
+import { OFFICIAL_NAME, REACTION, REACTIONS, useReactors, type ReactionKind, type ReactionSummary, type Voice } from '../../lib/feed'
 import { Avatar } from '../Avatar'
+import { Logo } from '../Logo'
+import { OfficialBadge } from './OfficialBadge'
+import { VoiceChooser } from './VoiceChooser'
 import { Dialog } from '../Dialog'
 import { EmptyState, ErrorNote, Spinner } from '../Feedback'
 import { useToast } from '../Toast'
@@ -25,14 +28,18 @@ type ButtonProps = {
   onPick: (kind: ReactionKind | null) => void
   /** bar : la barre d'actions d'une publication. text : le petit « J'aime » sous un commentaire. */
   variant?: 'bar' | 'text'
+  /** Pour le droit Annonces : la réaction de l'AEGB, choisie dans la même bulle. */
+  aegb?: { mine: ReactionKind | null; onPick: (kind: ReactionKind | null) => void }
 }
 
 /**
  * J'aime d'un appui, les six réactions d'un appui long (ou en survolant sur
  * ordinateur). Pas de « je n'aime pas ».
  */
-export function ReactionButton({ mine, onPick, variant = 'bar' }: ButtonProps) {
+export function ReactionButton({ mine, onPick, variant = 'bar', aegb }: ButtonProps) {
   const [open, setOpen] = useState(false)
+  // Chaque ouverture repart sur « Moi ».
+  const [voice, setVoice] = useState<Voice>('moi')
   const wrap = useRef<HTMLDivElement>(null)
   const press = useRef<number | null>(null)
   const hover = useRef<number | null>(null)
@@ -61,6 +68,11 @@ export function ReactionButton({ mine, onPick, variant = 'bar' }: ButtonProps) {
     [],
   )
 
+  function openPicker() {
+    if (!open) setVoice('moi')
+    setOpen(true)
+  }
+
   function stopPress() {
     if (press.current) clearTimeout(press.current)
     press.current = null
@@ -69,6 +81,16 @@ export function ReactionButton({ mine, onPick, variant = 'bar' }: ButtonProps) {
   function pick(kind: ReactionKind | null) {
     setOpen(false)
     onPick(kind)
+  }
+
+  const asAegb = voice === 'aegb' && !!aegb
+  const chosen = asAegb ? aegb.mine : mine
+  function choose(kind: ReactionKind) {
+    const next = chosen === kind ? null : kind
+    if (asAegb) {
+      setOpen(false)
+      aegb.onPick(next)
+    } else pick(next)
   }
 
   const current = mine ? REACTION[mine] : null
@@ -89,7 +111,7 @@ export function ReactionButton({ mine, onPick, variant = 'bar' }: ButtonProps) {
       ref={wrap}
       className={`relative ${variant === 'bar' ? 'flex-1' : ''}`}
       onMouseEnter={() => {
-        hover.current = window.setTimeout(() => setOpen(true), 550)
+        hover.current = window.setTimeout(() => openPicker(), 550)
       }}
       onMouseLeave={() => {
         if (hover.current) clearTimeout(hover.current)
@@ -100,23 +122,26 @@ export function ReactionButton({ mine, onPick, variant = 'bar' }: ButtonProps) {
         <div
           role="menu"
           aria-label="Choisir une réaction"
-          className={`absolute bottom-full z-30 mb-2 flex animate-[pop_160ms_ease-out] items-center gap-0.5 rounded-full border border-line-soft bg-surface px-2 py-1.5 shadow-xl ${variant === 'bar' ? 'left-0' : '-left-2'}`}
+          className={`absolute bottom-full z-30 mb-2 flex animate-[pop_160ms_ease-out] flex-col items-start gap-1.5 border border-line-soft bg-surface px-2 py-1.5 shadow-xl ${aegb ? 'rounded-[22px] pt-2.5' : 'rounded-full'} ${variant === 'bar' ? 'left-0' : '-left-2'}`}
         >
+          {aegb ? <VoiceChooser label="Réagir en tant que" value={voice} onChange={setVoice} size="sm" className="px-1.5" /> : null}
+          <div className="flex items-center gap-0.5">
           {REACTIONS.map((r) => (
             <button
               key={r.kind}
               type="button"
               role="menuitemradio"
-              aria-checked={mine === r.kind}
+              aria-checked={chosen === r.kind}
               aria-label={r.label}
               title={r.label}
-              onClick={() => pick(mine === r.kind ? null : r.kind)}
-              className={`group relative grid size-11 place-items-center rounded-full text-[28px] leading-none transition-transform duration-150 hover:-translate-y-1.5 hover:scale-125 focus-visible:scale-125 ${mine === r.kind ? 'bg-select' : ''}`}
+              onClick={() => choose(r.kind)}
+              className={`group relative grid size-11 place-items-center rounded-full text-[28px] leading-none transition-transform duration-150 hover:-translate-y-1.5 hover:scale-125 focus-visible:scale-125 ${chosen === r.kind ? 'bg-select' : ''}`}
             >
               {r.emoji}
               <span className="pointer-events-none absolute -top-7 hidden rounded-full bg-nuit px-2 py-0.5 text-[11px] font-bold whitespace-nowrap text-white group-hover:block">{r.label}</span>
             </button>
           ))}
+          </div>
         </div>
       ) : null}
       <button
@@ -131,7 +156,7 @@ export function ReactionButton({ mine, onPick, variant = 'bar' }: ButtonProps) {
           longPressed.current = false
           press.current = window.setTimeout(() => {
             longPressed.current = true
-            setOpen(true)
+            openPicker()
             navigator.vibrate?.(8)
           }, 420)
         }}
@@ -141,7 +166,7 @@ export function ReactionButton({ mine, onPick, variant = 'bar' }: ButtonProps) {
         onKeyDown={(e) => {
           if (e.key === 'ArrowUp') {
             e.preventDefault()
-            setOpen(true)
+            openPicker()
           }
         }}
         onClick={() => {
@@ -214,7 +239,17 @@ export function ReactorsDialog({ target, onClose }: { target: { post?: string; c
       ) : shown.length ? (
         <ul className="m-0 flex list-none flex-col p-0 pt-2">
           {shown.map((r, i) =>
-            r.member ? (
+            r.official ? (
+              <li key={`aegb-${i}`} className="flex items-center gap-3 px-1 py-2">
+                <span className="relative">
+                  <Logo size={44} alt="" />
+                  <span className="absolute -right-1 -bottom-1 grid size-[22px] place-items-center rounded-full bg-surface text-[14px] leading-none shadow-sm">{REACTION[r.kind].emoji}</span>
+                </span>
+                <span className="flex min-w-0 items-center gap-2 text-[15px] font-bold">
+                  {OFFICIAL_NAME} <OfficialBadge small />
+                </span>
+              </li>
+            ) : r.member ? (
               <li key={`${r.member.id}-${i}`}>
                 <Link to={`/app/membres/${r.member.id}`} onClick={onClose} className="flex items-center gap-3 rounded-xl px-1 py-2 text-ink no-underline hover:bg-surface-2">
                   <span className="relative">
