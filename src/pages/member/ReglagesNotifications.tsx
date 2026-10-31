@@ -150,7 +150,7 @@ function TimeChip({ label, value, onChange }: { label: string; value: string; on
       step={900}
       onChange={(e) => e.target.value && onChange(e.target.value)}
       onClick={(e) => e.stopPropagation()}
-      className="h-9 w-[86px] rounded-[10px] bg-surface-2 px-2 text-center text-[16px] font-bold text-ink focus:ring-[3px] focus:ring-safran/45 focus:outline-none"
+      className="h-9 w-[112px] rounded-[10px] bg-surface-2 px-2 text-center text-[16px] font-bold text-ink focus:ring-[3px] focus:ring-safran/45 focus:outline-none"
     />
   )
 }

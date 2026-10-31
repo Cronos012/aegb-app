@@ -262,8 +262,10 @@ export function useBlocks() {
     queryFn: async () => {
       const { data, error } = await supabase.from('blocks').select('blocked_id')
       if (error) throw error
-      return new Set(data.map((b) => b.blocked_id))
+      // Une liste, pas un Set : elle est gardée sur l'appareil en JSON.
+      return data.map((b) => b.blocked_id)
     },
+    select: (ids) => new Set(ids),
   })
 }
 
