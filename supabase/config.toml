@@ -3,3 +3,9 @@ project_id = "aegb-app"
 
 [db]
 major_version = 17
+
+# Le paiement par carte : HelloAsso appelle cette fonction sans être connecté,
+# et l'appli l'appelle avec la session du membre. La fonction vérifie
+# elle-même qui l'appelle.
+[functions.helloasso]
+verify_jwt = false

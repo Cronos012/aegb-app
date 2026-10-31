@@ -3,15 +3,16 @@ import { Briefcase, Calendar, CreditCard, FileText, House, LogOut, MessageSquare
 import { signOut } from '../auth/session'
 import { Avatar } from '../components/Avatar'
 import { Brand } from '../components/Logo'
+import { useMyDues } from '../lib/dues'
 import { TYPE_LABELS } from '../lib/format'
 import { useBureauBadge } from '../lib/feed'
 import { useMessagesLive, useUnreadConversations } from '../lib/messages'
 import { isBureau, useMe } from '../lib/queries'
 import { BottomNav } from './BottomNav'
 
-type Item = { to: string; label: string; icon: LucideIcon; soon?: boolean; badge?: number | null }
+type Item = { to: string; label: string; icon: LucideIcon; soon?: boolean; badge?: number | null; alert?: string | null }
 
-function SideLink({ to, label, icon: Icon, soon, badge }: Item) {
+function SideLink({ to, label, icon: Icon, soon, badge, alert }: Item) {
   return (
     <NavLink
       to={to}
@@ -26,6 +27,11 @@ function SideLink({ to, label, icon: Icon, soon, badge }: Item) {
           <span className="flex-1">{label}</span>
           {soon ? <span className="rounded-full bg-white/12 px-2 py-0.5 text-[11px] font-bold text-white/75">bientôt</span> : null}
           {badge ? <span className="grid h-5 min-w-5 place-items-center rounded-full bg-safran px-1.5 text-[11px] font-extrabold text-nuit">{badge}</span> : null}
+          {alert ? (
+            <span className="rounded-full bg-danger px-2 py-0.5 text-[11px] font-bold text-white" title={`Cotisation ${alert}`}>
+              {alert}
+            </span>
+          ) : null}
         </>
       )}
     </NavLink>
@@ -38,6 +44,7 @@ export function MemberLayout() {
   const bureau = isBureau(me)
   const badge = useBureauBadge()
   const unread = useUnreadConversations()
+  const late = useMyDues(me?.profile.status === 'actif').data?.status === 'retard'
   useMessagesLive(me?.profile.status === 'actif')
   // Ces écrans prennent tout l'écran sur téléphone, comme dans la maquette.
   const fullScreen = [
@@ -46,6 +53,9 @@ export function MemberLayout() {
     useMatch('/app/fil/:id'),
     useMatch('/app/messages/:id'),
     useMatch('/app/messages/:id/infos'),
+    useMatch('/app/cotisation/payer'),
+    useMatch('/app/cotisation/retour/:id'),
+    useMatch('/app/cotisation/quittances/:numero'),
   ].some(Boolean)
 
   return (
@@ -56,7 +66,7 @@ export function MemberLayout() {
           <SideLink to="/app/fil" label="Fil d'actu" icon={House} />
           <SideLink to="/app/messages" label="Messages" icon={MessageSquare} badge={unread} />
           <SideLink to="/app/evenements" label="Événements" icon={Calendar} soon />
-          <SideLink to="/app/cotisation" label="Cotisation" icon={CreditCard} soon />
+          <SideLink to="/app/cotisation" label="Cotisation" icon={CreditCard} alert={late ? 'en retard' : null} />
           <SideLink to="/app/votes" label="Votes" icon={SquareCheckBig} soon />
           <SideLink to="/app/documents" label="Documents" icon={FileText} soon />
           <SideLink to="/app/membres" label="Membres" icon={Users} />

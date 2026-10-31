@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useMatch, useNavigate } from 'react-router'
-import { Bot, ChevronLeft, LayoutDashboard, Megaphone, ScrollText, ShieldAlert, Star, UserCheck, Users, type LucideIcon } from 'lucide-react'
+import { Bot, ChevronLeft, LayoutDashboard, Megaphone, ReceiptText, ScrollText, Settings, ShieldAlert, Star, UserCheck, Users, Wallet, type LucideIcon } from 'lucide-react'
 import { Avatar } from '../components/Avatar'
 import { Logo } from '../components/Logo'
 import { useModerationPending } from '../lib/feed'
@@ -53,6 +53,13 @@ export function BureauLayout() {
       ],
     },
     {
+      title: 'Argent',
+      items: [
+        { to: '/bureau/cotisations', label: 'Cotisations', icon: Wallet, screen: 'tresorerie', end: true },
+        { to: '/bureau/journal-financier', label: 'Journal financier', icon: ReceiptText, screen: 'tresorerie' },
+      ],
+    },
+    {
       title: "Vie de l'asso",
       items: [
         { to: '/bureau/annonces', label: 'Annonces', icon: Megaphone, screen: 'annonces' },
@@ -64,6 +71,7 @@ export function BureauLayout() {
       items: [
         { to: '/bureau/postes', label: 'Postes et droits', icon: Star, screen: 'postes' },
         { to: '/bureau/aegb', label: 'Compte AEGB', icon: Bot, screen: 'bienvenue', badge: aegb },
+        { to: '/bureau/cotisations/reglages', label: 'Réglages de la cotisation', icon: Settings, screen: 'tresorerie' },
         { to: '/bureau/journal', label: "Journal d'activité", icon: ScrollText, screen: 'journal' },
       ],
     },

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link } from 'react-router'
-import { Ban, ChevronDown, EyeOff, Lock, Pause, Play, Sparkles, UserPlus } from 'lucide-react'
+import { Ban, BellRing, ChevronDown, CircleCheck, CircleX, EyeOff, Lock, Pause, Play, Sparkles, UserPlus } from 'lucide-react'
 import { REACTION, usePost } from '../../lib/feed'
 import { clock, duration, fileBadge, fileSize, type MessageFile, type MessageRow } from '../../lib/messages'
 import { frenchSpaces } from '../../lib/format'
@@ -443,6 +443,45 @@ export function WelcomeMessage({ m, actions }: { m: MessageRow; actions: { label
           ))}
         </div>
       ) : null}
+    </div>
+  )
+}
+
+const DUES_CARDS = {
+  relance: { title: 'Rappel de cotisation', icon: <BellRing className="size-4" />, tone: 'bg-safran-pale text-[#6B4A00]' },
+  recu: { title: 'Paiement reçu, merci !', icon: <CircleCheck className="size-4" />, tone: 'bg-ok-soft text-ok' },
+  annule: { title: 'Paiement annulé', icon: <CircleX className="size-4" />, tone: 'bg-danger-soft text-danger' },
+}
+
+/** Les cartes de cotisation du compte AEGB : rappel, paiement reçu, paiement annulé. */
+export function DuesCard({ m, staffView }: { m: MessageRow; staffView: boolean }) {
+  const kind = DUES_CARDS[m.meta.type ?? 'recu'] ?? DUES_CARDS.recu
+  const amount = m.meta.amount_cents != null ? new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(m.meta.amount_cents / 100) : null
+  return (
+    <div className={`mt-2.5 flex flex-col gap-1.5 ${staffView ? 'items-end pl-10' : 'items-start pr-10'}`}>
+      <div className={`flex w-full max-w-[340px] flex-col gap-2.5 rounded-[18px] bg-surface px-3.5 py-3 shadow-[0_1px_1px_rgba(18,22,43,0.06)] ${staffView ? 'rounded-br-[6px]' : 'rounded-bl-[6px]'}`}>
+        <span className={`flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-extrabold ${kind.tone}`}>
+          {kind.icon}
+          {frenchSpaces(kind.title)}
+        </span>
+        <p className="m-0 text-[15px] leading-[1.45]">{frenchSpaces(m.body ?? '')}</p>
+        {m.meta.type === 'relance' && !staffView ? (
+          <Link to="/app/cotisation/payer" className="flex h-11 items-center justify-center rounded-[14px] bg-primary text-[15px] font-bold text-primary-ink no-underline">
+            Payer{amount ? ` ${amount}` : ''}
+          </Link>
+        ) : null}
+        {m.meta.type === 'recu' && m.meta.receipt ? (
+          <Link to={`/app/cotisation/quittances/${m.meta.receipt}`} className="flex items-center gap-3 rounded-[14px] border-[1.5px] border-line-soft px-3 py-2.5 text-ink no-underline hover:bg-surface-2">
+            <span className="grid size-9 shrink-0 place-items-center rounded-[10px] bg-select text-[10px] font-extrabold text-link">PDF</span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-sm font-bold">Quittance n° {m.meta.receipt}</span>
+              <span className="block text-xs text-muted">Touche pour l'ouvrir</span>
+            </span>
+          </Link>
+        ) : null}
+        <span className="block text-right text-[11px] text-muted">{clock(m.created_at)}</span>
+      </div>
+      {m.meta.type === 'relance' && !staffView ? <p className="m-0 max-w-[340px] text-[12px] text-muted">Une difficulté pour payer ? Réponds ici, le bureau te répondra.</p> : null}
     </div>
   )
 }

@@ -1,7 +1,8 @@
 import { Link } from 'react-router'
-import { Bot, Briefcase, ChevronRight, HardDrive, ShieldAlert, Star, UserCheck, UserPlus, Users } from 'lucide-react'
+import { Bot, Briefcase, ChevronRight, HardDrive, ShieldAlert, Star, UserCheck, UserPlus, Users, Wallet } from 'lucide-react'
 import { ErrorNote, PageLoader } from '../../components/Feedback'
 import { Pill } from '../../components/Pill'
+import { eurosExact, euros, useDuesMatrix, useLedger } from '../../lib/dues'
 import { useModerationPending, useStorageUsed } from '../../lib/feed'
 import { useIsDesktop } from '../../lib/media'
 import { useAegbPending } from '../../lib/messages'
@@ -9,7 +10,7 @@ import { can, useAccounts, useActivity, useBureauCounts, useMe, useRoles } from 
 import { ActivityLine } from './activity'
 import { BureauPage, Card } from './BureauPage'
 
-const COMING = ['Trésorerie', 'Élections', 'Événements', 'Documents', 'Messages']
+const COMING = ['Élections', 'Événements', 'Documents', 'Notifications']
 
 /** L'offre gratuite de Supabase : 1 Go pour les photos et les vidéos. */
 const STORAGE_LIMIT = 1024 ** 3
@@ -37,6 +38,45 @@ function StorageCard({ used }: { used: number }) {
       </div>
       <div className="mt-3 h-2 overflow-hidden rounded-full bg-line-soft">
         <div className={`h-full rounded-full ${percent >= 80 ? 'bg-danger' : 'bg-primary'}`} style={{ width: `${Math.max(percent, 1)}%` }} />
+      </div>
+    </Card>
+  )
+}
+
+/** Les cotisations et la caisse, pour les postes qui ont accès à l'argent. */
+function MoneyCard() {
+  const matrix = useDuesMatrix()
+  const ledger = useLedger()
+  const rows = matrix.data ?? []
+  const paying = rows.filter((r) => r.dues.paying && r.dues.status !== 'pas_encore')
+  const upToDate = paying.filter((r) => r.dues.status === 'a_jour').length
+  const late = paying.filter((r) => r.dues.status === 'retard')
+  const owed = late.reduce((sum, r) => sum + r.dues.late_cents, 0)
+  const balance = (ledger.data ?? []).reduce((sum, e) => sum + e.amount_cents, 0)
+  const stats = [
+    { label: 'À jour', value: paying.length ? `${Math.round((upToDate / paying.length) * 100)} %` : '–', detail: `${upToDate} sur ${paying.length} qui cotisent`, tone: 'text-ok' },
+    { label: 'En retard', value: String(late.length), detail: `${euros(owed)} à rattraper`, tone: late.length ? 'text-danger' : '' },
+    { label: 'Solde de la caisse', value: ledger.data ? eurosExact(balance) : '…', detail: 'Journal financier', tone: '' },
+  ]
+  return (
+    <Card className="p-4 lg:p-5">
+      <div className="flex items-center gap-3">
+        <span className="grid size-10 place-items-center rounded-xl bg-ok-soft text-ok">
+          <Wallet className="size-5" />
+        </span>
+        <h2 className="titre m-0 flex-1 text-[18px] lg:text-[20px]">Cotisations et caisse</h2>
+        <Link to="/bureau/cotisations" className="text-[13px] font-bold">
+          Voir les cotisations
+        </Link>
+      </div>
+      <div className="mt-3 grid grid-cols-3 gap-3">
+        {stats.map((s) => (
+          <div key={s.label} className="min-w-0">
+            <span className="block text-[12px] font-semibold text-muted">{s.label}</span>
+            <span className={`titre block truncate text-[22px] leading-tight lg:text-[26px] ${s.tone}`}>{s.value}</span>
+            <span className="block truncate text-[12px] text-muted">{s.detail}</span>
+          </div>
+        ))}
       </div>
     </Card>
   )
@@ -256,6 +296,8 @@ export default function Dashboard() {
               </Card>
             ) : null}
           </div>
+
+          {can(me, 'tresorerie', 'lecture') ? <MoneyCard /> : null}
 
           {storage.data != null ? <StorageCard used={storage.data} /> : null}
 

@@ -1,13 +1,11 @@
 import { Logo } from '../../components/Logo'
 
 const PLAN = [
-  { title: 'Cotisation', detail: 'Paiement par carte, HelloAsso', when: 'Prochaine mise à jour', next: true },
-  { title: 'Votes', detail: 'Élections du bureau dans l’appli', when: 'Ensuite' },
+  { title: 'Votes', detail: 'Élections du bureau dans l’appli', when: 'Prochaine mise à jour', next: true },
   { title: 'Événements et documents', detail: 'Soirées, ateliers, statuts', when: 'Ensuite' },
 ]
 
 const PAGES = {
-  cotisation: { title: 'Cotisation', heading: 'La cotisation arrive bientôt', text: 'Tu pourras payer ta cotisation par carte avec HelloAsso et suivre tes paiements.' },
   votes: { title: 'Votes', heading: 'Les votes arrivent bientôt', text: "Tu pourras t'inscrire sur la liste électorale et voter pour le bureau, dans l'appli." },
   evenements: { title: 'Événements', heading: 'Les événements arrivent bientôt', text: "Tu verras les soirées et les ateliers de l'AEGB, et tu pourras dire que tu participes." },
   documents: { title: 'Documents', heading: 'Les documents arrivent bientôt', text: "Tu trouveras ici les statuts, le règlement et les guides de l'association." },

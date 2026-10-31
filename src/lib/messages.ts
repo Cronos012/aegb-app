@@ -14,7 +14,7 @@ import { supabase } from './supabase'
 */
 
 export type ConversationKind = Enums<'conversation_kind'>
-export type MessageKind = 'message' | 'bienvenue' | 'arrivee' | 'systeme'
+export type MessageKind = 'message' | 'bienvenue' | 'arrivee' | 'systeme' | 'cotisation'
 export type FileKind = 'photo' | 'vocal' | 'document'
 
 export type ConversationRow = {
@@ -63,7 +63,17 @@ export type MessageRow = {
   /** Qui a répondu au nom d'AEGB : le bureau seulement le voit. */
   written_by_name: string | null
   body: string | null
-  meta: { actions?: string[]; essai?: boolean; member?: string; publication?: boolean }
+  meta: {
+    actions?: string[]
+    essai?: boolean
+    member?: string
+    publication?: boolean
+    /** Cartes « cotisation » du compte AEGB : relance, paiement reçu, paiement annulé. */
+    type?: 'relance' | 'recu' | 'annule'
+    receipt?: string
+    amount_cents?: number
+    months?: string[]
+  }
   files: MessageFile[]
   post_id: string | null
   reply: Reply | null
@@ -532,6 +542,7 @@ export function useAegbBadge(): number {
 export const WELCOME_ACTIONS: { value: string; label: string; detail: string; to: string }[] = [
   { value: 'charte', label: 'Lire la charte', detail: 'ouvre la charte', to: '/charte' },
   { value: 'profil', label: 'Compléter mon profil', detail: 'ouvre le profil', to: '/app/profil/modifier' },
+  { value: 'cotisation', label: 'Payer ma cotisation', detail: 'ouvre la cotisation', to: '/app/cotisation' },
 ]
 
 /** Le texte de bienvenue pour un membre, comme la base le remplit. */
