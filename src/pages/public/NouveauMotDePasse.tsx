@@ -70,7 +70,7 @@ export function NouveauMotDePasse() {
           }
         />
         <ErrorNote error={error} className="mt-4" />
-        <div className="mt-auto pt-10">
+        <div className="mt-6">
           <Button type="submit" busy={busy} className="w-full">
             Enregistrer
           </Button>

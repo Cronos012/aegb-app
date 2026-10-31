@@ -41,7 +41,7 @@ export function MotDePasseOublie() {
             <p className="mt-3 mb-0 text-[16px] leading-[1.5] text-muted">
               Si un compte existe pour <strong className="text-ink">{email.trim()}</strong>, tu vas recevoir un lien pour choisir un nouveau mot de passe. Pense aux spams.
             </p>
-            <div className="mt-auto pt-10">
+            <div className="mt-6">
               <ButtonLink to="/connexion" className="w-full">
                 Retour à la connexion
               </ButtonLink>
@@ -56,7 +56,7 @@ export function MotDePasseOublie() {
             <p className="mt-3 mb-0 text-[16px] leading-[1.5] text-muted">Pas de souci. Entre ton email, on t'envoie un lien pour en choisir un nouveau.</p>
             <TextField className="mt-7" label="Adresse email" type="email" autoComplete="email" inputMode="email" value={email} onChange={(e) => setEmail(e.target.value)} />
             <ErrorNote error={error} className="mt-4" />
-            <div className="mt-auto pt-10">
+            <div className="mt-6">
               <Button type="submit" busy={busy} className="w-full">
                 Envoyer le lien
               </Button>

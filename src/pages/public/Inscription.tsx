@@ -185,7 +185,7 @@ export function Inscription() {
               </div>
             }
           />
-          <div className="mt-auto flex flex-col gap-4 pt-4 lg:mt-2">
+          <div className="mt-4 flex flex-col gap-4 lg:mt-2">
             <Button type="submit">Continuer</Button>
             <p className="m-0 text-center text-sm text-muted lg:hidden">
               Déjà membre ? <Link to="/connexion" className="font-bold">Se connecter</Link>
@@ -233,7 +233,7 @@ export function Inscription() {
               )
             })}
           </fieldset>
-          <div className="mt-auto pt-4 lg:mt-2">
+          <div className="mt-4 lg:mt-2">
             <Button type="submit" className="w-full">
               Continuer
             </Button>
@@ -265,7 +265,7 @@ export function Inscription() {
             <Link to="/charte" target="_blank" className="text-sm font-semibold">
               Lire la charte complète
             </Link>
-            <div className="mt-auto flex flex-col gap-3 pt-4 lg:mt-3">
+            <div className="mt-4 flex flex-col gap-3 lg:mt-3">
               <label className={`flex cursor-pointer items-center gap-3 rounded-2xl border-[1.5px] px-4 py-3.5 text-[15px] font-semibold ${accepted ? 'border-primary bg-select' : 'border-line'}`}>
                 <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} className="size-5 accent-[#1B4DB1]" />
                 J'ai lu et j'accepte la charte de l'AEGB
