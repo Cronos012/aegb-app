@@ -1,18 +1,17 @@
 import { Link } from 'react-router'
-import { Bot, Briefcase, ChevronRight, HardDrive, ShieldAlert, Star, UserCheck, UserPlus, Users, Wallet } from 'lucide-react'
+import { Bell as BellIcon, Bot, Briefcase, ChevronRight, HardDrive, Info, Laptop, ShieldAlert, Smartphone, Star, UserCheck, Users, Wallet } from 'lucide-react'
 import { ElectionsCard } from '../../components/elections/DashboardCard'
 import { EventsCard } from '../../components/events/DashboardCard'
 import { ErrorNote, PageLoader } from '../../components/Feedback'
-import { Pill } from '../../components/Pill'
+import { Bell } from '../../components/notifications/Bell'
 import { eurosExact, euros, useDuesMatrix, useLedger } from '../../lib/dues'
 import { useModerationPending, useStorageUsed } from '../../lib/feed'
 import { useIsDesktop } from '../../lib/media'
 import { useAegbPending } from '../../lib/messages'
+import { useReachable, type Reachable } from '../../lib/notifications'
 import { can, useAccounts, useActivity, useBureauCounts, useMe, useRoles } from '../../lib/queries'
 import { ActivityLine } from './activity'
 import { BureauPage, Card } from './BureauPage'
-
-const COMING = ['Notifications']
 
 /** L’offre gratuite de Supabase : 1 Go pour les photos, les vidéos et les documents. */
 const STORAGE_LIMIT = 1024 ** 3
@@ -89,6 +88,64 @@ function today() {
   return s.charAt(0).toUpperCase() + s.slice(1)
 }
 
+/** Combien de membres ont activé les notifications : un nombre, jamais de liste de noms. */
+function ReachableKpi({ r, className = '' }: { r: Reachable; className?: string }) {
+  const percent = r.total ? Math.round((r.reachable / r.total) * 100) : 0
+  return (
+    <div className={`block rounded-[22px] bg-surface p-5 text-ink ${className}`}>
+      <span className="flex items-start justify-between gap-2">
+        <span className="grid size-10 place-items-center rounded-xl bg-safran-pale text-[#6B4A00]">
+          <BellIcon className="size-5" />
+        </span>
+      </span>
+      <span className="titre mt-3 block text-[30px] leading-none">{r.reachable}</span>
+      <span className="mt-2 block text-[14px] font-semibold">{r.reachable > 1 ? 'Membres joignables' : 'Membre joignable'}</span>
+      <span className="mt-0.5 block text-[13px] text-muted">
+        Notifications activées, sur {r.total} membre{r.total > 1 ? 's' : ''}
+      </span>
+      <span className="mt-3 block h-2 overflow-hidden rounded-full bg-line-soft">
+        <span className="block h-full rounded-full bg-ok" style={{ width: `${Math.max(percent, r.reachable ? 2 : 0)}%` }} />
+      </span>
+    </div>
+  )
+}
+
+function ReachableCard({ r }: { r: Reachable }) {
+  const rows = [
+    { icon: Smartphone, label: 'Android', value: r.android, tone: 'bg-leppi' },
+    { icon: Smartphone, label: 'iPhone (appli sur l’écran d’accueil)', value: r.iphone, tone: 'bg-[#5B5FC7]' },
+    { icon: Laptop, label: 'PC', value: r.ordinateur, tone: 'bg-ok' },
+  ]
+  const max = Math.max(r.total, 1)
+  const others = r.total - r.reachable
+  return (
+    <Card className="p-5">
+      <h2 className="titre m-0 text-[20px]">Joignables, par appareil</h2>
+      <p className="mt-1.5 mb-0 text-[13px] leading-[1.45] text-muted">Un nombre seulement, jamais de liste de noms. Une même personne peut avoir un téléphone et un PC.</p>
+      <ul className="m-0 mt-4 flex list-none flex-col gap-4 p-0">
+        {rows.map((row) => (
+          <li key={row.label}>
+            <span className="flex items-center gap-2 text-[14px] font-bold">
+              <row.icon className="size-4 text-muted" />
+              <span className="flex-1">{row.label}</span>
+              <span className="titre text-[18px]">{row.value}</span>
+            </span>
+            <span className="mt-1.5 block h-2 overflow-hidden rounded-full bg-line-soft">
+              <span className={`block h-full rounded-full ${row.tone}`} style={{ width: `${(row.value / max) * 100}%` }} />
+            </span>
+          </li>
+        ))}
+      </ul>
+      {others > 0 ? (
+        <p className="mt-4 mb-0 flex items-start gap-2 rounded-2xl bg-surface-2 px-3.5 py-3 text-[13px] leading-[1.45] text-muted">
+          <Info className="mt-px size-4 shrink-0" />
+          {others > 1 ? `Les ${others} autres membres voient` : 'L’autre membre voit'} les annonces dans la cloche à {others > 1 ? 'leur' : 'sa'} prochaine visite.
+        </p>
+      ) : null}
+    </Card>
+  )
+}
+
 function Kpi({ icon, label, value, detail, to }: { icon: React.ReactNode; label: string; value: React.ReactNode; detail?: string; to?: string }) {
   const body = (
     <>
@@ -123,6 +180,7 @@ export default function Dashboard() {
   const pending = useAccounts('en_attente', seesAccounts)
   const roles = useRoles()
   const activity = useActivity(6, null, null, seesJournal)
+  const reachable = useReachable().data
 
   if (counts.isPending) return <PageLoader />
   const c = counts.data
@@ -142,6 +200,7 @@ export default function Dashboard() {
       back={null}
       kicker={kicker}
       subtitle={desktop ? `${today()}. Voici ce qui attend le bureau.` : `${me.role?.label} · ${full ? 'accès complet' : 'accès selon le poste'}`}
+      actions={desktop ? <Bell scope="bureau" /> : undefined}
     >
       <ErrorNote error={counts.error} />
       {c ? (
@@ -207,7 +266,7 @@ export default function Dashboard() {
               label="Postes attribués"
               to={seesRoles ? '/bureau/postes' : undefined}
             />
-            {desktop ? <Kpi icon={<UserPlus className="size-5" />} value={c.new_this_month} label="Validés ce mois-ci" /> : null}
+            {reachable ? <ReachableKpi r={reachable} className={desktop ? '' : 'col-span-2'} /> : null}
           </div>
 
           <div className="flex flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-start lg:gap-4">
@@ -281,6 +340,8 @@ export default function Dashboard() {
               </Card>
             ) : null}
 
+            <div className="flex flex-col gap-3 lg:gap-4">
+            {desktop && reachable ? <ReachableCard r={reachable} /> : null}
             {seesJournal ? (
               <Card className="p-4 lg:p-5">
                 <div className="flex items-center justify-between">
@@ -300,22 +361,13 @@ export default function Dashboard() {
                 )}
               </Card>
             ) : null}
+            </div>
           </div>
 
           {can(me, 'tresorerie', 'lecture') ? <MoneyCard /> : null}
 
           {storage.data != null ? <StorageCard used={storage.data} /> : null}
 
-          <div className="mt-2">
-            <p className="m-0 mb-2.5 px-1 text-[11px] font-bold tracking-[0.08em] text-muted uppercase">Dans les prochaines mises à jour</p>
-            <div className="flex flex-wrap gap-2 px-1">
-              {COMING.map((label) => (
-                <Pill key={label} className="border border-line bg-surface px-3 py-1.5 text-[13px] text-ink">
-                  {label}
-                </Pill>
-              ))}
-            </div>
-          </div>
         </>
       ) : null}
     </BureauPage>

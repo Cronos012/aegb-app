@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { useQueryClient } from '@tanstack/react-query'
+import { forgetDevice } from '../lib/push'
 import { supabase } from '../lib/supabase'
 
 type SessionState = {
@@ -22,7 +23,15 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       if (alive) setState((s) => ({ ...s, session: data.session, loading: false }))
     })
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT') queryClient.clear()
+      if (event === 'SIGNED_OUT') {
+        queryClient.clear()
+        // Les pages gardées pour ouvrir l'appli sans réseau partent aussi.
+        try {
+          localStorage.removeItem('aegb.pages')
+        } catch {
+          // Rien n'était gardé.
+        }
+      }
       setState((s) => ({
         session,
         loading: false,
@@ -42,6 +51,8 @@ export function useSession() {
   return useContext(SessionContext)
 }
 
+/** Se déconnecter : cet appareil quitte d'abord la liste et ne reçoit plus de notifications. */
 export async function signOut() {
+  await forgetDevice().catch(() => undefined)
   await supabase.auth.signOut()
 }

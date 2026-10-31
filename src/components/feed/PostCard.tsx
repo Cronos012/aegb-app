@@ -72,7 +72,7 @@ function Header({ post, menu }: { post: FeedPost; menu: React.ReactNode }) {
               {a.first_name} {a.last_name}
             </Link>
           ) : (
-            'Membre parti'
+            'Ancien membre'
           )}
           {a?.role ? <span className="rounded-full bg-safran-pale px-2 py-0.5 text-[11px] font-extrabold text-[#6B4A00]">Bureau</span> : null}
         </p>

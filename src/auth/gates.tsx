@@ -5,6 +5,8 @@ import { AccepterCharte } from '../pages/member/AccepterCharte'
 import { Attente } from '../pages/member/Attente'
 import { Bienvenue } from '../pages/member/Bienvenue'
 import { StatutCompte } from '../pages/member/StatutCompte'
+import { CompteFermeGate } from '../pages/public/CompteFerme'
+import { MemberServices } from '../layouts/MemberServices'
 import { can, isBureau, useCharter, useMe, type ScreenCode } from '../lib/queries'
 import { signOut, useSession } from './session'
 
@@ -37,11 +39,16 @@ export function MemberGate() {
 
   const data = me.data
   const p = data.profile
+  if (p.deletion_requested_at) return <CompteFermeGate me={data} />
   if (p.status === 'en_attente') return <Attente me={data} />
   if (p.status === 'refuse' || p.status === 'suspendu') return <StatutCompte me={data} />
   if (charter.data && (p.charter_version ?? 0) < charter.data.version) return <AccepterCharte charter={charter.data} />
   if (!p.welcomed_at) return <Bienvenue me={data} />
-  return <Outlet />
+  return (
+    <MemberServices>
+      <Outlet />
+    </MemberServices>
+  )
 }
 
 /** Le mode bureau n'existe que pour les membres qui ont un poste. */

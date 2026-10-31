@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { ImagePlus, LayoutGrid, Newspaper, Search } from 'lucide-react'
 import { Avatar } from '../../components/Avatar'
+import { ActivateCard } from '../../components/notifications/ActivateCard'
+import { Bell } from '../../components/notifications/Bell'
 import { ButtonLink } from '../../components/Button'
 import { FilVote } from '../../components/elections/FilVote'
 import { NextEventBand } from '../../components/events/EventParts'
@@ -92,6 +94,7 @@ export function Fil() {
         <Link to="/app/recherche" aria-label="Rechercher un membre ou une publication" className="grid size-11 place-items-center rounded-full bg-surface-2 text-ink">
           <Search className="size-[22px]" />
         </Link>
+        <Bell />
         <Link to="/app/menu" aria-label="Menu" className="grid size-11 place-items-center rounded-full bg-surface-2 text-ink">
           <LayoutGrid className="size-[22px]" />
         </Link>
@@ -100,17 +103,21 @@ export function Fil() {
       <div className="flex min-w-0 flex-col gap-2 pb-6 lg:gap-4 lg:pb-0">
         <div className="hidden items-center justify-between gap-6 lg:flex">
           <h1 className="titre m-0 text-[34px]">Fil d'actu</h1>
-          <form
-            className="w-[380px]"
-            onSubmit={(e) => {
-              e.preventDefault()
-              if (query.trim()) navigate(`/app/recherche?q=${encodeURIComponent(query.trim())}`)
-            }}
-          >
-            <SearchField value={query} onChange={setQuery} placeholder="Rechercher un membre, une publication" />
-          </form>
+          <div className="flex items-center gap-3">
+            <form
+              className="w-[380px]"
+              onSubmit={(e) => {
+                e.preventDefault()
+                if (query.trim()) navigate(`/app/recherche?q=${encodeURIComponent(query.trim())}`)
+              }}
+            >
+              <SearchField value={query} onChange={setQuery} placeholder="Rechercher un membre, une publication" />
+            </form>
+            <Bell />
+          </div>
         </div>
 
+        <ActivateCard className="mx-3 mt-3 lg:mx-0 lg:mt-0" />
         <NextEventBand />
         <div className="flex items-center gap-3 bg-surface px-4 py-3 lg:rounded-[22px] lg:p-4">
           <Avatar person={me.profile} size={44} />

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router'
-import { Briefcase, Calendar, ChevronRight, FileText, LogOut, Shield, SquareCheckBig, UserPen, Users, X } from 'lucide-react'
+import { Briefcase, Calendar, ChevronRight, FileText, LogOut, Settings, Shield, SquareCheckBig, UserPen, Users, X } from 'lucide-react'
 import { signOut } from '../../auth/session'
 import { Avatar } from '../../components/Avatar'
 import { useDirectory } from '../../lib/feed'
@@ -75,6 +75,10 @@ export function Menu() {
         <div className="overflow-hidden rounded-[20px] border border-line">
           <Row to="/app/profil/modifier" icon={<UserPen className="size-5" />}>
             Modifier mon profil
+          </Row>
+          <div className="h-px bg-line-soft" />
+          <Row to="/app/reglages" icon={<Settings className="size-5" />}>
+            Réglages
           </Row>
           <div className="h-px bg-line-soft" />
           <Row to="/charte" icon={<Shield className="size-5" />}>
