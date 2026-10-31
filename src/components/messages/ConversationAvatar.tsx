@@ -1,6 +1,7 @@
 import { Users } from 'lucide-react'
 import type { ConversationKind } from '../../lib/messages'
 import { usePhotoUrl } from '../../lib/photos'
+import { OnlineDot } from '../../lib/presence'
 import { Avatar, type AvatarPerson } from '../Avatar'
 import { Logo } from '../Logo'
 
@@ -12,10 +13,12 @@ type Props = {
   /** Un groupe sans photo montre deux de ses membres. */
   faces?: AvatarPerson[] | null
   size?: number
+  /** Le point vert d'une conversation privée : l'autre membre a l'appli ouverte. */
+  online?: boolean
 }
 
 /** Le grand groupe et AEGB portent le logo, un groupe sa photo, une conversation privée l'autre membre. */
-export function ConversationAvatar({ kind, title, photoPath, other, faces, size = 52 }: Props) {
+export function ConversationAvatar({ kind, title, photoPath, other, faces, size = 52, online = false }: Props) {
   const url = usePhotoUrl(kind === 'groupe' ? photoPath : null, 'messages')
   if (kind === 'grand_groupe' || kind === 'aegb') {
     return (
@@ -25,7 +28,14 @@ export function ConversationAvatar({ kind, title, photoPath, other, faces, size 
     )
   }
   if (kind === 'prive') {
-    return <Avatar person={other ?? { first_name: '?', last_name: '' }} size={size} />
+    const face = <Avatar person={other ?? { first_name: '?', last_name: '' }} size={size} />
+    if (!online) return face
+    return (
+      <span className="relative inline-flex shrink-0">
+        {face}
+        <OnlineDot size={size} />
+      </span>
+    )
   }
   if (url) {
     return <img src={url} alt="" className="shrink-0 rounded-full object-cover" style={{ width: size, height: size }} />

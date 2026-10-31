@@ -171,7 +171,7 @@ function SharedPost({ id, mine }: { id: string; mine: boolean }) {
   if (post.isPending) return <span className={`${cls} h-16 animate-pulse`} />
   if (!p) return <span className={`${cls} text-[13px] italic opacity-80`}>Publication indisponible</span>
   const media = p.post_media[0]
-  const author = p.official ? "Bureau de l'AEGB" : p.author ? `${p.author.first_name} ${p.author.last_name}` : 'Membre parti'
+  const author = p.official ? "Bureau de l'AEGB" : p.author ? `${p.author.first_name} ${p.author.last_name}` : 'Ancien membre'
   return (
     <Link to={`/app/fil/${p.id}`} className={cls}>
       <span className="min-w-0 flex-1">
@@ -195,7 +195,7 @@ function ReplyQuote({ m, mine, onJump }: { m: MessageRow; mine: boolean; onJump:
       onClick={() => onJump(r.id)}
       className={`mb-1.5 block w-full rounded-[10px] border-l-[3px] px-2.5 py-1.5 text-left ${mine ? 'border-safran bg-white/10' : 'border-primary bg-surface-2'}`}
     >
-      <span className={`block text-[12px] font-bold ${mine ? 'text-safran' : 'text-link'}`}>{r.sender_name}</span>
+      <span className={`block text-[12px] font-bold ${mine ? 'text-safran' : 'text-link'}`}>{!r.as_aegb && !r.sender_id ? 'Ancien membre' : r.sender_name}</span>
       <span className={`block truncate text-[13px] ${mine ? 'text-white/80' : 'text-muted'}`}>{r.excerpt ?? 'Message supprimé'}</span>
     </button>
   )
@@ -265,7 +265,7 @@ type BubbleProps = {
   group: boolean
   /** Premier message d'une suite du même auteur : son nom et sa photo s'affichent. */
   first: boolean
-  status?: string | null
+  status?: { text: string; seen: boolean } | null
   highlighted?: boolean
   pending?: boolean
   onActions?: (m: MessageRow) => void
@@ -336,7 +336,7 @@ export function Bubble({ m, uid, staffView, group, first, status, highlighted = 
           {...(canAct ? press : {})}
           className={`relative max-w-full min-w-0 rounded-[18px] transition ${photoOnly ? 'p-1' : 'px-3.5 py-2.5'} ${tone} ${mine ? 'rounded-br-[6px]' : 'rounded-bl-[6px]'} ${highlighted ? 'ring-[3px] ring-safran' : ''} ${pending ? 'opacity-70' : ''} select-none [-webkit-touch-callout:none] lg:select-text`}
         >
-          {showName ? <span className="mb-0.5 block text-[13px] font-bold text-link">{m.sender_first_name ? `${m.sender_first_name} ${m.sender_last_name ?? ''}`.trim() : 'Membre parti'}</span> : null}
+          {showName ? <span className="mb-0.5 block text-[13px] font-bold text-link">{m.sender_first_name ? `${m.sender_first_name} ${m.sender_last_name ?? ''}`.trim() : 'Ancien membre'}</span> : null}
           {aegbLabel ? (
             <span className={`mb-0.5 flex items-center gap-1.5 text-[12px] font-extrabold ${mine ? 'text-safran' : 'text-link'}`}>AEGB {group ? <OfficialBadge /> : null}</span>
           ) : null}
@@ -367,7 +367,7 @@ export function Bubble({ m, uid, staffView, group, first, status, highlighted = 
           ) : null}
         </div>
         <Reactions m={m} mine={mine} uid={uid} onOpen={() => onActions?.(m)} />
-        {status ? <span className="mt-0.5 mr-1 text-[12px] font-semibold text-muted">{status}</span> : null}
+        {status ? <span className={`mt-0.5 mr-1 text-[12px] font-bold ${status.seen ? 'text-ink' : 'text-muted'}`}>{status.text}</span> : null}
       </div>
     </div>
   )

@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { useQueryClient } from '@tanstack/react-query'
-import { Ban, Bot, Lock, MessageSquare, UserX } from 'lucide-react'
+import { Ban, Bot, EyeOff, Lock, MessageSquare, UserX } from 'lucide-react'
 import { useSession } from '../../auth/session'
 import { errorMessage } from '../../lib/errors'
+import { useSettings } from '../../lib/notifications'
 import { clock, dayLabel, markRead, openPrivate, refreshMessages, sameDay, sendMessage, useThread, WELCOME_ACTIONS, type ConversationInfo, type MessageRow, type Outgoing } from '../../lib/messages'
 import { supabase } from '../../lib/supabase'
 import { Button } from '../Button'
@@ -36,7 +37,7 @@ function describe(files: Outgoing[]): string {
 function senderName(m: MessageRow, uid: string | undefined, staffView: boolean): string {
   if (m.as_aegb) return staffView ? 'ta réponse AEGB' : 'AEGB'
   if (m.sender_id === uid) return 'toi'
-  return m.sender_first_name ? `${m.sender_first_name} ${m.sender_last_name ?? ''}`.trim() : 'un membre parti'
+  return m.sender_first_name ? `${m.sender_first_name} ${m.sender_last_name ?? ''}`.trim() : 'un ancien membre'
 }
 
 type Props = {
@@ -127,6 +128,10 @@ export function Thread({ id, info, intro, readOnly = false }: Props) {
   }
 
   async function send({ body, files }: { body: string; files: Outgoing[] }): Promise<boolean> {
+    if (!navigator.onLine) {
+      toast('Pas envoyé, pas de réseau. Ton message t’attend.', 'error')
+      return false
+    }
     const messageId = crypto.randomUUID()
     const quoted = replyTo
     const temp: MessageRow = {
@@ -179,9 +184,19 @@ export function Thread({ id, info, intro, readOnly = false }: Props) {
 
   const isMine = (m: MessageRow) => (staffView ? m.as_aegb : !m.as_aegb && m.sender_id === uid)
   // « Vu » sous mon dernier message, s'il est le dernier de la conversation.
+  // La base ne donne pas l'heure de lecture si l'un des deux a caché « Vu ».
   const lastMine = newest && newest.kind === 'message' && !newest.deleted && isMine(newest) ? newest : null
-  const seen = lastMine && other && (info.kind === 'prive' || staffView) ? new Date(other.last_read_at) >= new Date(lastMine.created_at) : false
-  const status = lastMine && other && (info.kind === 'prive' || staffView) ? (seen ? (staffView ? `Vu par ${other.first_name}` : 'Vu') : 'Envoyé') : null
+  const readAt = other?.last_read_at
+  const seen = !!lastMine && !!readAt && new Date(readAt) >= new Date(lastMine.created_at)
+  const status =
+    lastMine && other && (info.kind === 'prive' || staffView)
+      ? seen && readAt
+        ? { text: staffView ? `Vu par ${other.first_name} à ${clock(readAt)}` : `Vu à ${clock(readAt)}`, seen: true }
+        : { text: 'Envoyé', seen: false }
+      : null
+  // Ce que j'ai caché : je ne vois plus non plus celui des autres.
+  const privacy = useSettings(info.kind === 'prive' && !staffView).data?.privacy
+  const hidden = info.kind === 'prive' && !staffView && privacy ? [!privacy.show_online && '« En ligne »', !privacy.show_seen && '« Vu »'].filter((x) => !!x) : []
 
   const items: ReactNode[] = []
   rows.forEach((m, i) => {
@@ -242,10 +257,10 @@ export function Thread({ id, info, intro, readOnly = false }: Props) {
         </Button>
       </div>
     )
-  } else if (info.kind === 'prive' && other && other.status !== 'actif') {
+  } else if (info.kind === 'prive' && (!other || other.closed || other.status !== 'actif')) {
     footer = (
       <p className="m-0 flex shrink-0 items-center justify-center gap-2 border-t border-line-soft bg-surface px-4 pt-3 pb-[max(env(safe-area-inset-bottom),14px)] text-[14px] text-muted">
-        <UserX className="size-4" /> {name} n’est plus joignable.
+        <UserX className="size-4" /> {other ? name : 'Ce membre'} n’est plus joignable.
       </p>
     )
   } else if (staffView && readOnly) {
@@ -257,7 +272,7 @@ export function Thread({ id, info, intro, readOnly = false }: Props) {
   } else if (info.member || staffView) {
     footer = (
       <Composer
-        placeholder={staffView ? 'Répondre au nom d’AEGB' : info.kind === 'aegb' ? 'Écrire au bureau' : 'Écrire un message'}
+        placeholder={staffView ? 'Répondre au nom d’AEGB' : info.kind === 'aegb' ? 'Écrire au bureau' : info.kind === 'prive' && other ? `Écrire à ${other.first_name}` : 'Écrire un message'}
         replyTo={replyTo}
         onCancelReply={() => setReplyTo(null)}
         onSend={send}
@@ -301,6 +316,17 @@ export function Thread({ id, info, intro, readOnly = false }: Props) {
             <EmptyState title={info.kind === 'aegb' && !staffView ? 'Écris au bureau' : other ? `Dis bonjour à ${other.first_name}` : 'Pas encore de message'} icon={<MessageSquare className="size-6" />}>
               {info.kind === 'aegb' && !staffView ? 'Une question ? Un membre du bureau te répond ici.' : 'Ton premier message ouvrira la conversation.'}
             </EmptyState>
+          ) : null}
+          {hidden.length && !empty ? (
+            <p className="mx-auto my-3 flex w-full max-w-[560px] items-start gap-3 rounded-[18px] bg-safran-pale px-4 py-3 text-[14px] leading-[1.45] text-ink">
+              <EyeOff className="mt-0.5 size-5 shrink-0" />
+              <span>
+                Tu as caché {hidden.join(' et ')}. C’est réciproque : tu ne vois plus {hidden.length > 1 ? 'ceux' : 'celui'} des autres.{' '}
+                <Link to="/app/reglages/confidentialite" className="font-bold text-ink underline">
+                  Changer
+                </Link>
+              </span>
+            </p>
           ) : null}
           {items}
         </div>

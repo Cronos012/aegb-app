@@ -15,6 +15,7 @@ import { Thread } from '../../components/messages/Thread'
 import { errorMessage } from '../../lib/errors'
 import { TYPE_LABELS } from '../../lib/format'
 import { groupFaces, setBlocked, useConversationInfo, type ConversationInfo } from '../../lib/messages'
+import { useOnline } from '../../lib/presence'
 
 function subtitle(info: ConversationInfo): string {
   const o = info.other
@@ -26,7 +27,7 @@ function subtitle(info: ConversationInfo): string {
 
 function title(info: ConversationInfo): string {
   if ((info.kind === 'prive' || info.as_aegb) && info.other) return `${info.other.first_name} ${info.other.last_name}`
-  if (info.kind === 'prive') return 'Membre parti'
+  if (info.kind === 'prive') return 'Ancien membre'
   return info.title
 }
 
@@ -66,6 +67,8 @@ export function Conversation() {
   const uid = useSession().session?.user.id
   const [menu, setMenu] = useState(false)
   const [block, setBlock] = useState<{ id: string; first_name: string } | null>(null)
+  const other = info.data?.other
+  const online = useOnline(info.data?.kind === 'prive' && other && !other.closed ? other.id : null)
 
   const back = (
     <button type="button" onClick={() => navigate('/app/messages')} aria-label="Retour aux messages" className="grid size-11 shrink-0 place-items-center rounded-xl hover:bg-surface-2 lg:hidden">
@@ -115,13 +118,13 @@ export function Conversation() {
 
   const head = (
     <>
-      <ConversationAvatar kind={c.as_aegb ? 'prive' : c.kind} title={title(c)} photoPath={c.photo_path} other={o} faces={groupFaces(c, uid)} size={44} />
+      <ConversationAvatar kind={c.as_aegb ? 'prive' : c.kind} title={title(c)} photoPath={c.photo_path} other={o} faces={groupFaces(c, uid)} size={44} online={online} />
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-2">
           <span className="truncate text-[17px] font-bold">{title(c)}</span>
           {c.kind === 'aegb' && !c.as_aegb ? <OfficialBadge /> : null}
         </span>
-        <span className="block truncate text-[13px] text-muted">{subtitle(c)}</span>
+        {online ? <span className="block text-[13px] font-bold text-ok">En ligne</span> : <span className="block truncate text-[13px] text-muted">{subtitle(c)}</span>}
       </span>
     </>
   )

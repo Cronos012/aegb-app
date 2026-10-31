@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router'
 import { MessageSquare, Mic, Pencil } from 'lucide-react'
 import { useSession } from '../../auth/session'
 import { conversationName, listDate, previewLine, useConversations, type ConversationRow } from '../../lib/messages'
+import { useOnline } from '../../lib/presence'
 import { EmptyState, ErrorNote } from '../Feedback'
 import { SearchField } from '../Field'
 import { OfficialBadge } from '../feed/PostCard'
@@ -23,6 +24,7 @@ function Row({ c, active, uid }: { c: ConversationRow; active: boolean; uid: str
   const unread = c.unread > 0
   const line = previewLine(c, uid)
   const vocal = c.last_preview?.startsWith('Message vocal')
+  const online = useOnline(c.kind === 'prive' ? c.other_id : null)
   return (
     <li>
       <Link
@@ -37,6 +39,7 @@ function Row({ c, active, uid }: { c: ConversationRow; active: boolean; uid: str
           other={c.other_id ? { id: c.other_id, first_name: c.other_first_name ?? '?', last_name: c.other_last_name ?? '', avatar_path: c.other_avatar_path } : null}
           faces={c.faces}
           size={52}
+          online={online}
         />
         <span className="min-w-0 flex-1">
           <span className="flex items-center gap-2">
