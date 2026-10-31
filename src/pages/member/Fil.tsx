@@ -87,7 +87,7 @@ export function Fil() {
   const first = me.profile.first_name
 
   return (
-    <div className="flex flex-1 flex-col lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start lg:gap-6 lg:px-10 lg:py-8">
+    <div className="flex flex-1 flex-col lg:grid lg:grid-cols-[minmax(0,680px)_320px] lg:items-start lg:justify-center lg:gap-6 lg:px-10 lg:py-8">
       <header className="sticky top-0 z-20 flex h-[calc(56px+env(safe-area-inset-top))] items-center gap-3 border-b border-line-soft bg-surface px-4 pt-[env(safe-area-inset-top)] lg:hidden">
         <Logo size={34} />
         <span className="flex-1 text-[26px] font-extrabold tracking-[-0.03em] text-primary">aegb</span>
