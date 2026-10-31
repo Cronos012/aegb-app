@@ -79,7 +79,7 @@ function Form({ a }: { a: Assembly }) {
                 role="radio"
                 aria-checked={selected}
                 onClick={() => setRole(s.role)}
-                className={`flex flex-col items-start rounded-[18px] px-3.5 py-3 text-left transition-colors ${
+                className={`flex flex-col items-start rounded-[12px] px-3.5 py-3 text-left transition-colors ${
                   selected ? 'border-2 border-leppi bg-select ring-4 ring-safran/45' : 'border-[1.5px] border-line bg-surface hover:bg-surface-2'
                 }`}
               >
@@ -98,7 +98,7 @@ function Form({ a }: { a: Assembly }) {
           </label>
           <span className="text-sm text-muted">Lue dans l’isoloir</span>
         </div>
-        <div className="flex flex-col gap-2.5 rounded-[20px] border-[1.5px] border-line bg-surface p-4 transition-colors focus-within:border-leppi focus-within:ring-4 focus-within:ring-safran/45">
+        <div className="flex flex-col gap-2.5 rounded-[12px] border-[1.5px] border-line bg-surface p-4 transition-colors focus-within:border-leppi focus-within:ring-4 focus-within:ring-safran/45">
           {me ? (
             <span className="flex min-w-0 items-center gap-3">
               <Avatar person={me.profile} size={40} />
@@ -125,7 +125,7 @@ function Form({ a }: { a: Assembly }) {
         </div>
       </div>
 
-      <section className="flex flex-col gap-3 rounded-[22px] bg-surface-2 p-4">
+      <section className="flex flex-col gap-3 rounded-[12px] bg-surface-2 p-4">
         <h2 className="m-0 text-[16px] font-bold text-ink/85">Les conditions (article 15)</h2>
         <Condition done title="Statut étudiant, compte validé" detail="Vérifié par l’appli" />
         <Condition done title="Cotisation à jour" detail="Vérifié par l’appli" />
@@ -153,7 +153,7 @@ function Form({ a }: { a: Assembly }) {
           <h1 className="titre m-0 text-[34px]">Je me présente</h1>
           <p className="mt-1 mb-0 text-[15px] text-muted">{subtitle}</p>
         </div>
-        <div className="flex max-w-[760px] flex-col gap-6 rounded-[26px] bg-surface p-7">{form}</div>
+        <div className="flex max-w-[760px] flex-col gap-6 rounded-[12px] bg-surface p-7">{form}</div>
       </div>
     )
   }
@@ -168,7 +168,7 @@ function Form({ a }: { a: Assembly }) {
 function Condition({ done, title, detail }: { done: boolean; title: string; detail: string }) {
   return (
     <div className="flex items-start gap-3">
-      <span className={`grid size-9 shrink-0 place-items-center rounded-full ${done ? 'bg-ok-soft text-ok' : 'bg-safran-pale text-[#6B4A00]'}`}>
+      <span className={`grid size-9 shrink-0 place-items-center rounded-full ${done ? 'bg-ok-soft text-ok' : 'bg-safran-pale text-[#163F93]'}`}>
         {done ? <Check className="size-[18px]" strokeWidth={2.8} /> : <Clock className="size-[18px]" />}
       </span>
       <span className="flex min-w-0 flex-col">

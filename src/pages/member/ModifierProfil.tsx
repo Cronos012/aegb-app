@@ -99,7 +99,7 @@ export function ModifierProfil() {
   const coverStyle = cover.picked ? { backgroundImage: `url(${cover.picked.preview})` } : coverUrl ? { backgroundImage: `url(${coverUrl})` } : undefined
 
   return (
-    <form onSubmit={save} noValidate className="flex flex-1 flex-col bg-surface lg:mx-10 lg:my-8 lg:max-w-[760px] lg:overflow-hidden lg:rounded-[26px]">
+    <form onSubmit={save} noValidate className="flex flex-1 flex-col bg-surface lg:mx-10 lg:my-8 lg:max-w-[760px] lg:overflow-hidden lg:rounded-[12px]">
       <div className="sticky top-0 z-10 flex h-[58px] items-center justify-between gap-2 border-b border-line-soft bg-surface px-4 pt-[env(safe-area-inset-top)]">
         <Link to="/app/profil" className="text-[15px] font-semibold text-ink no-underline">
           Annuler
@@ -132,7 +132,7 @@ export function ModifierProfil() {
             type="button"
             onClick={avatar.open}
             aria-label="Changer la photo de profil"
-            className="absolute right-0 bottom-1 grid size-9 place-items-center rounded-full border-[3px] border-surface bg-safran text-nuit"
+            className="absolute right-0 bottom-1 grid size-9 place-items-center rounded-full border-[3px] border-surface bg-safran text-white"
           >
             <Camera className="size-4" />
           </button>

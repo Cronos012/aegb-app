@@ -115,13 +115,13 @@ export default function Confidentialite() {
             <ButtonLink to="/connexion" variant="light" size="sm" className="h-10 px-4">
               Se connecter
             </ButtonLink>
-            <ButtonLink to="/inscription" variant="accent" size="sm" className="hidden h-10 px-4 sm:inline-flex">
+            <ButtonLink to="/inscription" variant="onblue" size="sm" className="hidden h-10 px-4 sm:inline-flex">
               Créer mon compte
             </ButtonLink>
           </div>
         </header>
         <div className="mx-auto max-w-[1200px] px-5 pt-6 pb-12 lg:px-10 lg:pt-8">
-          <p className="m-0 text-xs font-extrabold tracking-[0.14em] text-safran uppercase">L’appli AEGB</p>
+          <p className="m-0 text-xs font-extrabold tracking-[0.14em] text-ciel uppercase">L’appli AEGB</p>
           <h1 className="titre mt-3 mb-0 text-[40px] leading-[1.05] lg:text-[48px]">Confidentialité</h1>
           <p className="mt-4 mb-0 max-w-[760px] text-[16px] leading-[1.55] text-white/85">
             Ce que l’appli garde sur toi, qui le voit, et comment tout effacer. Mise à jour le {UPDATED}.

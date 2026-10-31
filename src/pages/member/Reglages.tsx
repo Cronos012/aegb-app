@@ -34,7 +34,7 @@ export function ReglagesLayout() {
       <h1 className="titre m-0 text-[34px] leading-tight">Réglages</h1>
       <p className="mt-1 mb-0 text-[15px] text-muted">Ce que l’appli t’envoie, et ce que les autres membres voient de toi.</p>
       <div className="mt-6 grid grid-cols-[250px_minmax(0,1fr)] items-start gap-6">
-        <nav aria-label="Réglages" className="flex flex-col gap-1 rounded-[22px] bg-surface p-2.5">
+        <nav aria-label="Réglages" className="flex flex-col gap-1 rounded-[12px] bg-surface p-2.5">
           {TABS.map((t) => (
             <NavLink
               key={t.to}
@@ -96,7 +96,7 @@ export function ReglagesMenu() {
           <LinkRow to="confidentialite" icon={<Shield className="size-5" />} tone="bg-ok-soft text-ok" title="Confidentialité" detail="En ligne, Vu, téléphone, appareils" />
         </Group>
         <Group title="L’appli">
-          {isStandalone() ? null : <LinkRow to="installer" icon={<Download className="size-5" />} tone="bg-safran-pale text-[#6B4A00]" title="Installer l’appli" detail="Sur l’écran d’accueil, en plein écran" />}
+          {isStandalone() ? null : <LinkRow to="installer" icon={<Download className="size-5" />} tone="bg-safran-pale text-[#163F93]" title="Installer l’appli" detail="Sur l’écran d’accueil, en plein écran" />}
           <VersionRow />
         </Group>
         <AccountRows />

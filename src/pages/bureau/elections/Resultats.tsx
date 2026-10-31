@@ -161,7 +161,7 @@ export function Resultats({ view, full, onNew }: { view: AdminView; full: boolea
 
   const passation =
     seats.length && filled ? (
-      <section className="flex flex-col gap-2.5 rounded-[22px] bg-ok-soft/70 p-5">
+      <section className="flex flex-col gap-2.5 rounded-[12px] bg-ok-soft/70 p-5">
         <strong className="flex items-center gap-2 text-[16px] text-ok">
           <KeyRound className="size-5" /> {a.mandate_start ? `Passation le ${plainDay(a.mandate_start)}` : 'Passation dès la confirmation'}
         </strong>
@@ -193,7 +193,7 @@ export function Resultats({ view, full, onNew }: { view: AdminView; full: boolea
       {desktop ? <Steps step={3} done={published} /> : null}
       {!desktop ? <div className="flex flex-col gap-2.5">{actions}</div> : null}
       {tie && !published ? (
-        <section className="rounded-[22px] border-2 border-safran bg-safran-pale/50 p-5 text-[15px] leading-[1.5]">
+        <section className="rounded-[12px] border-2 border-safran bg-safran-pale/50 p-5 text-[15px] leading-[1.5]">
           <strong>Égalité pour un poste.</strong> Le second tour départage les candidats à égalité, pendant 30 minutes, avec la même liste électorale. Publie ensuite tous les résultats en une fois.
         </section>
       ) : null}
@@ -272,7 +272,7 @@ function SeatCard({ label, q, firstRound, names, year }: { label: string; q: Que
     foot = `Second tour, ${blank} blanc${blank > 1 ? 's' : ''}. Premier tour : ${each} voix pour ${tied.length === 2 ? 'chacun des deux' : `chacun des ${tied.length}`}.`
   }
   return (
-    <div className="flex flex-col gap-2.5 rounded-[18px] border-[1.5px] border-line-soft p-4">
+    <div className="flex flex-col gap-2.5 rounded-[12px] border-[1.5px] border-line-soft p-4">
       <div className="flex items-center justify-between gap-2">
         <strong className="text-[16px]">{label}</strong>
         {!q ? (

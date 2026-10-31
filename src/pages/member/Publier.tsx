@@ -88,7 +88,7 @@ export function Publier() {
         {submit}
       </header>
 
-      <div className="mx-auto flex w-full max-w-[640px] flex-1 flex-col lg:flex-none lg:rounded-[26px] lg:bg-surface lg:p-6">
+      <div className="mx-auto flex w-full max-w-[640px] flex-1 flex-col lg:flex-none lg:rounded-[12px] lg:bg-surface lg:p-6">
         <div className="mb-5 hidden items-center justify-between lg:flex">
           <h1 className="titre m-0 text-[28px]">Nouvelle publication</h1>
           <button type="button" onClick={back} className="text-[14px] font-bold text-muted hover:underline">

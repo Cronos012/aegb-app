@@ -20,7 +20,7 @@ export function Group({ title, children, note, className = '' }: { title: ReactN
   return (
     <section className={className}>
       <h2 className="m-0 px-1 pb-2 text-[12px] font-bold tracking-[0.08em] text-muted uppercase">{title}</h2>
-      <div className="divide-y divide-line-soft overflow-hidden rounded-[22px] bg-surface">{children}</div>
+      <div className="divide-y divide-line-soft overflow-hidden rounded-[12px] bg-surface">{children}</div>
       {note ? <Hint className="mt-2.5">{note}</Hint> : null}
     </section>
   )

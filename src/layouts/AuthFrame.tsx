@@ -26,7 +26,7 @@ export function AuthFrame({ hero, heading, sub, panelTitle, panelText, topRight,
     return (
       <div className="flex min-h-dvh flex-col bg-surface">
         {hero}
-        <div className="relative -mt-6 flex flex-1 flex-col rounded-t-[26px] bg-surface px-5 pt-[26px] pb-[max(env(safe-area-inset-bottom),24px)]">{children}</div>
+        <div className="relative -mt-6 flex flex-1 flex-col rounded-t-[12px] bg-surface px-5 pt-[26px] pb-[max(env(safe-area-inset-bottom),24px)]">{children}</div>
       </div>
     )
   }

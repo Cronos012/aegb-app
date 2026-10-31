@@ -6,7 +6,7 @@ const KIND_TONES: Record<DocKind, string> = {
   PDF: 'bg-danger-soft text-[#8A0C20]',
   DOC: 'bg-[#E7F1FB] text-[#1D4F86]',
   XLS: 'bg-ok-soft text-[#075C2C]',
-  PPT: 'bg-safran-pale text-[#6B5200]',
+  PPT: 'bg-safran-pale text-[#163F93]',
   IMG: 'bg-[#EFEDFF] text-[#3C2E8F]',
   TXT: 'bg-surface-2 text-muted',
 }
@@ -32,7 +32,7 @@ export const CATEGORY_ICONS: Record<CategoryIcon, LucideIcon> = {
 
 export const CATEGORY_TONES: Record<CategoryIcon, string> = {
   shield: 'bg-select text-leppi',
-  vote: 'bg-safran-pale text-[#6B5200]',
+  vote: 'bg-safran-pale text-[#163F93]',
   info: 'bg-ok-soft text-ok',
   euro: 'bg-[#E2F2F8] text-[#145A75]',
   pen: 'bg-[#F1E8FB] text-[#5B2D91]',

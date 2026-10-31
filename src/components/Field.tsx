@@ -3,7 +3,7 @@ import { Eye, EyeOff } from 'lucide-react'
 
 /** Le style des champs, sans la hauteur : chaque champ choisit la sienne. */
 export const inputBase =
-  'w-full min-w-0 rounded-[14px] border-[1.5px] border-line bg-surface px-4 text-base text-ink placeholder:text-muted/70 ' +
+  'w-full min-w-0 rounded-lg border border-line bg-surface px-4 text-base text-ink placeholder:text-muted/70 ' +
   'outline-none transition focus:border-primary focus:ring-[3px] focus:ring-safran/45 aria-invalid:border-danger disabled:bg-surface-2 disabled:text-muted'
 
 export const inputClass = `${inputBase} h-[52px]`
@@ -119,7 +119,7 @@ export function TextArea({ label, counter, error, id, className = '', maxLength,
 
 export function SearchField({ value, onChange, placeholder, className = '', label = 'Rechercher' }: { value: string; onChange: (v: string) => void; placeholder: string; className?: string; label?: string }) {
   return (
-    <label className={`flex h-12 min-w-0 items-center gap-2.5 rounded-[14px] border-[1.5px] border-line bg-surface px-3.5 focus-within:border-primary focus-within:ring-[3px] focus-within:ring-safran/45 ${className}`}>
+    <label className={`flex h-10 min-w-0 items-center gap-2.5 rounded-full border border-transparent bg-line-soft px-3.5 focus-within:border-primary focus-within:ring-[3px] focus-within:ring-safran/45 ${className}`}>
       <svg className="size-5 shrink-0 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
         <circle cx="11" cy="11" r="6.5" />
         <path d="M16 16l4 4" />

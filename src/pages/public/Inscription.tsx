@@ -145,7 +145,7 @@ export function Inscription() {
       above={progress}
       panelTitle={
         <>
-          Bienvenue dans <span className="text-safran">la famille.</span>
+          Bienvenue dans <span className="text-ciel">la famille.</span>
         </>
       }
       panelText="Trois étapes, puis le bureau valide ton compte. Tu retrouves ensuite toute la communauté."
@@ -224,7 +224,7 @@ export function Inscription() {
                   key={t.value}
                   className={`flex cursor-pointer items-center gap-3.5 rounded-2xl border-[1.5px] px-4 py-3 ${selected ? 'border-primary bg-select ring-[3px] ring-safran/35' : 'border-line bg-surface'}`}
                 >
-                  <input type="radio" name="type" value={t.value} checked={selected} onChange={() => set({ type: t.value })} className="size-5 accent-[#1A2352]" />
+                  <input type="radio" name="type" value={t.value} checked={selected} onChange={() => set({ type: t.value })} className="size-5 accent-[#1B4DB1]" />
                   <span className="flex flex-col">
                     <span className="text-[15px] font-bold">{TYPE_LABELS[t.value]}</span>
                     <span className="text-[13px] text-muted">{t.hint}</span>
@@ -267,7 +267,7 @@ export function Inscription() {
             </Link>
             <div className="mt-auto flex flex-col gap-3 pt-4 lg:mt-3">
               <label className={`flex cursor-pointer items-center gap-3 rounded-2xl border-[1.5px] px-4 py-3.5 text-[15px] font-semibold ${accepted ? 'border-primary bg-select' : 'border-line'}`}>
-                <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} className="size-5 accent-[#1A2352]" />
+                <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} className="size-5 accent-[#1B4DB1]" />
                 J'ai lu et j'accepte la charte de l'AEGB
               </label>
               <ErrorNote error={submitError ?? charter.error} />

@@ -16,12 +16,12 @@ export function AccepterCharte({ charter }: { charter: Charter }) {
 
   return (
     <div className="flex min-h-dvh justify-center bg-page lg:items-center lg:py-10">
-      <div className="flex w-full max-w-[480px] flex-col overflow-hidden bg-surface lg:rounded-[26px] lg:shadow-sm">
+      <div className="flex w-full max-w-[480px] flex-col overflow-hidden bg-surface lg:rounded-[12px] lg:shadow-sm">
         <header className="bg-tisse px-5 pt-[max(env(safe-area-inset-top),24px)] pb-12 text-white">
           <h1 className="titre m-0 text-[30px]">La charte a changé</h1>
           <p className="mt-1.5 mb-0 text-[15px] text-white/85">Lis la nouvelle version et accepte-la pour continuer.</p>
         </header>
-        <div className="relative -mt-6 flex flex-1 flex-col gap-4 rounded-t-[26px] bg-surface px-5 pt-6 pb-[max(env(safe-area-inset-bottom),24px)]">
+        <div className="relative -mt-6 flex flex-1 flex-col gap-4 rounded-t-[12px] bg-surface px-5 pt-6 pb-[max(env(safe-area-inset-bottom),24px)]">
           <ul className="m-0 flex list-none flex-col gap-4 p-0">
             {charter.rules.map((rule, i) => {
               const Icon = RULE_ICONS[rule.icon] ?? Heart
@@ -40,7 +40,7 @@ export function AccepterCharte({ charter }: { charter: Charter }) {
           </ul>
           <div className="mt-auto flex flex-col gap-3 pt-6">
             <label className={`flex cursor-pointer items-center gap-3 rounded-2xl border-[1.5px] px-4 py-3.5 text-[15px] font-semibold ${accepted ? 'border-primary bg-select' : 'border-line'}`}>
-              <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} className="size-5 accent-[#1A2352]" />
+              <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} className="size-5 accent-[#1B4DB1]" />
               J'ai lu et j'accepte la charte de l'AEGB
             </label>
             <ErrorNote error={accept.error} />

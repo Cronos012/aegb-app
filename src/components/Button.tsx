@@ -2,12 +2,13 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react'
 import { Link, type LinkProps } from 'react-router'
 import { LoaderCircle } from 'lucide-react'
 
-export type Variant = 'primary' | 'accent' | 'outline' | 'light' | 'danger' | 'danger-outline' | 'ghost' | 'soft'
+export type Variant = 'primary' | 'accent' | 'onblue' | 'outline' | 'light' | 'danger' | 'danger-outline' | 'ghost' | 'soft'
 export type Size = 'lg' | 'md' | 'sm'
 
 const VARIANTS: Record<Variant, string> = {
   primary: 'bg-primary text-primary-ink hover:opacity-92',
-  accent: 'bg-safran text-nuit hover:brightness-105',
+  accent: 'bg-safran text-white hover:brightness-105',
+  onblue: 'bg-white text-leppi hover:bg-white/90',
   outline: 'border-[1.5px] border-line bg-surface text-ink hover:bg-surface-2',
   light: 'border-[1.5px] border-white/45 text-white hover:bg-white/10',
   danger: 'bg-[#B3122A] text-white hover:brightness-110',
@@ -17,13 +18,13 @@ const VARIANTS: Record<Variant, string> = {
 }
 
 const SIZES: Record<Size, string> = {
-  lg: 'h-14 rounded-2xl px-6 text-base',
-  md: 'h-11 rounded-xl px-4 text-[15px]',
-  sm: 'h-9 rounded-[10px] px-3 text-sm',
+  lg: 'h-12 rounded-lg px-6 text-base',
+  md: 'h-10 rounded-lg px-4 text-[15px]',
+  sm: 'h-9 rounded-md px-3 text-sm',
 }
 
 export function buttonClass(variant: Variant = 'primary', size: Size = 'lg', extra = '') {
-  return `inline-flex shrink-0 items-center justify-center gap-2 font-bold no-underline transition disabled:opacity-50 ${VARIANTS[variant]} ${SIZES[size]} ${extra}`
+  return `inline-flex shrink-0 items-center justify-center gap-2 font-semibold no-underline transition disabled:opacity-50 ${VARIANTS[variant]} ${SIZES[size]} ${extra}`
 }
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {

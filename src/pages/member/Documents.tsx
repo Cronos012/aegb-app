@@ -55,7 +55,7 @@ function DocRow({ d, showCategory = true }: { d: Doc; showCategory?: boolean }) 
         <span className="flex min-w-0 flex-col gap-0.5">
           <span className="truncate text-[15px] font-bold">{d.title}</span>
           <span className="truncate text-[13px] text-muted">
-            {isNew(d) ? <b className="text-[#6B5200]">Nouveau · </b> : null}
+            {isNew(d) ? <b className="text-[#163F93]">Nouveau · </b> : null}
             {showCategory ? `${d.category} · ` : `${docMeta(d)} · `}
             {shortDate(d.updated_at)}
           </span>
@@ -112,7 +112,7 @@ export function Documents() {
         </div>
         <ErrorNote error={q.error} />
         <div className="grid max-w-[1180px] grid-cols-[260px_minmax(0,1fr)] items-start gap-[22px]">
-          <nav aria-label="Catégories de documents" className="flex flex-col gap-0.5 rounded-[22px] bg-surface px-3.5 py-[18px]">
+          <nav aria-label="Catégories de documents" className="flex flex-col gap-0.5 rounded-[12px] bg-surface px-3.5 py-[18px]">
             <h2 className="titre m-0 mb-2 px-1 text-[18px]">Catégories</h2>
             {[{ id: null as string | null, name: 'Tous les documents', icon: 'folder' as const, n: docs.length }, ...(lib?.categories ?? []).map((c) => ({ id: c.id as string | null, name: c.name, icon: c.icon, n: count(c.id) }))].map((c) => {
               const Icon = c.icon === 'folder' ? Folder : CATEGORY_ICONS[c.icon]
@@ -126,7 +126,7 @@ export function Documents() {
               )
             })}
           </nav>
-          <section className="rounded-[22px] bg-surface pt-4 pb-2">
+          <section className="rounded-[12px] bg-surface pt-4 pb-2">
             <div className="grid grid-cols-[minmax(0,1fr)_180px_120px_40px] gap-3.5 px-[18px] pb-2 text-[12px] font-extrabold tracking-[0.8px] text-muted uppercase">
               <span>Document</span>
               <span>Catégorie</span>
@@ -173,7 +173,7 @@ export function Documents() {
           <p className="m-0 text-[14px] text-white/85">Les textes et guides de l’AEGB</p>
         </div>
       </header>
-      <div className="relative -mt-6 flex flex-1 flex-col gap-3 rounded-t-[26px] bg-[#F8F9FC] px-4 pt-5 pb-6">
+      <div className="relative -mt-6 flex flex-1 flex-col gap-3 rounded-t-[12px] bg-[#F8F9FC] px-4 pt-5 pb-6">
         <SearchField value={query} onChange={setQuery} placeholder="Chercher un document" label="Chercher un document" className="border-0 bg-[#F3F4F8]" />
         <ErrorNote error={q.error} />
         {current ? (
@@ -191,13 +191,13 @@ export function Documents() {
         ) : null}
         <span className="mx-0.5 mt-1 -mb-1 text-[13px] font-extrabold tracking-[0.6px] text-muted uppercase">{current ? current.name : query ? 'Résultats' : 'Ajoutés récemment'}</span>
         {shown.length ? (
-          <ul className="m-0 flex list-none flex-col overflow-hidden rounded-[20px] bg-surface p-0 shadow-[0_1px_2px_rgba(18,22,43,0.06),0_6px_18px_rgba(18,22,43,0.06)]">
+          <ul className="m-0 flex list-none flex-col overflow-hidden rounded-[12px] bg-surface p-0 shadow-[0_1px_2px_rgba(18,22,43,0.06),0_6px_18px_rgba(18,22,43,0.06)]">
             {(current || query ? shown : shown.slice(0, 8)).map((d) => (
               <DocRow key={d.id} d={d} showCategory={!current} />
             ))}
           </ul>
         ) : (
-          <div className="rounded-[20px] bg-surface">
+          <div className="rounded-[12px] bg-surface">
             <EmptyState title={query ? 'Aucun document ne correspond' : 'Aucun document pour l’instant'} icon={<FileText className="size-6" />}>
               {query ? 'Essaie un autre mot.' : 'Le bureau range ici les statuts, les procès-verbaux d’AG et les guides.'}
             </EmptyState>

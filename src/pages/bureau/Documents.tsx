@@ -378,7 +378,7 @@ export default function DocumentsBureau() {
         </EmptyState>
       )}
       {!category || category === AG_CATEGORY ? (
-        <div className="mx-[18px] mt-2 mb-1 flex items-center gap-2.5 rounded-xl bg-safran-pale px-3.5 py-2.5 text-[13px] text-[#4A3A00]">
+        <div className="mx-[18px] mt-2 mb-1 flex items-center gap-2.5 rounded-xl bg-safran-pale px-3.5 py-2.5 text-[13px] text-[#163F93]">
           <Vote className="size-[17px] shrink-0" />
           <span>Le procès-verbal de chaque AG arrive ici tout seul, à la publication des résultats.</span>
         </div>

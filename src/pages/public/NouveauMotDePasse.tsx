@@ -46,8 +46,8 @@ export function NouveauMotDePasse() {
 
   return (
     <div className="flex min-h-dvh justify-center bg-page lg:items-center lg:py-10">
-      <form onSubmit={submit} noValidate className="flex w-full max-w-[480px] flex-col bg-surface px-5 pt-[max(env(safe-area-inset-top),24px)] pb-[max(env(safe-area-inset-bottom),24px)] lg:rounded-[26px] lg:px-10 lg:py-10 lg:shadow-sm">
-        <span className="mt-6 grid size-[60px] place-items-center rounded-2xl bg-leppi text-safran">
+      <form onSubmit={submit} noValidate className="flex w-full max-w-[480px] flex-col bg-surface px-5 pt-[max(env(safe-area-inset-top),24px)] pb-[max(env(safe-area-inset-bottom),24px)] lg:rounded-[12px] lg:px-10 lg:py-10 lg:shadow-sm">
+        <span className="mt-6 grid size-[60px] place-items-center rounded-2xl bg-leppi text-ciel">
           <KeyRound className="size-7" />
         </span>
         <h1 className="titre mt-6 mb-0 text-[30px] leading-tight">Nouveau mot de passe</h1>

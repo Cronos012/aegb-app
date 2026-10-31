@@ -56,7 +56,7 @@ export function Evenements() {
         const on = f.value === filter
         const tone = onDark
           ? on
-            ? 'bg-safran font-extrabold text-nuit'
+            ? 'bg-white font-extrabold text-leppi'
             : 'border-[1.5px] border-white/30 bg-white/12 text-white'
           : on
             ? 'bg-primary font-extrabold text-primary-ink'
@@ -81,7 +81,7 @@ export function Evenements() {
       ))}
     </>
   ) : (
-    <div className="rounded-[20px] bg-surface lg:col-span-2">
+    <div className="rounded-[12px] bg-surface lg:col-span-2">
       <EmptyState title={EMPTY[filter].title} icon={<CalendarDays className="size-6" />}>
         {EMPTY[filter].text}
       </EmptyState>
@@ -101,7 +101,7 @@ export function Evenements() {
         <div className="grid max-w-[1180px] grid-cols-[minmax(0,1fr)_340px] items-start gap-[22px]">
           <div className="grid grid-cols-2 content-start gap-[18px]">{body}</div>
           <div className="flex flex-col gap-[18px]">
-            <section className="flex flex-col gap-3.5 rounded-[22px] bg-surface px-6 py-5">
+            <section className="flex flex-col gap-3.5 rounded-[12px] bg-surface px-6 py-5">
               <h2 className="titre m-0 text-[19px]">Mon agenda</h2>
               {mine.length ? (
                 mine.slice(0, 5).map((e) => (
@@ -131,7 +131,7 @@ export function Evenements() {
               ) : null}
             </section>
             {past.length && filter !== 'passes' ? (
-              <section className="flex flex-col gap-3.5 rounded-[22px] bg-surface px-6 py-5">
+              <section className="flex flex-col gap-3.5 rounded-[12px] bg-surface px-6 py-5">
                 <h2 className="titre m-0 text-[19px]">Passés</h2>
                 {past.slice(0, 4).map((e) => (
                   <Link key={e.id} to={`/app/evenements/${e.id}`} className="flex items-center gap-3 text-ink no-underline opacity-80 hover:opacity-100">

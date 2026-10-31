@@ -45,7 +45,7 @@ function DeviceRow({ d, onRevoke }: { d: Device; onRevoke: (d: Device) => void }
 
 function Segmented<T extends string>({ value, options, onChange, label }: { value: T; options: { value: T; label: string }[]; onChange: (v: T) => void; label: string }) {
   return (
-    <div role="radiogroup" aria-label={label} className="grid grid-cols-2 gap-1 rounded-[18px] bg-[#E6E8F0] p-1">
+    <div role="radiogroup" aria-label={label} className="grid grid-cols-2 gap-1 rounded-[12px] bg-[#E6E8F0] p-1">
       {options.map((o) => (
         <button
           key={o.value}

@@ -53,7 +53,7 @@ export function Carence({ view, full, onNew }: { view: AdminView; full: boolean;
       )
 
   const alert = (
-    <section className="flex gap-4 rounded-[22px] border-2 border-danger/30 bg-danger-soft/50 p-5 lg:p-6">
+    <section className="flex gap-4 rounded-[12px] border-2 border-danger/30 bg-danger-soft/50 p-5 lg:p-6">
       <span className="grid size-11 shrink-0 place-items-center rounded-full bg-danger-soft text-danger">
         <AlertTriangle className="size-5" />
       </span>
@@ -161,7 +161,7 @@ export function Carence({ view, full, onNew }: { view: AdminView; full: boolean;
   const preview =
     canSecond ? (
       <Panel title="Le message envoyé">
-        <div className="rounded-[18px] bg-surface-2 p-3">
+        <div className="rounded-[12px] bg-surface-2 p-3">
           <div className="flex flex-col gap-2.5 rounded-[16px] bg-surface p-4">
             <strong className="flex items-center gap-2 text-[15px]">
               <Megaphone className="size-4" /> Seconde assemblée générale

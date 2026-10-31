@@ -66,7 +66,7 @@ export function Profil() {
 
   return (
     <div className="flex flex-1 flex-col lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start lg:gap-6 lg:px-10 lg:py-8">
-      <section className="flex-1 bg-surface lg:overflow-hidden lg:rounded-[26px]">
+      <section className="flex-1 bg-surface lg:overflow-hidden lg:rounded-[12px]">
         <Cover path={p.cover_path} className="h-[150px] pt-[env(safe-area-inset-top)] lg:h-[170px]" />
         <div className="px-5 lg:px-6">
           <div className="flex items-end justify-between gap-3">
@@ -154,7 +154,7 @@ export function Profil() {
       </section>
 
       <aside className="hidden flex-col gap-6 lg:flex">
-        <div className="rounded-[22px] bg-surface p-5">
+        <div className="rounded-[12px] bg-surface p-5">
           <div className="flex items-center justify-between">
             <h2 className="titre m-0 text-[19px]">Complète ton profil</h2>
             <span className="text-sm font-bold">{percent} %</span>

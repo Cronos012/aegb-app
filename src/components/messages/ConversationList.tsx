@@ -54,7 +54,7 @@ function Row({ c, active, uid }: { c: ConversationRow; active: boolean; uid: str
         <span className="flex shrink-0 flex-col items-end gap-1.5 self-start pt-1">
           <span className={`text-[12px] ${unread ? 'font-bold text-ink' : 'text-muted'}`}>{listDate(c.last_at)}</span>
           {unread ? (
-            <span className="grid h-[22px] min-w-[22px] place-items-center rounded-full bg-safran px-1.5 text-[11px] font-extrabold text-nuit" aria-label={`${c.unread} non lu${c.unread > 1 ? 's' : ''}`}>
+            <span className="grid h-[22px] min-w-[22px] place-items-center rounded-full bg-safran px-1.5 text-[11px] font-extrabold text-white" aria-label={`${c.unread} non lu${c.unread > 1 ? 's' : ''}`}>
               {c.unread > 99 ? '99+' : c.unread}
             </span>
           ) : null}
@@ -92,7 +92,7 @@ export function ConversationList() {
       <div className="flex flex-col gap-3.5 px-4 pt-[max(env(safe-area-inset-top),16px)] pb-3 lg:px-5 lg:pt-6">
         <div className="flex items-center justify-between gap-3">
           <h1 className="titre m-0 text-[32px] lg:text-[30px]">Messages</h1>
-          <Link to="/app/messages/nouveau" aria-label="Nouveau message" title="Nouveau message" className="grid size-12 place-items-center rounded-full bg-safran text-nuit shadow-sm hover:brightness-105">
+          <Link to="/app/messages/nouveau" aria-label="Nouveau message" title="Nouveau message" className="grid size-12 place-items-center rounded-full bg-safran text-white shadow-sm hover:brightness-105">
             <Pencil className="size-5" />
           </Link>
         </div>

@@ -20,7 +20,7 @@ export function EventsCard() {
   return (
     <Link
       to={next ? `/bureau/evenements/${next.id}` : '/bureau/evenements'}
-      className="flex items-center gap-3.5 rounded-[22px] bg-surface p-4 text-ink no-underline hover:ring-2 hover:ring-line"
+      className="flex items-center gap-3.5 rounded-[12px] bg-surface p-4 text-ink no-underline hover:ring-2 hover:ring-line"
     >
       <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-select text-ink">
         <CalendarDays className="size-6" />

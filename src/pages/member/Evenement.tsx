@@ -70,7 +70,7 @@ function PriceBlock({ e, onPay, paying, cardReady }: { e: EventDetail; onPay: ()
     return (
       <div className="flex flex-col gap-2.5 rounded-2xl border-[1.5px] border-[#F5D46B] bg-[#FFF8E0] p-3">
         <span className="flex items-center gap-3">
-          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-safran text-nuit">
+          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-safran text-white">
             <Ticket className="size-5" />
           </span>
           <span className="flex min-w-0 flex-col gap-px">
@@ -141,14 +141,14 @@ function useMainAction(e: EventDetail) {
   } else if (e.mine?.status === 'attente') {
     label = 'Quitter la liste d’attente'
     tone = 'border-[1.5px] border-line bg-surface text-ink'
-    note = { text: `Tu es ${rank(e.mine.rank ?? 1)} sur la liste d’attente, on te prévient`, tone: 'text-[#6B5200]' }
+    note = { text: `Tu es ${rank(e.mine.rank ?? 1)} sur la liste d’attente, on te prévient`, tone: 'text-[#163F93]' }
     onClick = () => run(leave, 'Tu as quitté la liste d’attente.')
   } else if (e.up_to_date_only && !e.dues_ok) {
     label = 'Je participe'
     tone = off
   } else if (isFull(e)) {
     label = 'Rejoindre la liste d’attente'
-    tone = 'bg-safran text-nuit font-extrabold'
+    tone = 'bg-safran text-white font-extrabold'
     note = { text: 'Si une place se libère, la 1re personne de la liste la prend' }
     onClick = () => run(join, 'Tu es sur la liste d’attente.')
   } else {
@@ -222,7 +222,7 @@ export function Evenement() {
   if (q.isPending) return <PageLoader />
   if (q.error || !q.data) {
     return (
-      <div className="flex flex-1 flex-col gap-4 bg-surface px-5 pt-[max(env(safe-area-inset-top),24px)] lg:mx-auto lg:my-10 lg:w-full lg:max-w-[560px] lg:flex-none lg:rounded-[22px] lg:pb-6">
+      <div className="flex flex-1 flex-col gap-4 bg-surface px-5 pt-[max(env(safe-area-inset-top),24px)] lg:mx-auto lg:my-10 lg:w-full lg:max-w-[560px] lg:flex-none lg:rounded-[12px] lg:pb-6">
         <ErrorNote error={q.error ?? 'Cet événement n’existe plus.'} />
         <ButtonLink to="/app/evenements" variant="outline">
           Retour aux événements
@@ -303,7 +303,7 @@ function Detail({ e, uid, desktop, cardReady, paying, payError, onBack, onShare,
 
       {e.status === 'publie' && e.up_to_date_only && !e.dues_ok && !e.mine && !isPast(e) ? (
         <div className="flex flex-col gap-2.5 rounded-2xl bg-safran-pale px-3.5 py-3">
-          <span className="flex gap-2.5 text-[#6B5200]">
+          <span className="flex gap-2.5 text-[#163F93]">
             <Lock className="mt-px size-[19px] shrink-0" />
             <span className="flex flex-col gap-0.5">
               <span className="text-[15px] font-extrabold">Réservé aux membres à jour</span>
@@ -322,14 +322,14 @@ function Detail({ e, uid, desktop, cardReady, paying, payError, onBack, onShare,
       <ErrorNote error={payError} />
 
       {ag ? (
-        <div className="bg-tisse flex flex-col gap-2.5 rounded-[18px] p-3.5 text-white">
+        <div className="bg-tisse flex flex-col gap-2.5 rounded-[12px] p-3.5 text-white">
           <span className="flex items-center gap-2 text-[15px] font-extrabold">
             <Vote className="size-[19px]" /> Le vote se fait dans l’appli
           </span>
           <span className="text-[13px] leading-[1.45] text-white/86">
             De {hour(ag.vote_opens_at)} à {hour(ag.vote_closes_at)}, en salle ou à distance. « Je viens en salle » sert seulement à préparer la salle.
           </span>
-          <ButtonLink to="/app/votes" variant="accent" size="md">
+          <ButtonLink to="/app/votes" variant="onblue" size="md">
             Voir l’assemblée générale
           </ButtonLink>
         </div>
@@ -372,11 +372,11 @@ function Detail({ e, uid, desktop, cardReady, paying, payError, onBack, onShare,
           <ChevronLeft className="size-4" strokeWidth={2.4} /> Événements
         </Link>
         <div className="grid max-w-[1100px] grid-cols-[minmax(0,1fr)_340px] items-start gap-6">
-          <article className="overflow-hidden rounded-[22px] bg-surface">
+          <article className="overflow-hidden rounded-[12px] bg-surface">
             <EventCover event={e} className="h-[260px]" muted={e.status === 'annule'} />
             <div className="px-7 py-6">{sheet}</div>
           </article>
-          <aside className="sticky top-8 flex flex-col gap-3 rounded-[22px] bg-surface p-5">
+          <aside className="sticky top-8 flex flex-col gap-3 rounded-[12px] bg-surface p-5">
             <p className="m-0 text-[15px] font-extrabold">{capitalize(day(e.starts_at))}</p>
             <p className="m-0 -mt-2 text-[13px] text-muted">
               {hour(e.starts_at)}
@@ -412,7 +412,7 @@ function Detail({ e, uid, desktop, cardReady, paying, payError, onBack, onShare,
           <Share2 className="size-5" />
         </button>
       </div>
-      <div className="relative -mt-6 flex flex-1 flex-col rounded-t-[26px] bg-surface px-5 pt-[22px] pb-4">{sheet}</div>
+      <div className="relative -mt-6 flex flex-1 flex-col rounded-t-[12px] bg-surface px-5 pt-[22px] pb-4">{sheet}</div>
       <div className="sticky bottom-0 flex shrink-0 flex-col gap-2 border-t border-line-soft bg-surface px-5 pt-2.5 pb-[max(env(safe-area-inset-bottom),20px)]">
         {noteLine}
         <div className="flex gap-2.5">

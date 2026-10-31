@@ -19,7 +19,7 @@ export function Charte() {
         </div>
       </header>
       <main className="mx-auto -mt-6 max-w-[720px] px-3 pb-12">
-        <div className="rounded-[26px] bg-surface px-5 py-7 lg:px-10">
+        <div className="rounded-[12px] bg-surface px-5 py-7 lg:px-10">
           {charter.isPending ? <PageLoader /> : null}
           <ErrorNote error={charter.error} />
           {charter.data ? (

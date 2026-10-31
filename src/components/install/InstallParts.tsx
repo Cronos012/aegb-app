@@ -64,7 +64,7 @@ export function InstallButton({ onDone, className = '' }: { onDone?: (installed:
 
 function SafariBar({ highlight }: { highlight: boolean }) {
   return (
-    <div className="flex items-center gap-7 rounded-[18px] bg-surface px-7 py-4 text-[#2F6FE4] shadow-[0_8px_22px_rgba(18,24,61,0.12)]">
+    <div className="flex items-center gap-7 rounded-[12px] bg-surface px-7 py-4 text-[#2F6FE4] shadow-[0_8px_22px_rgba(18,24,61,0.12)]">
       <ChevronLeft className="size-6" />
       <ChevronRight className="size-6 text-line" />
       <span className={`grid size-[54px] place-items-center rounded-full ${highlight ? 'bg-safran-pale ring-[3px] ring-safran' : ''}`}>
@@ -79,7 +79,7 @@ function SafariBar({ highlight }: { highlight: boolean }) {
 function ShareMenu() {
   const row = 'flex items-center justify-between px-4 py-3 text-[16px]'
   return (
-    <div className="w-full max-w-[260px] overflow-hidden rounded-[18px] bg-surface p-1.5 shadow-[0_8px_22px_rgba(18,24,61,0.12)]">
+    <div className="w-full max-w-[260px] overflow-hidden rounded-[12px] bg-surface p-1.5 shadow-[0_8px_22px_rgba(18,24,61,0.12)]">
       <div className={`${row} border-b border-line-soft`}>
         Copier <Copy className="size-5" />
       </div>
@@ -95,7 +95,7 @@ function ShareMenu() {
 
 function AddSheet() {
   return (
-    <div className="w-full max-w-[300px] rounded-[18px] bg-surface p-4 shadow-[0_8px_22px_rgba(18,24,61,0.12)]">
+    <div className="w-full max-w-[300px] rounded-[12px] bg-surface p-4 shadow-[0_8px_22px_rgba(18,24,61,0.12)]">
       <div className="flex items-center justify-between text-[15px]">
         <span className="text-[#2F6FE4]">Annuler</span>
         <span className="font-semibold">Écran d’accueil</span>
@@ -123,9 +123,9 @@ export function IphoneGuide({ onDone }: { onDone: () => void }) {
   const s = STEPS[step]
   return (
     <div className="flex flex-1 flex-col">
-      <div className="grid min-h-[190px] place-items-center rounded-[24px] bg-page px-4 py-6">{s.image}</div>
+      <div className="grid min-h-[190px] place-items-center rounded-[12px] bg-page px-4 py-6">{s.image}</div>
       <div className="mt-5 flex items-center gap-3">
-        <span className="grid size-[34px] shrink-0 place-items-center rounded-full bg-safran text-[16px] font-extrabold text-nuit">{step + 1}</span>
+        <span className="grid size-[34px] shrink-0 place-items-center rounded-full bg-safran text-[16px] font-extrabold text-white">{step + 1}</span>
         <h2 className="titre m-0 text-[22px] leading-tight" aria-live="polite">
           {s.title}
         </h2>

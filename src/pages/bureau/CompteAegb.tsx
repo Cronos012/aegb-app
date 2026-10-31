@@ -51,7 +51,7 @@ function InboxLine({ r, active }: { r: InboxRow; active: boolean }) {
           </span>
           <span className={`block truncate text-[14px] ${r.last_from_member ? 'font-semibold' : 'text-muted'}`}>{r.last_from_member ? r.last_preview : `AEGB : ${r.last_preview}`}</span>
           {r.last_from_member ? (
-            <span className="mt-1 inline-flex h-5 items-center rounded-full bg-safran-pale px-2 text-[11px] font-bold text-[#6B4A00]">À répondre</span>
+            <span className="mt-1 inline-flex h-5 items-center rounded-full bg-safran-pale px-2 text-[11px] font-bold text-[#163F93]">À répondre</span>
           ) : r.replied_by_name ? (
             <span className="block truncate text-[12px] text-muted">Répondu par {r.replied_by_name}</span>
           ) : null}
@@ -166,14 +166,14 @@ function Preview({ text, actions, name }: { text: string; actions: string[]; nam
   return (
     <div className="flex flex-col gap-3">
       <p className="m-0 text-[12px] font-extrabold tracking-wide text-muted uppercase">Aperçu pour {name}</p>
-      <div className="mx-auto w-full max-w-[360px] overflow-hidden rounded-[34px] border-[9px] border-nuit bg-page shadow-xl" aria-label="Aperçu du message de bienvenue">
+      <div className="mx-auto w-full max-w-[360px] overflow-hidden rounded-[12px] border-[9px] border-nuit bg-page shadow-xl" aria-label="Aperçu du message de bienvenue">
         <div className="bg-tisse flex items-center gap-3 px-4 py-3 text-white">
           <span className="bg-anneau inline-flex rounded-full p-[2px]">
             <Logo size={34} />
           </span>
           <span>
             <span className="block text-[15px] font-bold">AEGB</span>
-            <span className="block text-[12px] font-bold text-safran">Compte officiel</span>
+            <span className="block text-[12px] font-bold text-ciel">Compte officiel</span>
           </span>
         </div>
         <div className="flex min-h-[340px] flex-col items-start gap-1.5 px-3 py-4">

@@ -55,13 +55,11 @@ export function Bell({ scope = 'membre', onDark = false, className = '' }: Props
   const label = `Notifications${unread ? `, ${unread} non lue${unread > 1 ? 's' : ''}` : ''}`
   const look = onDark
     ? 'bg-white/12 text-white hover:bg-white/20'
-    : scope === 'bureau' || desktop
-      ? 'bg-leppi text-white hover:opacity-92'
-      : 'bg-surface-2 text-ink'
+    : 'bg-line-soft text-ink hover:brightness-95'
 
   if (!desktop) {
     return (
-      <Link to="/app/notifications" aria-label={label} className={`relative grid size-11 shrink-0 place-items-center rounded-full ${look} ${className}`}>
+      <Link to="/app/notifications" aria-label={label} className={`relative grid size-10 shrink-0 place-items-center rounded-full ${look} ${className}`}>
         <BellIcon className="size-[22px]" />
         <Count n={unread} onDark={onDark} />
       </Link>
@@ -76,7 +74,7 @@ export function Bell({ scope = 'membre', onDark = false, className = '' }: Props
         <Count n={unread} />
       </button>
       {open ? (
-        <div role="dialog" aria-label={scope === 'bureau' ? 'Notifications du bureau' : 'Notifications'} className="absolute top-[54px] right-0 z-50 flex max-h-[min(640px,calc(100dvh-120px))] w-[430px] flex-col overflow-hidden rounded-[22px] border border-line-soft bg-surface shadow-[0_24px_60px_rgba(18,24,61,0.22)]">
+        <div role="dialog" aria-label={scope === 'bureau' ? 'Notifications du bureau' : 'Notifications'} className="absolute top-[54px] right-0 z-50 flex max-h-[min(640px,calc(100dvh-120px))] w-[430px] flex-col overflow-hidden rounded-[12px] border border-line-soft bg-surface shadow-[0_24px_60px_rgba(18,24,61,0.22)]">
           <div className="flex items-center justify-between px-[18px] pt-4 pb-2">
             <h2 className="titre m-0 text-[19px]">{scope === 'bureau' ? 'Notifications du bureau' : 'Notifications'}</h2>
             {ids.length ? (

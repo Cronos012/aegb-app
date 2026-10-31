@@ -24,7 +24,7 @@ import { useEvents } from '../../lib/events'
 
 export function OfficialBadge() {
   return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-leppi px-2 py-0.5 text-[11px] font-extrabold text-safran">
+    <span className="inline-flex items-center gap-1 rounded-full bg-leppi px-2 py-0.5 text-[11px] font-extrabold text-ciel">
       <Check className="size-3" strokeWidth={3.2} /> Officiel
     </span>
   )
@@ -74,7 +74,7 @@ function Header({ post, menu }: { post: FeedPost; menu: React.ReactNode }) {
           ) : (
             'Ancien membre'
           )}
-          {a?.role ? <span className="rounded-full bg-safran-pale px-2 py-0.5 text-[11px] font-extrabold text-[#6B4A00]">Bureau</span> : null}
+          {a?.role ? <span className="rounded-full bg-safran-pale px-2 py-0.5 text-[11px] font-extrabold text-[#163F93]">Bureau</span> : null}
         </p>
         <p className="m-0 truncate text-[13px] text-muted">
           {a ? `${personLine(a)} · ` : ''}
@@ -149,11 +149,11 @@ export function PostCard({ post, pinned = false, preview = false, onComment, med
   return (
     <article
       ref={root}
-      className={`bg-surface ${pinned ? 'overflow-hidden rounded-[22px] border-[1.5px] border-safran' : 'lg:rounded-[22px]'} ${className}`}
+      className={`bg-surface ${pinned ? 'overflow-hidden rounded-[12px] border-[1.5px] border-safran' : 'lg:rounded-[12px]'} ${className}`}
       aria-label={post.official ? `Annonce du bureau : ${post.title}` : `Publication de ${post.author?.first_name ?? 'un membre'}`}
     >
       {pinned ? (
-        <p className="m-0 flex items-center gap-2 bg-safran-pale px-4 py-2 text-[13px] font-bold text-[#6B4A00]">
+        <p className="m-0 flex items-center gap-2 bg-safran-pale px-4 py-2 text-[13px] font-bold text-[#163F93]">
           <Pin className="size-4" /> Épinglé par le bureau
         </p>
       ) : null}

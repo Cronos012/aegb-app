@@ -287,7 +287,7 @@ export default function Moderation() {
         </div>
 
         <aside className="hidden flex-col gap-6 lg:flex">
-          <div className="flex items-start gap-3.5 rounded-[22px] bg-nuit p-5 text-white">
+          <div className="flex items-start gap-3.5 rounded-[12px] bg-nuit p-5 text-white">
             <span className="grid size-9 shrink-0 place-items-center rounded-full bg-safran/20 text-safran">
               <Lock className="size-4" />
             </span>
@@ -311,7 +311,7 @@ export default function Moderation() {
               <ol className="m-0 mt-4 flex list-none flex-col gap-3.5 p-0">
                 {charter.data.rules.slice(0, 4).map((r, i) => (
                   <li key={r.title} className="flex items-start gap-3">
-                    <span className="grid size-7 shrink-0 place-items-center rounded-full bg-safran-pale text-[13px] font-extrabold text-[#6B4A00]">{i + 1}</span>
+                    <span className="grid size-7 shrink-0 place-items-center rounded-full bg-safran-pale text-[13px] font-extrabold text-[#163F93]">{i + 1}</span>
                     <span>
                       <span className="block text-[14px] font-bold">{r.title}</span>
                       <span className="block text-[13px] text-muted">{r.text}</span>

@@ -44,14 +44,14 @@ export function EventCover({ event, className = '', muted = false }: { event: Pi
   return (
     <div className={`bg-tisse relative grid w-full place-items-center overflow-hidden ${filter} ${className}`} aria-hidden="true">
       <span className="absolute inset-x-0 bottom-0 h-1/2 bg-[radial-gradient(ellipse_at_50%_120%,rgba(245,184,0,0.45)_0,transparent_60%)]" />
-      {event.assembly_id ? <Logo size={64} /> : <CalendarDays className="size-11 text-safran" strokeWidth={1.8} />}
+      {event.assembly_id ? <Logo size={64} /> : <CalendarDays className="size-11 text-ciel" strokeWidth={1.8} />}
     </div>
   )
 }
 
 export function AgTag() {
   return (
-    <span className="inline-flex h-6 items-center gap-1 rounded-full bg-leppi px-2.5 text-[12px] font-extrabold text-safran">
+    <span className="inline-flex h-6 items-center gap-1 rounded-full bg-leppi px-2.5 text-[12px] font-extrabold text-ciel">
       <Vote className="size-3.5" strokeWidth={2.4} /> Assemblée générale
     </span>
   )
@@ -81,7 +81,7 @@ export function GoingButton({ event, small = false }: { event: EventCard; small?
   }
   if (event.mine?.status === 'attente') {
     return (
-      <Link to={to} className={`${BTN} ${size} bg-safran-pale font-extrabold text-[#6B5200]`}>
+      <Link to={to} className={`${BTN} ${size} bg-safran-pale font-extrabold text-[#163F93]`}>
         <Hourglass className="size-4" /> {event.mine.rank ? `${rank(event.mine.rank)} en attente` : 'En attente'}
       </Link>
     )
@@ -90,7 +90,7 @@ export function GoingButton({ event, small = false }: { event: EventCard; small?
   // Complet, réservé aux membres à jour : le détail explique.
   if (isFull(event)) {
     return (
-      <Link to={to} className={`${BTN} ${size} bg-safran-pale font-extrabold text-[#6B5200]`}>
+      <Link to={to} className={`${BTN} ${size} bg-safran-pale font-extrabold text-[#163F93]`}>
         <Hourglass className="size-4" /> Liste d’attente
       </Link>
     )
@@ -128,7 +128,7 @@ export function EventListCard({ event, large = false }: { event: EventCard; larg
   const to = `/app/evenements/${event.id}`
   const tag = event.assembly_id ? <AgTag /> : event.status === 'annule' ? <Pill tone="danger">Annulé</Pill> : isFull(event) && !past ? <Pill tone="danger">Complet</Pill> : null
   return (
-    <article className="flex flex-col overflow-hidden rounded-[20px] bg-surface shadow-[0_1px_2px_rgba(18,22,43,0.06),0_6px_18px_rgba(18,22,43,0.06)]">
+    <article className="flex flex-col overflow-hidden rounded-[12px] bg-surface shadow-[0_1px_2px_rgba(18,22,43,0.06),0_6px_18px_rgba(18,22,43,0.06)]">
       <Link to={to} className="relative block text-ink no-underline" aria-label={event.title}>
         <EventCover event={event} muted={past || event.status === 'annule'} className={large ? 'h-[150px]' : 'h-[108px]'} />
         <span className="absolute top-3 left-3">
@@ -156,7 +156,7 @@ export function EventListCard({ event, large = false }: { event: EventCard; larg
 /** La pastille « Événement » à côté de l'heure d'une annonce. */
 export function EventBadge() {
   return (
-    <span className="inline-flex h-5 items-center gap-1 rounded-full bg-safran-pale px-2 text-[11px] font-extrabold text-[#6B5200]">
+    <span className="inline-flex h-5 items-center gap-1 rounded-full bg-safran-pale px-2 text-[11px] font-extrabold text-[#163F93]">
       <CalendarDays className="size-3" strokeWidth={2.6} /> Événement
     </span>
   )
@@ -217,8 +217,8 @@ export function NextEventBand({ className = '' }: { className?: string }) {
   if (!next) return null
   const when = parisDay(new Date(next.starts_at)) === today ? (hasStarted(next) ? 'En ce moment' : 'Aujourd’hui') : 'Demain'
   return (
-    <Link to={`/app/evenements/${next.id}`} className={`flex items-center gap-2.5 bg-safran-pale px-4 py-2.5 text-[#4A3A00] no-underline lg:rounded-[18px] ${className}`}>
-      <span className="grid size-[34px] shrink-0 place-items-center rounded-[10px] bg-safran text-nuit">
+    <Link to={`/app/evenements/${next.id}`} className={`flex items-center gap-2.5 bg-safran-pale px-4 py-2.5 text-[#163F93] no-underline lg:rounded-[12px] ${className}`}>
+      <span className="grid size-[34px] shrink-0 place-items-center rounded-[10px] bg-safran text-white">
         <CalendarDays className="size-[18px]" strokeWidth={2.2} />
       </span>
       <span className="flex min-w-0 flex-1 flex-col">
@@ -226,7 +226,7 @@ export function NextEventBand({ className = '' }: { className?: string }) {
           {when}
           {when === 'En ce moment' ? '' : `, ${hour(next.starts_at)}`} : {next.title}
         </span>
-        <span className="truncate text-[12px] font-semibold text-[#6B5200]">
+        <span className="truncate text-[12px] font-semibold text-[#163F93]">
           {next.assembly_id ? 'Tu viens en salle' : 'Tu y vas'} · {whereShort(next)}
         </span>
       </span>

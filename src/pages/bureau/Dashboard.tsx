@@ -92,9 +92,9 @@ function today() {
 function ReachableKpi({ r, className = '' }: { r: Reachable; className?: string }) {
   const percent = r.total ? Math.round((r.reachable / r.total) * 100) : 0
   return (
-    <div className={`block rounded-[22px] bg-surface p-5 text-ink ${className}`}>
+    <div className={`block rounded-[12px] bg-surface p-5 text-ink ${className}`}>
       <span className="flex items-start justify-between gap-2">
-        <span className="grid size-10 place-items-center rounded-xl bg-safran-pale text-[#6B4A00]">
+        <span className="grid size-10 place-items-center rounded-xl bg-safran-pale text-[#163F93]">
           <BellIcon className="size-5" />
         </span>
       </span>
@@ -155,7 +155,7 @@ function Kpi({ icon, label, value, detail, to }: { icon: React.ReactNode; label:
       {detail ? <span className="mt-0.5 block text-[13px] text-muted">{detail}</span> : null}
     </>
   )
-  const cls = 'block rounded-[22px] bg-surface p-5 text-ink no-underline'
+  const cls = 'block rounded-[12px] bg-surface p-5 text-ink no-underline'
   return to ? (
     <Link to={to} className={`${cls} hover:ring-2 hover:ring-line`}>
       {body}
@@ -189,7 +189,7 @@ export default function Dashboard() {
   const full = me.guarantor || ['presidence', 'vice_presidence'].includes(me.role?.code ?? '')
 
   const kicker = desktop ? null : (
-    <span className="mb-1 inline-flex w-fit items-center gap-1.5 rounded-full bg-safran px-2.5 py-1 text-[11px] font-extrabold tracking-wide text-nuit">
+    <span className="mb-1 inline-flex w-fit items-center gap-1.5 rounded-full bg-safran px-2.5 py-1 text-[11px] font-extrabold tracking-wide text-white">
       <Briefcase className="size-3.5" /> MODE BUREAU
     </span>
   )
@@ -206,19 +206,19 @@ export default function Dashboard() {
       {c ? (
         <>
           {!desktop && seesAccounts ? (
-            <Link to="/bureau/comptes" className="flex items-center gap-3.5 rounded-[22px] bg-surface p-4 text-ink no-underline">
-              <span className="grid size-12 place-items-center rounded-2xl bg-safran-pale text-[#7A5200]">
+            <Link to="/bureau/comptes" className="flex items-center gap-3.5 rounded-[12px] bg-surface p-4 text-ink no-underline">
+              <span className="grid size-12 place-items-center rounded-2xl bg-safran-pale text-[#163F93]">
                 <UserCheck className="size-6" />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block text-[16px] font-bold">Comptes en attente</span>
                 <span className="block text-[13px] text-muted">{c.pending ? `${c.pending} demande${c.pending > 1 ? 's' : ''} à traiter` : 'Aucune demande à traiter'}</span>
               </span>
-              {c.pending ? <span className="grid size-8 place-items-center rounded-full bg-safran text-sm font-extrabold text-nuit">{c.pending}</span> : <ChevronRight className="size-5 text-muted" />}
+              {c.pending ? <span className="grid size-8 place-items-center rounded-full bg-safran text-sm font-extrabold text-white">{c.pending}</span> : <ChevronRight className="size-5 text-muted" />}
             </Link>
           ) : null}
           {!desktop && seesReports && reports ? (
-            <Link to="/bureau/moderation" className="flex items-center gap-3.5 rounded-[22px] bg-surface p-4 text-ink no-underline">
+            <Link to="/bureau/moderation" className="flex items-center gap-3.5 rounded-[12px] bg-surface p-4 text-ink no-underline">
               <span className="grid size-12 place-items-center rounded-2xl bg-danger-soft text-danger">
                 <ShieldAlert className="size-6" />
               </span>
@@ -228,12 +228,12 @@ export default function Dashboard() {
                   {reports} contenu{reports > 1 ? 's' : ''} à examiner
                 </span>
               </span>
-              <span className="grid size-8 place-items-center rounded-full bg-safran text-sm font-extrabold text-nuit">{reports}</span>
+              <span className="grid size-8 place-items-center rounded-full bg-safran text-sm font-extrabold text-white">{reports}</span>
             </Link>
           ) : null}
 
           {!desktop && seesAegb && aegb ? (
-            <Link to="/bureau/aegb" className="flex items-center gap-3.5 rounded-[22px] bg-surface p-4 text-ink no-underline">
+            <Link to="/bureau/aegb" className="flex items-center gap-3.5 rounded-[12px] bg-surface p-4 text-ink no-underline">
               <span className="grid size-12 place-items-center rounded-2xl bg-select text-ink">
                 <Bot className="size-6" />
               </span>
@@ -243,7 +243,7 @@ export default function Dashboard() {
                   {aegb} membre{aegb > 1 ? 's' : ''} attend{aegb > 1 ? 'ent' : ''} une réponse
                 </span>
               </span>
-              <span className="grid size-8 place-items-center rounded-full bg-safran text-sm font-extrabold text-nuit">{aegb}</span>
+              <span className="grid size-8 place-items-center rounded-full bg-safran text-sm font-extrabold text-white">{aegb}</span>
             </Link>
           ) : null}
 
@@ -279,7 +279,7 @@ export default function Dashboard() {
                   {seesAccounts ? (
                     <li>
                       <Link to="/bureau/comptes" className="flex items-center gap-3.5 rounded-2xl border border-line-soft px-4 py-3 text-ink no-underline hover:bg-surface-2">
-                        <span className="grid size-10 place-items-center rounded-xl bg-safran-pale text-[#7A5200]">
+                        <span className="grid size-10 place-items-center rounded-xl bg-safran-pale text-[#163F93]">
                           <UserCheck className="size-5" />
                         </span>
                         <span className="min-w-0 flex-1">

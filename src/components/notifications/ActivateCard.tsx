@@ -92,9 +92,9 @@ export function ActivateCard({ className = '' }: { className?: string }) {
   }
 
   return (
-    <section aria-labelledby="carte-notif" className={`bg-tisse rounded-[26px] p-[18px] text-white shadow-[0_12px_30px_rgba(18,24,61,0.18)] lg:p-6 ${className}`}>
+    <section aria-labelledby="carte-notif" className={`bg-tisse rounded-[12px] p-[18px] text-white shadow-[0_12px_30px_rgba(18,24,61,0.18)] lg:p-6 ${className}`}>
       <div className="flex items-center gap-4">
-        <span className="grid size-[52px] shrink-0 place-items-center rounded-full bg-safran text-nuit">
+        <span className="grid size-[52px] shrink-0 place-items-center rounded-full bg-white text-leppi">
           <Bell className="size-6" strokeWidth={2.2} />
         </span>
         <div className="min-w-0">
@@ -113,12 +113,12 @@ export function ActivateCard({ className = '' }: { className?: string }) {
       </p>
       <div className="mt-4 flex gap-2.5">
         {s.support === 'installer' ? (
-          <Button variant="accent" size="md" className="h-12 flex-1" icon={<Share className="size-5" />} onClick={() => navigate('/app/reglages/installer')}>
+          <Button variant="onblue" size="md" className="h-12 flex-1" icon={<Share className="size-5" />} onClick={() => navigate('/app/reglages/installer')}>
             Voir comment faire
           </Button>
         ) : denied ? (
           <>
-            <Button variant="accent" size="md" className="h-12 flex-1" onClick={() => remember({ reshown: true })}>
+            <Button variant="onblue" size="md" className="h-12 flex-1" onClick={() => remember({ reshown: true })}>
               J’ai compris
             </Button>
             <Button variant="light" size="md" className="h-12" busy={busy} onClick={activate}>
@@ -127,7 +127,7 @@ export function ActivateCard({ className = '' }: { className?: string }) {
           </>
         ) : (
           <>
-            <Button variant="accent" size="md" className="h-12 flex-1" busy={busy} onClick={activate}>
+            <Button variant="onblue" size="md" className="h-12 flex-1" busy={busy} onClick={activate}>
               Activer
             </Button>
             <Button variant="light" size="md" className="h-12 px-6" onClick={() => remember({ later: Date.now() })}>
