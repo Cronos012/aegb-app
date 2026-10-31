@@ -76,7 +76,7 @@ export function Waveform({ seed, progress, mine }: { seed: string; progress: num
     <span className="flex h-7 min-w-0 flex-1 items-center justify-between gap-[2px] overflow-hidden" aria-hidden="true">
       {list.map((v, i) => {
         const played = i / list.length < progress
-        const tone = mine ? (played ? 'bg-safran' : 'bg-white/45') : played ? 'bg-primary' : 'bg-line'
+        const tone = mine ? (played ? 'bg-white' : 'bg-white/45') : played ? 'bg-primary' : 'bg-line'
         return <span key={i} className={`w-[3px] shrink-0 rounded-full ${tone}`} style={{ height: `${Math.round(v * 100)}%` }} />
       })}
     </span>
@@ -171,11 +171,11 @@ function SharedPost({ id, mine }: { id: string; mine: boolean }) {
   if (post.isPending) return <span className={`${cls} h-16 animate-pulse`} />
   if (!p) return <span className={`${cls} text-[13px] italic opacity-80`}>Publication indisponible</span>
   const media = p.post_media[0]
-  const author = p.official ? "Bureau de l'AEGB" : p.author ? `${p.author.first_name} ${p.author.last_name}` : 'Ancien membre'
+  const author = p.official ? 'AEGB' : p.author ? `${p.author.first_name} ${p.author.last_name}` : 'Ancien membre'
   return (
     <Link to={`/app/fil/${p.id}`} className={cls}>
       <span className="min-w-0 flex-1">
-        <span className={`block text-[12px] font-bold ${mine ? 'text-safran' : 'text-link'}`}>Publication de {author}</span>
+        <span className={`block text-[12px] font-bold ${mine ? 'text-ciel' : 'text-link'}`}>Publication de {author}</span>
         <span className="line-clamp-3 block text-[13px] leading-snug">{p.title ?? p.body ?? (media ? 'Photo' : '')}</span>
       </span>
       {media ? <MediaThumb media={media} className="size-14 shrink-0 rounded-lg" /> : null}
@@ -195,7 +195,7 @@ function ReplyQuote({ m, mine, onJump }: { m: MessageRow; mine: boolean; onJump:
       onClick={() => onJump(r.id)}
       className={`mb-1.5 block w-full rounded-[10px] border-l-[3px] px-2.5 py-1.5 text-left ${mine ? 'border-safran bg-white/10' : 'border-primary bg-surface-2'}`}
     >
-      <span className={`block text-[12px] font-bold ${mine ? 'text-safran' : 'text-link'}`}>{!r.as_aegb && !r.sender_id ? 'Ancien membre' : r.sender_name}</span>
+      <span className={`block text-[12px] font-bold ${mine ? 'text-ciel' : 'text-link'}`}>{!r.as_aegb && !r.sender_id ? 'Ancien membre' : r.sender_name}</span>
       <span className={`block truncate text-[13px] ${mine ? 'text-white/80' : 'text-muted'}`}>{r.excerpt ?? 'Message supprimé'}</span>
     </button>
   )
@@ -334,11 +334,11 @@ export function Bubble({ m, uid, staffView, group, first, status, highlighted = 
         ) : null}
         <div
           {...(canAct ? press : {})}
-          className={`relative max-w-full min-w-0 rounded-[18px] transition ${photoOnly ? 'p-1' : 'px-3.5 py-2.5'} ${tone} ${mine ? 'rounded-br-[6px]' : 'rounded-bl-[6px]'} ${highlighted ? 'ring-[3px] ring-safran' : ''} ${pending ? 'opacity-70' : ''} select-none [-webkit-touch-callout:none] lg:select-text`}
+          className={`relative max-w-full min-w-0 rounded-[12px] transition ${photoOnly ? 'p-1' : 'px-3.5 py-2.5'} ${tone} ${mine ? 'rounded-br-[6px]' : 'rounded-bl-[6px]'} ${highlighted ? 'ring-[3px] ring-safran' : ''} ${pending ? 'opacity-70' : ''} select-none [-webkit-touch-callout:none] lg:select-text`}
         >
           {showName ? <span className="mb-0.5 block text-[13px] font-bold text-link">{m.sender_first_name ? `${m.sender_first_name} ${m.sender_last_name ?? ''}`.trim() : 'Ancien membre'}</span> : null}
           {aegbLabel ? (
-            <span className={`mb-0.5 flex items-center gap-1.5 text-[12px] font-extrabold ${mine ? 'text-safran' : 'text-link'}`}>AEGB {group ? <OfficialBadge /> : null}</span>
+            <span className={`mb-0.5 flex items-center gap-1.5 text-[12px] font-extrabold ${mine ? 'text-ciel' : 'text-link'}`}>AEGB {group ? <OfficialBadge /> : null}</span>
           ) : null}
           {m.hidden && !masked ? (
             <span className={`mb-1.5 flex items-start gap-1.5 rounded-lg px-2 py-1 text-[12px] ${mine ? 'bg-white/12 text-white' : 'bg-danger-soft text-ink'}`}>
@@ -399,14 +399,14 @@ export function ArrivalCard({ m, uid, onHello }: { m: MessageRow; uid: string | 
       <span className="w-8 shrink-0 self-start">
         <Logo size={32} />
       </span>
-      <div className="max-w-[min(100%,520px)] rounded-[18px] rounded-bl-[6px] border-[1.5px] border-safran bg-surface px-3.5 py-2.5">
+      <div className="max-w-[min(100%,520px)] rounded-[12px] rounded-bl-[6px] border-[1.5px] border-safran bg-surface px-3.5 py-2.5">
         <span className="mb-1 flex items-center gap-1.5 text-[13px] font-extrabold text-ink">
           AEGB <OfficialBadge />
         </span>
         <p className="m-0 text-[15px] leading-[1.45]">{frenchSpaces(m.body ?? '')}</p>
         <div className="mt-2 flex items-center justify-between gap-3">
           {member && member !== uid ? (
-            <button type="button" onClick={() => onHello(member)} className="inline-flex h-9 items-center gap-1.5 rounded-full bg-safran-pale px-3.5 text-[13px] font-bold text-[#6B4A00] hover:brightness-97">
+            <button type="button" onClick={() => onHello(member)} className="inline-flex h-9 items-center gap-1.5 rounded-full bg-safran-pale px-3.5 text-[13px] font-bold text-[#163F93] hover:brightness-97">
               <UserPlus className="size-4" /> Dire bonjour
             </button>
           ) : (
@@ -430,7 +430,7 @@ export function WelcomeMessage({ m, actions }: { m: MessageRow; actions: { label
         </span>
       ) : null}
       {paragraphs.map((p, i) => (
-        <div key={i} className="max-w-[min(100%,520px)] rounded-[18px] rounded-bl-[6px] bg-surface px-3.5 py-2.5 shadow-[0_1px_1px_rgba(18,22,43,0.06)]">
+        <div key={i} className="max-w-[min(100%,520px)] rounded-[12px] rounded-bl-[6px] bg-surface px-3.5 py-2.5 shadow-[0_1px_1px_rgba(18,22,43,0.06)]">
           <p className="m-0 text-[15px] leading-[1.45] whitespace-pre-line">{frenchSpaces(p)}</p>
           {i === paragraphs.length - 1 ? <span className="mt-1 block text-right text-[11px] text-muted">{clock(m.created_at)}</span> : null}
         </div>
@@ -449,7 +449,7 @@ export function WelcomeMessage({ m, actions }: { m: MessageRow; actions: { label
 }
 
 const DUES_CARDS = {
-  relance: { title: 'Rappel de cotisation', icon: <BellRing className="size-4" />, tone: 'bg-safran-pale text-[#6B4A00]' },
+  relance: { title: 'Rappel de cotisation', icon: <BellRing className="size-4" />, tone: 'bg-safran-pale text-[#163F93]' },
   recu: { title: 'Paiement reçu, merci !', icon: <CircleCheck className="size-4" />, tone: 'bg-ok-soft text-ok' },
   annule: { title: 'Paiement annulé', icon: <CircleX className="size-4" />, tone: 'bg-danger-soft text-danger' },
 }
@@ -460,7 +460,7 @@ export function DuesCard({ m, staffView }: { m: MessageRow; staffView: boolean }
   const amount = m.meta.amount_cents != null ? new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(m.meta.amount_cents / 100) : null
   return (
     <div className={`mt-2.5 flex flex-col gap-1.5 ${staffView ? 'items-end pl-10' : 'items-start pr-10'}`}>
-      <div className={`flex w-full max-w-[340px] flex-col gap-2.5 rounded-[18px] bg-surface px-3.5 py-3 shadow-[0_1px_1px_rgba(18,22,43,0.06)] ${staffView ? 'rounded-br-[6px]' : 'rounded-bl-[6px]'}`}>
+      <div className={`flex w-full max-w-[340px] flex-col gap-2.5 rounded-[12px] bg-surface px-3.5 py-3 shadow-[0_1px_1px_rgba(18,22,43,0.06)] ${staffView ? 'rounded-br-[6px]' : 'rounded-bl-[6px]'}`}>
         <span className={`flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-extrabold ${kind.tone}`}>
           {kind.icon}
           {frenchSpaces(kind.title)}
@@ -492,7 +492,7 @@ const ASSEMBLY_CARDS = {
   seconde: { title: 'Convocation à la seconde AG', icon: <Megaphone className="size-5" />, tone: 'text-ink' },
   ouverture: { title: 'Le vote est ouvert', icon: <Vote className="size-5" />, tone: 'text-ok' },
   second_tour: { title: 'Second tour ouvert', icon: <Vote className="size-5" />, tone: 'text-ok' },
-  relance: { title: 'Tu n’as pas encore voté', icon: <BellRing className="size-5" />, tone: 'text-[#6B4A00]' },
+  relance: { title: 'Tu n’as pas encore voté', icon: <BellRing className="size-5" />, tone: 'text-[#163F93]' },
   annulation: { title: 'AG annulée', icon: <CircleX className="size-5" />, tone: 'text-danger' },
   candidature_validee: { title: 'Candidature validée', icon: <CircleCheck className="size-5" />, tone: 'text-ok' },
   candidature_refusee: { title: 'Candidature refusée', icon: <CircleX className="size-5" />, tone: 'text-danger' },
@@ -508,7 +508,7 @@ export function AssemblyCard({ m, staffView }: { m: MessageRow; staffView: boole
   const vote = type === 'ouverture' || type === 'second_tour' || type === 'relance'
   return (
     <div className={`mt-2.5 flex flex-col gap-1.5 ${staffView ? 'items-end pl-10' : 'items-start pr-10'}`}>
-      <div className={`flex w-full max-w-[400px] flex-col gap-3 rounded-[18px] bg-surface px-4 py-3.5 shadow-[0_1px_1px_rgba(18,22,43,0.06)] ${staffView ? 'rounded-br-[6px]' : 'rounded-bl-[6px]'}`}>
+      <div className={`flex w-full max-w-[400px] flex-col gap-3 rounded-[12px] bg-surface px-4 py-3.5 shadow-[0_1px_1px_rgba(18,22,43,0.06)] ${staffView ? 'rounded-br-[6px]' : 'rounded-bl-[6px]'}`}>
         <span className={`flex items-center gap-2 text-[17px] font-extrabold ${card.tone}`}>
           {card.icon}
           {frenchSpaces(card.title)}
@@ -557,7 +557,7 @@ export function AssemblyCard({ m, staffView }: { m: MessageRow; staffView: boole
           <p className="m-0 text-[15px] leading-[1.5]">{frenchSpaces(m.body ?? '')}</p>
         )}
         {staffView ? null : vote ? (
-          <Link to="/app/votes/isoloir" className="flex h-12 items-center justify-center gap-2 rounded-[14px] bg-safran text-[16px] font-extrabold text-nuit no-underline hover:brightness-105">
+          <Link to="/app/votes/isoloir" className="flex h-12 items-center justify-center gap-2 rounded-[14px] bg-safran text-[16px] font-extrabold text-white no-underline hover:brightness-105">
             <Vote className="size-5" /> Voter
           </Link>
         ) : type !== 'annulation' ? (
@@ -573,7 +573,7 @@ export function AssemblyCard({ m, staffView }: { m: MessageRow; staffView: boole
 
 const EVENT_CARDS = {
   place: { title: 'Une place s’est libérée', icon: <CircleCheck className="size-[18px]" />, tone: 'text-ok' },
-  rappel: { title: 'C’est demain !', icon: <CalendarDays className="size-[18px]" />, tone: 'text-[#6B5200]' },
+  rappel: { title: 'C’est demain !', icon: <CalendarDays className="size-[18px]" />, tone: 'text-[#163F93]' },
   changement: { title: 'Changement', icon: <Clock className="size-[18px]" />, tone: 'text-link' },
   annulation: { title: 'Événement annulé', icon: <CircleX className="size-[18px]" />, tone: 'text-danger' },
   paiement: { title: 'Paiement reçu, merci !', icon: <CircleCheck className="size-[18px]" />, tone: 'text-ok' },
@@ -599,7 +599,7 @@ export function EventMessageCard({ m, staffView }: { m: MessageRow; staffView: b
   const open = meta.event && !staffView && type !== 'annulation'
   return (
     <div className={`mt-2.5 flex flex-col gap-1.5 ${staffView ? 'items-end pl-10' : 'items-start pr-10'}`}>
-      <div className={`flex w-full max-w-[340px] flex-col gap-2.5 rounded-[18px] bg-surface px-3.5 py-3 shadow-[0_1px_1px_rgba(18,22,43,0.06)] ${staffView ? 'rounded-br-[6px]' : 'rounded-bl-[6px]'}`}>
+      <div className={`flex w-full max-w-[340px] flex-col gap-2.5 rounded-[12px] bg-surface px-3.5 py-3 shadow-[0_1px_1px_rgba(18,22,43,0.06)] ${staffView ? 'rounded-br-[6px]' : 'rounded-bl-[6px]'}`}>
         <span className={`flex items-center gap-2 text-[15px] font-extrabold ${card.tone}`}>
           {card.icon}
           {frenchSpaces(title)}
@@ -638,7 +638,7 @@ export function EventMessageCard({ m, staffView }: { m: MessageRow; staffView: b
             href={`https://www.openstreetmap.org/search?query=${encodeURIComponent(meta.place)}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex h-[42px] items-center justify-center gap-2 rounded-[14px] bg-safran text-[14px] font-bold text-nuit no-underline"
+            className="flex h-[42px] items-center justify-center gap-2 rounded-[14px] bg-safran text-[14px] font-bold text-white no-underline"
           >
             <MapPin className="size-4" /> Voir le plan
           </a>

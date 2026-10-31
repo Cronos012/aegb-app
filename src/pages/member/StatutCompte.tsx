@@ -12,8 +12,8 @@ export function StatutCompte({ me }: { me: Me }) {
   const date = refused ? p.refused_at : p.suspended_at
 
   return (
-    <div className="flex min-h-dvh justify-center bg-page lg:items-center lg:py-10">
-      <div className="flex w-full max-w-[480px] flex-col bg-surface px-5 pt-[max(env(safe-area-inset-top),40px)] pb-[max(env(safe-area-inset-bottom),24px)] lg:rounded-[26px] lg:px-10 lg:py-10 lg:shadow-sm">
+    <div className="flex min-h-app justify-center bg-page lg:items-center lg:py-10">
+      <div className="flex w-full max-w-[480px] flex-col bg-surface px-5 pt-[max(env(safe-area-inset-top),40px)] pb-[max(env(safe-area-inset-bottom),24px)] lg:rounded-[12px] lg:px-10 lg:py-10 lg:shadow-sm">
         <span className="grid size-[60px] place-items-center rounded-2xl bg-danger-soft text-danger">
           {refused ? <CircleX className="size-7" /> : <Ban className="size-7" />}
         </span>

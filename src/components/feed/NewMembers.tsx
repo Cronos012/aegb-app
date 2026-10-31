@@ -31,7 +31,7 @@ export function NewMembers({ count = 3 }: { count?: number }) {
   }
 
   return (
-    <div className="rounded-[22px] bg-surface p-5">
+    <div className="rounded-[12px] bg-surface p-5">
       <h2 className="titre m-0 text-[19px]">Nouveaux membres</h2>
       <ul className="m-0 mt-4 flex list-none flex-col gap-3.5 p-0">
         {newcomers.map((m) => (
@@ -51,7 +51,7 @@ export function NewMembers({ count = 3 }: { count?: number }) {
               type="button"
               onClick={() => hello(m.id)}
               disabled={!!opening}
-              className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full bg-safran-pale px-3 text-[12px] font-bold text-[#6B4A00] hover:brightness-97 disabled:opacity-60"
+              className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full bg-safran-pale px-3 text-[12px] font-bold text-[#163F93] hover:brightness-97 disabled:opacity-60"
             >
               {opening === m.id ? <LoaderCircle className="size-3.5 animate-spin" /> : null}
               Dire bonjour

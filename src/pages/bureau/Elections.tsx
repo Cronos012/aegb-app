@@ -52,7 +52,7 @@ export default function Elections() {
         />
       ) : (
         <BureauPage title="Élections">
-          <div className="rounded-[22px] bg-surface">
+          <div className="rounded-[12px] bg-surface">
             <EmptyState title="Aucune AG en préparation" icon={<SquareCheckBig className="size-6" />}>
               Le secrétariat prépare l’AG ici : ordre du jour, convocation, candidatures, vote et résultats.
             </EmptyState>
@@ -96,7 +96,7 @@ function ClearTrials() {
   const [open, setOpen] = useState(false)
   return (
     <div className="mt-6 px-3 pb-6 lg:px-0 lg:pb-0">
-      <section className="flex flex-wrap items-center gap-3 rounded-[22px] border-[1.5px] border-dashed border-line p-4 lg:max-w-[760px]">
+      <section className="flex flex-wrap items-center gap-3 rounded-[12px] border-[1.5px] border-dashed border-line p-4 lg:max-w-[760px]">
         <span className="min-w-0 flex-1 text-sm text-muted">
           <strong className="text-ink">AG d’essai.</strong> Avant le lancement, efface toutes les AG, candidatures et votes d’essai en une fois.
         </span>

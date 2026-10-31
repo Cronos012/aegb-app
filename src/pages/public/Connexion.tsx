@@ -68,7 +68,7 @@ export function Connexion() {
             <Brand size={40} />
           </Link>
           <h1 className="titre mt-16 mb-0 text-[40px] leading-[1.04]">
-            Content de <span className="text-safran">te revoir.</span>
+            Content de <span className="text-ciel">te revoir.</span>
           </h1>
           <p className="mt-3 mb-0 text-[15px] text-white/85">Connecte-toi pour retrouver la communauté.</p>
         </header>
@@ -77,7 +77,7 @@ export function Connexion() {
       sub="Accède à ton espace membre AEGB."
       panelTitle={
         <>
-          Content de <span className="text-safran">te revoir.</span>
+          Content de <span className="text-ciel">te revoir.</span>
         </>
       }
       panelText="Le fil, tes messages et ta cotisation t'attendent."
@@ -91,11 +91,11 @@ export function Connexion() {
         <TextField label="Adresse email" type="email" autoComplete="email" inputMode="email" value={email} onChange={(e) => setEmail(e.target.value)} />
         <PasswordField label="Mot de passe" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} labelRight={forgot} />
         <label className="hidden items-center gap-2.5 text-sm lg:flex">
-          <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} className="size-[18px] accent-[#1A2352]" />
+          <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} className="size-[18px] accent-[#1B4DB1]" />
           Rester connecté sur cet ordinateur
         </label>
         <ErrorNote error={error} />
-        <div className="mt-auto flex flex-col gap-4 pt-4 lg:mt-2 lg:pt-0">
+        <div className="mt-4 flex flex-col gap-4 lg:mt-2">
           <Button type="submit" busy={busy}>
             Se connecter
           </Button>

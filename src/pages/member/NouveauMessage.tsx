@@ -64,7 +64,7 @@ export function NouveauMessage() {
   ]
 
   return (
-    <div className="flex h-dvh flex-col bg-surface lg:h-full">
+    <div className="flex h-app flex-col bg-surface lg:h-full">
       <header className="flex shrink-0 items-center justify-between gap-3 border-b border-line-soft px-4 pt-[max(env(safe-area-inset-top),14px)] pb-3 lg:px-6 lg:pt-5">
         <h1 className="titre m-0 text-[24px]">Nouveau message</h1>
         <button type="button" onClick={() => navigate('/app/messages')} className="h-10 rounded-xl px-2 text-[15px] font-bold text-muted hover:text-ink">

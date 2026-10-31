@@ -54,7 +54,7 @@ function historyLine(e: ActivityEntry, roles: RoleWithHolder[]): string {
 
 function Section({ title, children, action }: { title: string; children: ReactNode; action?: ReactNode }) {
   return (
-    <section className="rounded-[22px] bg-surface p-4 lg:rounded-none lg:bg-transparent lg:p-0">
+    <section className="rounded-[12px] bg-surface p-4 lg:rounded-none lg:bg-transparent lg:p-0">
       <div className="mb-3 flex items-center justify-between gap-3">
         <h3 className="m-0 text-[15px] font-bold">{title}</h3>
         {action}
@@ -350,7 +350,7 @@ export function FichePanel({ id, onClose, drawer = false }: { id: string; onClos
       </header>
       <div className="relative -mt-6 flex flex-col gap-3 px-3 pb-6">
         {m.status === 'suspendu' && m.suspension_reason ? (
-          <p className="m-0 rounded-[22px] bg-danger-soft px-4 py-3 text-[13px]">
+          <p className="m-0 rounded-[12px] bg-danger-soft px-4 py-3 text-[13px]">
             <strong>Compte suspendu le {m.suspended_at ? longDate(m.suspended_at) : ''}.</strong> Motif : {m.suspension_reason}
           </p>
         ) : null}
@@ -359,7 +359,7 @@ export function FichePanel({ id, onClose, drawer = false }: { id: string; onClos
         {historyList}
         {warningList}
         <ErrorNote error={dialog ? null : error} />
-        {actions ? <div className="rounded-[22px] bg-surface p-4">{actions}</div> : null}
+        {actions ? <div className="rounded-[12px] bg-surface p-4">{actions}</div> : null}
       </div>
       {dialogs}
     </>

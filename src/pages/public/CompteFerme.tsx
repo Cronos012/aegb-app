@@ -12,7 +12,7 @@ import type { Me } from '../../lib/queries'
 
 function Frame({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-page px-6 py-10">
+    <div className="flex min-h-app items-center justify-center bg-page px-6 py-10">
       <div className="flex w-full max-w-[420px] flex-col items-center gap-4 text-center">
         <span className="grid size-[72px] place-items-center rounded-full bg-select text-ink">{icon}</span>
         <h1 className="titre m-0 text-[28px] leading-tight">{title}</h1>

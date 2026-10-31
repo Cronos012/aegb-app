@@ -318,7 +318,7 @@ export function Thread({ id, info, intro, readOnly = false }: Props) {
             </EmptyState>
           ) : null}
           {hidden.length && !empty ? (
-            <p className="mx-auto my-3 flex w-full max-w-[560px] items-start gap-3 rounded-[18px] bg-safran-pale px-4 py-3 text-[14px] leading-[1.45] text-ink">
+            <p className="mx-auto my-3 flex w-full max-w-[560px] items-start gap-3 rounded-[12px] bg-safran-pale px-4 py-3 text-[14px] leading-[1.45] text-ink">
               <EyeOff className="mt-0.5 size-5 shrink-0" />
               <span>
                 Tu as caché {hidden.join(' et ')}. C’est réciproque : tu ne vois plus {hidden.length > 1 ? 'ceux' : 'celui'} des autres.{' '}

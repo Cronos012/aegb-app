@@ -225,7 +225,7 @@ function PaymentCell({ e, p, canCash }: { e: AdminEvent; p: AdminPerson; canCash
               { onSuccess: () => toast(`${p.first_name} : ${euros(e.member_price_cents)} en espèces, noté au journal.`), onError: (err) => toast(errorMessage(err), 'error') },
             )
           }
-          className="h-[30px] rounded-[9px] bg-safran-pale px-2.5 text-[12px] font-extrabold text-[#4A3A00] disabled:opacity-60"
+          className="h-[30px] rounded-[9px] bg-safran-pale px-2.5 text-[12px] font-extrabold text-[#163F93] disabled:opacity-60"
         >
           Marquer payé
         </button>
@@ -293,7 +293,7 @@ function Refunds({ e, treasurer }: { e: AdminEvent; treasurer: boolean }) {
   if (!e.refunds.length) return null
   return (
     <div className="flex flex-col gap-2.5 rounded-2xl border-[1.5px] border-[#F5D46B] bg-[#FFF8E0] p-4">
-      <span className="flex items-center gap-2 text-[15px] font-extrabold text-[#6B5200]">
+      <span className="flex items-center gap-2 text-[15px] font-extrabold text-[#163F93]">
         <CircleDollarSign className="size-[18px]" /> {e.refunds.length} place{e.refunds.length > 1 ? 's' : ''} à rembourser
       </span>
       <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
@@ -412,7 +412,7 @@ function EventPanel({ id }: { id: string }) {
           {past ? (
             <Stat icon={<Check className="size-3.5" strokeWidth={2.6} />} tone="text-ok" label="Présences" value={`${present.length} / ${going.length}`} detail="Notées à l’entrée" />
           ) : (
-            <Stat icon={<Hourglass className="size-3.5" strokeWidth={2.4} />} tone="text-[#6B5200]" label="Liste d’attente" value={waiting.length} detail="La 1re prend la place libérée" />
+            <Stat icon={<Hourglass className="size-3.5" strokeWidth={2.4} />} tone="text-[#163F93]" label="Liste d’attente" value={waiting.length} detail="La 1re prend la place libérée" />
           )}
           {ag ? (
             <Stat icon={<MessageSquare className="size-3.5" strokeWidth={2.4} />} tone="text-leppi" label="Rappel" value="Convocation" detail="Envoyée par Élections" />

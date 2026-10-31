@@ -24,15 +24,15 @@ export function AuthFrame({ hero, heading, sub, panelTitle, panelText, topRight,
 
   if (!desktop) {
     return (
-      <div className="flex min-h-dvh flex-col bg-surface">
+      <div className="flex min-h-app flex-col bg-surface">
         {hero}
-        <div className="relative -mt-6 flex flex-1 flex-col rounded-t-[26px] bg-surface px-5 pt-[26px] pb-[max(env(safe-area-inset-bottom),24px)]">{children}</div>
+        <div className="relative -mt-6 flex flex-1 flex-col rounded-t-[12px] bg-surface px-5 pt-[26px] pb-[max(env(safe-area-inset-bottom),24px)]">{children}</div>
       </div>
     )
   }
 
   return (
-    <div className="grid min-h-dvh grid-cols-[minmax(0,1fr)_minmax(0,1fr)] bg-surface">
+    <div className="grid min-h-app grid-cols-[minmax(0,1fr)_minmax(0,1fr)] bg-surface">
       <section className="bg-tisse relative flex flex-col overflow-hidden px-12 pt-10 pb-14 text-white">
         <Link to="/" className="text-white no-underline">
           <Brand size={40} />

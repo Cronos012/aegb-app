@@ -77,8 +77,8 @@ export function PaiementRetour() {
   const shown: View = view === 'attente' && abandoned ? 'echec' : view
   const label = monthsLabel(p.months)
   const head = {
-    verif: { icon: <Hourglass className="size-8" />, box: 'bg-safran-pale text-[#6B4A00]', title: 'Paiement en cours de confirmation', text: 'HelloAsso nous confirme ton paiement. Ça prend quelques secondes, tu peux rester sur cette page.' },
-    attente: { icon: <Hourglass className="size-8" />, box: 'bg-safran-pale text-[#6B4A00]', title: 'Paiement en cours de confirmation', text: 'HelloAsso nous confirme ton paiement. Ça prend quelques secondes, tu peux rester sur cette page.' },
+    verif: { icon: <Hourglass className="size-8" />, box: 'bg-safran-pale text-[#163F93]', title: 'Paiement en cours de confirmation', text: 'HelloAsso nous confirme ton paiement. Ça prend quelques secondes, tu peux rester sur cette page.' },
+    attente: { icon: <Hourglass className="size-8" />, box: 'bg-safran-pale text-[#163F93]', title: 'Paiement en cours de confirmation', text: 'HelloAsso nous confirme ton paiement. Ça prend quelques secondes, tu peux rester sur cette page.' },
     echec: { icon: <X className="size-8" strokeWidth={2.6} />, box: 'bg-danger-soft text-danger', title: 'Paiement non terminé', text: "Rien n'a été débité et aucun mois n'est compté. Tu peux réessayer quand tu veux." },
     confirme: {
       icon: <Check className="size-9" strokeWidth={3} />,
@@ -89,7 +89,7 @@ export function PaiementRetour() {
   }[shown]
 
   return (
-    <div className="flex flex-1 flex-col bg-surface lg:mx-auto lg:my-10 lg:w-full lg:max-w-[480px] lg:flex-none lg:rounded-[26px]">
+    <div className="flex flex-1 flex-col bg-surface lg:mx-auto lg:my-10 lg:w-full lg:max-w-[480px] lg:flex-none lg:rounded-[12px]">
       <div className="flex flex-1 flex-col gap-6 px-5 pt-[max(env(safe-area-inset-top),40px)] pb-6 lg:pt-10">
         <div className="flex flex-col items-center gap-4 text-center">
           <span className={`grid size-[76px] place-items-center rounded-full ${head.box} ${shown === 'verif' || shown === 'attente' ? 'animate-pulse' : ''}`} aria-hidden="true">
@@ -103,7 +103,7 @@ export function PaiementRetour() {
         </div>
 
         {shown === 'confirme' && p.receipt_number ? (
-          <Link to={`/app/cotisation/quittances/${p.receipt_number}`} className="flex items-center gap-3 rounded-[18px] border-[1.5px] border-line-soft p-4 text-ink no-underline hover:bg-surface-2">
+          <Link to={`/app/cotisation/quittances/${p.receipt_number}`} className="flex items-center gap-3 rounded-[12px] border-[1.5px] border-line-soft p-4 text-ink no-underline hover:bg-surface-2">
             <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-select text-[11px] font-extrabold text-link">PDF</span>
             <span className="flex min-w-0 flex-1 flex-col gap-0.5">
               <span className="text-[15px] font-bold">Quittance n° {p.receipt_number}</span>
@@ -115,7 +115,7 @@ export function PaiementRetour() {
             <ChevronRight className="size-5 text-muted" />
           </Link>
         ) : (
-          <div className="flex items-center gap-3 rounded-[18px] bg-surface-2 p-4">
+          <div className="flex items-center gap-3 rounded-[12px] bg-surface-2 p-4">
             <span className="flex min-w-0 flex-1 flex-col gap-0.5">
               <span className="text-[15px] font-bold">{label}</span>
               <span className="text-[13px] text-muted">{shown === 'echec' ? `${p.months.length} × ${euros(p.monthly_cents)} · carte bancaire` : 'En attente de HelloAsso'}</span>

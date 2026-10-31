@@ -16,15 +16,14 @@ function SideLink({ to, label, icon: Icon, badge, end }: Item) {
       to={to}
       end={end}
       className={({ isActive }) =>
-        `relative flex h-10 items-center gap-3 rounded-[10px] px-3 text-[14px] font-semibold no-underline ${isActive ? 'bg-white/12 text-white' : 'text-white/82 hover:bg-white/6 hover:text-white'}`
+        `flex h-10 items-center gap-3 rounded-lg px-2.5 text-[14px] no-underline ${isActive ? 'bg-select font-semibold text-primary' : 'font-medium text-ink hover:bg-line-soft'}`
       }
     >
       {({ isActive }) => (
         <>
-          {isActive ? <span className="absolute top-2 -left-3 h-6 w-1 rounded-r bg-safran" aria-hidden="true" /> : null}
-          <Icon className="size-[18px]" aria-hidden="true" />
+          <Icon className={`size-[19px] ${isActive ? '' : 'text-muted'}`} aria-hidden="true" />
           <span className="flex-1">{label}</span>
-          {badge ? <span className="grid h-5 min-w-5 place-items-center rounded-full bg-safran px-1.5 text-[11px] font-extrabold text-nuit">{badge}</span> : null}
+          {badge ? <span className="grid h-5 min-w-5 place-items-center rounded-full bg-badge px-1.5 text-[11px] font-bold text-white">{badge}</span> : null}
         </>
       )}
     </NavLink>
@@ -81,12 +80,12 @@ export function BureauLayout() {
   ]
 
   return (
-    <div className="min-h-dvh lg:grid lg:grid-cols-[248px_minmax(0,1fr)]">
-      <aside className="sticky top-0 hidden h-dvh flex-col bg-nuit px-4 py-5 text-white lg:flex">
+    <div className="min-h-app lg:grid lg:grid-cols-[248px_minmax(0,1fr)]">
+      <aside className="sticky top-0 hidden h-app flex-col overflow-y-auto border-r border-line-soft bg-surface px-3 py-5 lg:flex">
         <div className="flex items-center gap-2.5 px-1.5">
-          <Logo size={34} background="#12183D" />
-          <span className="titre text-[19px]">AEGB</span>
-          <span className="ml-auto rounded-full bg-safran px-2 py-0.5 text-[10px] font-extrabold tracking-wide text-nuit">BUREAU</span>
+          <Logo size={34} />
+          <span className="titre text-[20px] text-primary">AEGB</span>
+          <span className="ml-auto rounded-full bg-select px-2 py-0.5 text-[10px] font-extrabold tracking-wide text-primary">BUREAU</span>
         </div>
         <nav aria-label="Navigation du bureau" className="mt-6 flex flex-col gap-5">
           {groups.map((g) => {
@@ -94,7 +93,7 @@ export function BureauLayout() {
             if (!visible.length) return null
             return (
               <div key={g.title} className="flex flex-col gap-0.5">
-                <p className="m-0 mb-1 px-3 text-[11px] font-bold tracking-[0.08em] text-white/50 uppercase">{g.title}</p>
+                <p className="m-0 mb-1 px-3 text-[12px] font-semibold text-muted">{g.title}</p>
                 {visible.map((i) => (
                   <SideLink key={i.to} {...i} />
                 ))}
@@ -105,25 +104,25 @@ export function BureauLayout() {
         <button
           type="button"
           onClick={() => navigate('/app/profil')}
-          className="mt-6 flex h-10 items-center gap-2 rounded-[10px] border border-white/20 px-3 text-sm font-semibold text-white hover:bg-white/8"
+          className="mt-6 flex h-10 shrink-0 items-center gap-2 rounded-lg bg-line-soft px-3 text-sm font-semibold text-ink hover:brightness-95"
         >
           <ChevronLeft className="size-4" /> Quitter le mode bureau
         </button>
         {me ? (
-          <div className="mt-auto flex items-center gap-3 border-t border-white/12 px-1.5 pt-4">
+          <div className="mt-auto flex items-center gap-3 border-t border-line-soft px-1.5 pt-4">
             <Avatar person={me.profile} size={36} />
             <div className="min-w-0">
               <p className="m-0 truncate text-sm font-bold">
                 {me.profile.first_name} {me.profile.last_name}
               </p>
-              <p className="m-0 truncate text-xs text-white/65">
+              <p className="m-0 truncate text-xs text-muted">
                 {me.role?.label} · {full ? 'accès complet' : 'accès selon le poste'}
               </p>
             </div>
           </div>
         ) : null}
       </aside>
-      <main className={`flex min-h-dvh min-w-0 flex-col bg-page lg:px-10 lg:py-8 lg:pb-10 ${fullScreen ? '' : 'pb-[calc(68px+env(safe-area-inset-bottom))]'}`}>
+      <main className={`flex min-h-app min-w-0 flex-col bg-page lg:px-10 lg:py-8 lg:pb-10 ${fullScreen ? '' : 'pb-[calc(68px+env(safe-area-inset-bottom))]'}`}>
         <Outlet />
       </main>
       {fullScreen ? null : <BottomNav />}

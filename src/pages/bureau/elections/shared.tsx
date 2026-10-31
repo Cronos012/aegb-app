@@ -10,7 +10,7 @@ const STEPS = ['Préparation', 'Candidatures', 'Vote', 'Résultats']
 /** La frise du bureau : préparation, candidatures, vote, résultats. */
 export function Steps({ step, done = false }: { step: number; done?: boolean }) {
   return (
-    <ol className="m-0 flex list-none items-center gap-3 rounded-[22px] bg-surface px-6 py-4" aria-label="Étapes de l’AG">
+    <ol className="m-0 flex list-none items-center gap-3 rounded-[12px] bg-surface px-6 py-4" aria-label="Étapes de l’AG">
       {STEPS.map((label, i) => {
         const past = i < step || done
         const now = i === step && !done
@@ -38,7 +38,7 @@ export function Steps({ step, done = false }: { step: number; done?: boolean }) 
 
 export function Tile({ icon, tone, label, value, detail }: { icon: ReactNode; tone: string; label: string; value: ReactNode; detail: ReactNode }) {
   return (
-    <div className="flex min-w-0 flex-col gap-1.5 rounded-[20px] bg-surface px-[18px] py-4">
+    <div className="flex min-w-0 flex-col gap-1.5 rounded-[12px] bg-surface px-[18px] py-4">
       <span className={`flex items-center gap-2 text-[13px] font-bold ${tone.split(' ').find((c) => c.startsWith('text-')) ?? ''}`}>
         <span className={`grid size-7 place-items-center rounded-lg ${tone}`}>{icon}</span>
         {label}
@@ -51,7 +51,7 @@ export function Tile({ icon, tone, label, value, detail }: { icon: ReactNode; to
 
 export function Panel({ title, right, children, className = '' }: { title?: ReactNode; right?: ReactNode; children: ReactNode; className?: string }) {
   return (
-    <section className={`flex min-w-0 flex-col gap-4 rounded-[22px] bg-surface p-5 lg:p-6 ${className}`}>
+    <section className={`flex min-w-0 flex-col gap-4 rounded-[12px] bg-surface p-5 lg:p-6 ${className}`}>
       {title || right ? (
         <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
           {title ? <h2 className="titre m-0 text-[20px]">{title}</h2> : null}
@@ -65,7 +65,7 @@ export function Panel({ title, right, children, className = '' }: { title?: Reac
 
 /** Une ligne cochée ou en attente, pour les conditions et les vérifications. */
 export function CheckLine({ state, title, detail }: { state: 'ok' | 'warn' | 'todo'; title: ReactNode; detail?: ReactNode }) {
-  const tone = state === 'ok' ? 'bg-ok-soft text-ok' : state === 'warn' ? 'bg-danger-soft text-danger' : 'bg-safran-pale text-[#6B4A00]'
+  const tone = state === 'ok' ? 'bg-ok-soft text-ok' : state === 'warn' ? 'bg-danger-soft text-danger' : 'bg-safran-pale text-[#163F93]'
   return (
     <div className="flex items-start gap-3">
       <span className={`mt-0.5 grid size-6 shrink-0 place-items-center rounded-full text-[13px] font-extrabold ${tone}`} aria-hidden="true">

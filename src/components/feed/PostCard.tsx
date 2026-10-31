@@ -1,15 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router'
 import { useQueryClient } from '@tanstack/react-query'
-import { Check, EyeOff, Flag, MessageCircle, MoreHorizontal, Pencil, Pin, PinOff, Send, Trash2, User } from 'lucide-react'
+import { EyeOff, Flag, MessageCircle, MoreHorizontal, Pencil, Pin, PinOff, Send, Trash2, User } from 'lucide-react'
 import { useSession } from '../../auth/session'
 import { errorMessage } from '../../lib/errors'
-import { AUDIENCES, markSeen, OFFICIAL_NAME, personLine, POST_MAX, react, summarize, useNow, type FeedPost, type ReactionKind } from '../../lib/feed'
+import { AUDIENCES, markSeen, OFFICIAL_NAME, personLine, POST_MAX, shortRole, react, summarize, useNow, type FeedPost, type ReactionKind } from '../../lib/feed'
 import { relative } from '../../lib/format'
 import { removeFiles } from '../../lib/photos'
 import { can, useMe } from '../../lib/queries'
 import { supabase } from '../../lib/supabase'
 import { Avatar } from '../Avatar'
+import { OfficialBadge } from './OfficialBadge'
 import { Logo } from '../Logo'
 import { useToast } from '../Toast'
 import { ActionSheet, ConfirmDialog, EditTextDialog, HideDialog, ReportDialog, SheetAction, type Target } from './Dialogs'
@@ -22,13 +23,7 @@ import { EventBadge, FeedEvent } from '../events/EventParts'
 import { useLibrary } from '../../lib/documents'
 import { useEvents } from '../../lib/events'
 
-export function OfficialBadge() {
-  return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-leppi px-2 py-0.5 text-[11px] font-extrabold text-safran">
-      <Check className="size-3" strokeWidth={3.2} /> Officiel
-    </span>
-  )
-}
+export { OfficialBadge }
 
 function Header({ post, menu }: { post: FeedPost; menu: React.ReactNode }) {
   const edited = post.edited_at ? ' · modifiée' : ''
@@ -74,7 +69,7 @@ function Header({ post, menu }: { post: FeedPost; menu: React.ReactNode }) {
           ) : (
             'Ancien membre'
           )}
-          {a?.role ? <span className="rounded-full bg-safran-pale px-2 py-0.5 text-[11px] font-extrabold text-[#6B4A00]">Bureau</span> : null}
+          {a?.role ? <span className="rounded-full bg-safran-pale px-2 py-0.5 text-[11px] font-extrabold text-[#163F93]">{shortRole(a.role.label)}</span> : null}
         </p>
         <p className="m-0 truncate text-[13px] text-muted">
           {a ? `${personLine(a)} · ` : ''}
@@ -106,11 +101,13 @@ export function PostCard({ post, pinned = false, preview = false, onComment, med
   const toast = useToast()
   const queryClient = useQueryClient()
   const [pending, setPending] = useState<ReactionKind | null | undefined>(undefined)
+  const [pendingAegb, setPendingAegb] = useState<ReactionKind | null | undefined>(undefined)
+  const me = useMe().data
   const [lightbox, setLightbox] = useState<number | null>(null)
   const [reactors, setReactors] = useState(false)
   const [share, setShare] = useState(false)
   const root = useRef<HTMLElement>(null)
-  const summary = summarize(post.reactions, uid, pending)
+  const summary = summarize(post.reactions, uid, pending, pendingAegb)
   const comments = post.comments[0]?.count ?? 0
   const events = useEvents(!!post.event_id && !preview).data
   const library = useLibrary(!!post.document_id && !preview).data
@@ -132,15 +129,16 @@ export function PostCard({ post, pinned = false, preview = false, onComment, med
     return () => observer.disconnect()
   }, [post.id, post.official, preview])
 
-  async function pick(kind: ReactionKind | null) {
-    setPending(kind)
+  async function pick(kind: ReactionKind | null, asAegb = false) {
+    const set = asAegb ? setPendingAegb : setPending
+    set(kind)
     try {
-      await react({ post: post.id }, kind)
+      await react({ post: post.id }, kind, asAegb)
       await queryClient.invalidateQueries({ queryKey: ['fil'] })
     } catch (e) {
       toast(errorMessage(e), 'error')
     } finally {
-      setPending(undefined)
+      set(undefined)
     }
   }
 
@@ -149,11 +147,11 @@ export function PostCard({ post, pinned = false, preview = false, onComment, med
   return (
     <article
       ref={root}
-      className={`bg-surface ${pinned ? 'overflow-hidden rounded-[22px] border-[1.5px] border-safran' : 'lg:rounded-[22px]'} ${className}`}
-      aria-label={post.official ? `Annonce du bureau : ${post.title}` : `Publication de ${post.author?.first_name ?? 'un membre'}`}
+      className={`bg-surface ${pinned ? 'overflow-hidden rounded-[12px] border-[1.5px] border-safran' : 'lg:rounded-[12px]'} ${className}`}
+      aria-label={post.official ? (post.title ? `Annonce du bureau : ${post.title}` : `Publication de l'AEGB`) : `Publication de ${post.author?.first_name ?? 'un membre'}`}
     >
       {pinned ? (
-        <p className="m-0 flex items-center gap-2 bg-safran-pale px-4 py-2 text-[13px] font-bold text-[#6B4A00]">
+        <p className="m-0 flex items-center gap-2 bg-safran-pale px-4 py-2 text-[13px] font-bold text-[#163F93]">
           <Pin className="size-4" /> Épinglé par le bureau
         </p>
       ) : null}
@@ -199,7 +197,7 @@ export function PostCard({ post, pinned = false, preview = false, onComment, med
             </div>
           ) : null}
           <div className="mx-2 mt-1 flex items-center gap-1 border-t border-line-soft py-1">
-            <ReactionButton mine={summary.mine} onPick={pick} />
+            <ReactionButton mine={summary.mine} onPick={pick} aegb={can(me, 'annonces') ? { mine: summary.aegb, onPick: (k) => pick(k, true) } : undefined} />
             <button type="button" onClick={comment} className="flex h-11 flex-1 items-center justify-center gap-2 rounded-xl text-[15px] font-bold text-muted hover:bg-surface-2">
               <MessageCircle className="size-5" /> Commenter
             </button>
@@ -234,6 +232,8 @@ function PostMenu({ post }: { post: FeedPost }) {
   const pinned = !!post.pinned_until && Date.parse(post.pinned_until) > now
   const moderate = !post.official && !mine && !post.hidden_at && can(me, 'moderation')
   const announces = post.official && can(me, 'annonces')
+  // Une publication AEGB : officielle mais sans titre. Elle se modifie comme une publication.
+  const aegbPost = post.official && !post.title
 
   async function refresh() {
     await Promise.all([queryClient.invalidateQueries({ queryKey: ['fil'] }), queryClient.invalidateQueries({ queryKey: ['bureau', 'annonces'] })])
@@ -293,9 +293,14 @@ function PostMenu({ post }: { post: FeedPost }) {
         Retirer l'épingle
       </SheetAction>
     ) : null,
+    announces && aegbPost ? (
+      <SheetAction key="modifier" icon={<Pencil className="size-5" />} onClick={() => setSheet('modifier')}>
+        Modifier le texte
+      </SheetAction>
+    ) : null,
     announces ? (
       <SheetAction key="retirer" icon={<Trash2 className="size-5" />} danger onClick={() => setSheet('retirer')}>
-        Supprimer l'annonce
+        {aegbPost ? 'Supprimer la publication' : "Supprimer l'annonce"}
       </SheetAction>
     ) : null,
   ].filter(Boolean)
@@ -308,10 +313,10 @@ function PostMenu({ post }: { post: FeedPost }) {
       <button type="button" onClick={() => setSheet('menu')} aria-label="Plus d'options" className="-mt-1 -mr-2 grid size-10 shrink-0 place-items-center rounded-full text-muted hover:bg-surface-2 hover:text-ink">
         <MoreHorizontal className="size-6" />
       </button>
-      <ActionSheet open={sheet === 'menu'} onClose={() => setSheet(null)} title={post.official ? 'Annonce du bureau' : 'Publication'}>
+      <ActionSheet open={sheet === 'menu'} onClose={() => setSheet(null)} title={post.official && !aegbPost ? 'Annonce du bureau' : 'Publication'}>
         {post.official && post.announcement_authors ? (
           <p className="m-0 mb-2 rounded-xl bg-surface-2 px-3 py-2.5 text-[13px] text-muted">
-            Écrite par <strong className="text-ink">{post.announcement_authors.written_by_name}</strong>. Seul le bureau le voit.
+            Écrit par <strong className="text-ink">{post.announcement_authors.written_by_name}</strong>. Seul le bureau le voit.
           </p>
         ) : null}
         {options}
@@ -324,7 +329,7 @@ function PostMenu({ post }: { post: FeedPost }) {
           max={POST_MAX}
           onClose={() => setSheet(null)}
           onSave={async (text) => {
-            const { error } = await supabase.rpc('update_post', { p_id: post.id, p_body: text })
+            const { error } = await supabase.rpc(aegbPost ? 'update_aegb_post' : 'update_post', { p_id: post.id, p_body: text })
             if (error) throw error
             await refresh()
             toast('Publication modifiée.')
@@ -348,7 +353,7 @@ function PostMenu({ post }: { post: FeedPost }) {
       />
       <ConfirmDialog
         open={sheet === 'retirer'}
-        title="Supprimer l'annonce ?"
+        title={aegbPost ? 'Supprimer la publication ?' : "Supprimer l'annonce ?"}
         description="Elle disparaît du fil de tous les membres. La suppression va au journal."
         confirm="Supprimer"
         onClose={() => setSheet(null)}
@@ -358,7 +363,7 @@ function PostMenu({ post }: { post: FeedPost }) {
           await removeFiles('publications', data ?? [])
           leave()
           await refresh()
-          toast('Annonce supprimée.')
+          toast(aegbPost ? 'Publication supprimée.' : 'Annonce supprimée.')
         }}
       />
       {sheet === 'masquer' ? <HideDialog target={{ post: post.id }} firstName={firstName} onClose={() => setSheet(null)} /> : null}

@@ -109,7 +109,7 @@ function Editor({ settings, readOnly }: { settings: DuesSettings; readOnly: bool
   return (
     <>
       {!readOnly ? (
-        <div className={`sticky top-2 z-10 flex items-center justify-between gap-3 rounded-[18px] px-4 py-3 lg:static ${dirty ? 'bg-safran-pale text-[#5C4300]' : 'bg-surface'}`}>
+        <div className={`sticky top-2 z-10 flex items-center justify-between gap-3 rounded-[12px] px-4 py-3 lg:static ${dirty ? 'bg-safran-pale text-[#163F93]' : 'bg-surface'}`}>
           <span className="text-sm font-bold">{dirty ? 'Modifications non enregistrées' : settings.updated_at ? `Enregistré${settings.updated_by_name ? ` par ${settings.updated_by_name}` : ''}` : 'Réglages proposés pour les essais'}</span>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" disabled={!dirty || busy} onClick={() => setForm(initial)}>

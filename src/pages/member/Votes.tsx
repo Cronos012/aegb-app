@@ -64,7 +64,7 @@ function NoAssembly() {
         <h1 className="titre m-0 text-[22px]">Votes</h1>
       </header>
       <h1 className="titre m-0 hidden text-[34px] lg:block">Votes</h1>
-      <div className="lg:mt-6 lg:max-w-[640px] lg:rounded-[22px] lg:bg-surface">
+      <div className="lg:mt-6 lg:max-w-[640px] lg:rounded-[12px] lg:bg-surface">
         <EmptyState title="Aucune assemblée générale prévue" icon={<SquareCheckBig className="size-6" />}>
           Quand le bureau convoque une AG, la convocation arrive dans tes messages et tout se passe ici : candidatures, vote et résultats.
         </EmptyState>
@@ -155,7 +155,7 @@ function MainCard({ a }: { a: Assembly }) {
   if (a.seats.length && a.candidacy_until && new Date(a.candidacy_until).getTime() > now) return <CandidacyCard a={a} />
   const late = openingLate(a)
   return (
-    <section className="flex flex-col gap-3 rounded-[24px] border-[1.5px] border-line-soft bg-surface p-5">
+    <section className="flex flex-col gap-3 rounded-[12px] border-[1.5px] border-line-soft bg-surface p-5">
       <div className="flex items-center justify-between gap-3">
         <Pill tone="brand">Convocation envoyée</Pill>
         <span className="inline-flex items-center gap-1.5 text-sm font-bold text-muted">
@@ -179,10 +179,10 @@ function CandidacyCard({ a }: { a: Assembly }) {
   const active = mine && (mine.status === 'deposee' || mine.status === 'validee')
   const validated = a.seats.reduce((n, s) => n + s.candidates.length, 0)
   return (
-    <section className="flex flex-col gap-3.5 rounded-[24px] border-2 border-safran bg-safran-pale/45 p-5">
+    <section className="flex flex-col gap-3.5 rounded-[12px] border-2 border-safran bg-safran-pale/45 p-5">
       <div className="flex items-center justify-between gap-3">
         <Pill tone="safran">Candidatures ouvertes</Pill>
-        <span className="inline-flex items-center gap-1.5 text-sm font-bold text-[#6B4A00]">
+        <span className="inline-flex items-center gap-1.5 text-sm font-bold text-[#163F93]">
           <Clock className="size-4" /> Encore {remaining(a.candidacy_until!, now)}
         </span>
       </div>
@@ -220,7 +220,7 @@ function MyCandidacy({ a, c }: { a: Assembly; c: Candidacy }) {
   const label = a.seats.find((s) => s.role === c.role)?.label ?? c.role
   const canWithdraw = a.status === 'convoquee' && (c.status === 'deposee' || c.status === 'validee')
   return (
-    <div className="flex flex-col gap-2.5 rounded-[18px] bg-surface p-4">
+    <div className="flex flex-col gap-2.5 rounded-[12px] bg-surface p-4">
       <div className="flex items-center justify-between gap-3">
         <span className="flex min-w-0 flex-col">
           <span className="text-xs font-bold tracking-[0.06em] text-muted uppercase">Ta candidature</span>
@@ -288,12 +288,12 @@ function questionsLine(b: Ballot): string {
 
 function VoteCard({ a, b }: { a: Assembly; b: Ballot }) {
   return (
-    <section className="flex flex-col gap-3.5 rounded-[24px] border-2 border-safran bg-safran-pale/45 p-5">
+    <section className="flex flex-col gap-3.5 rounded-[12px] border-2 border-safran bg-safran-pale/45 p-5">
       <div className="flex items-center justify-between gap-3">
         <Pill tone="ok" icon={<Check className="size-3.5" strokeWidth={3} />}>
           {b.round === 2 ? 'Second tour ouvert' : 'Vote ouvert'}
         </Pill>
-        <span className="inline-flex items-center gap-1.5 text-sm font-bold text-[#6B4A00]">
+        <span className="inline-flex items-center gap-1.5 text-sm font-bold text-[#163F93]">
           <Clock className="size-4" /> Ferme à {hour(b.closes_at)}
         </span>
       </div>
@@ -326,7 +326,7 @@ function VoteCard({ a, b }: { a: Assembly; b: Ballot }) {
 function ClosedCard({ a }: { a: Assembly }) {
   const b = currentBallot(a)
   return (
-    <section className="flex flex-col gap-3 rounded-[24px] border-[1.5px] border-line-soft bg-surface p-5">
+    <section className="flex flex-col gap-3 rounded-[12px] border-[1.5px] border-line-soft bg-surface p-5">
       <Pill tone="neutral" className="self-start">
         Vote fermé
       </Pill>
@@ -344,7 +344,7 @@ function CarenceCard({ a }: { a: Assembly }) {
   const b = a.ballots.find((x) => x.round === 1)
   const held = new Date(a.held_at).getTime()
   return (
-    <section className="flex flex-col gap-3 rounded-[24px] border-2 border-danger/30 bg-danger-soft/50 p-5">
+    <section className="flex flex-col gap-3 rounded-[12px] border-2 border-danger/30 bg-danger-soft/50 p-5">
       <div className="flex items-center gap-3">
         <span className="grid size-10 shrink-0 place-items-center rounded-full bg-danger-soft text-danger">
           <AlertTriangle className="size-5" />
@@ -399,7 +399,7 @@ function Results({ a }: { a: Assembly }) {
   const seats = seatResults(a)
 
   const summary = first ? (
-    <div className="flex items-center gap-4 rounded-[22px] bg-ok-soft px-5 py-4">
+    <div className="flex items-center gap-4 rounded-[12px] bg-ok-soft px-5 py-4">
       <span className="titre text-[44px] leading-none text-ok">{percent(first.voters, first.electors)} %</span>
       <span className="flex min-w-0 flex-col">
         <strong className="text-[16px] leading-snug text-ok">
@@ -496,7 +496,7 @@ function Results({ a }: { a: Assembly }) {
           </div>
           <PvButton a={a} dark={false} />
         </div>
-        <div className="flex max-w-[760px] flex-col gap-5 rounded-[26px] bg-surface p-7">{body}</div>
+        <div className="flex max-w-[760px] flex-col gap-5 rounded-[12px] bg-surface p-7">{body}</div>
       </div>
     )
   }

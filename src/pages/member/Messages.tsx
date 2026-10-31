@@ -15,7 +15,7 @@ export function Messages() {
   if (!desktop) return outlet ?? <ConversationList />
 
   return (
-    <div className="grid h-dvh grid-cols-[380px_minmax(0,1fr)] overflow-hidden">
+    <div className="grid h-app grid-cols-[380px_minmax(0,1fr)] overflow-hidden">
       <div className="flex min-h-0 flex-col border-r border-line-soft bg-surface">
         <ConversationList />
       </div>

@@ -17,13 +17,13 @@ export function AttachmentPreviews({ media, readOnly = false }: { media: Attachm
         <div key={a.key} className={`relative overflow-hidden rounded-2xl bg-surface-2 ${single ? '' : 'aspect-square'}`}>
           {a.kind === 'video' ? (
             <>
-              <video src={a.preview} muted playsInline controls className="max-h-[50dvh] w-full bg-black object-contain" />
+              <video src={a.preview} muted playsInline controls className="max-h-[calc(50dvh/var(--zoom,1))] w-full bg-black object-contain" />
               <span className="absolute bottom-2 left-2 flex items-center gap-1 rounded-full bg-black/60 px-2 py-0.5 text-xs font-bold text-white">
                 <Play className="size-3 fill-current" /> {seconds(a.duration ?? 0)}
               </span>
             </>
           ) : (
-            <img src={a.preview} alt={`Photo ${i + 1}`} className={`w-full object-cover ${single ? 'max-h-[50dvh]' : 'h-full'}`} />
+            <img src={a.preview} alt={`Photo ${i + 1}`} className={`w-full object-cover ${single ? 'max-h-[calc(50dvh/var(--zoom,1))]' : 'h-full'}`} />
           )}
           {readOnly ? null : (
           <button

@@ -159,14 +159,16 @@ export default function Annonces() {
           {items.map((a) => {
             const later = new Date(a.published_at) > now
             const pinned = !later && !!a.pinned_until && new Date(a.pinned_until) > now
+            // Une publication AEGB n'a pas de titre.
+            const title = (a.title as string | null) ?? "Publication au nom de l'AEGB"
             return (
               <li key={a.id} className="flex flex-col gap-1.5 py-3">
                 <div className="flex items-start justify-between gap-3">
                   {later ? (
-                    <span className="min-w-0 text-[15px] font-bold">{a.title}</span>
+                    <span className="min-w-0 text-[15px] font-bold">{title}</span>
                   ) : (
                     <Link to={`/app/fil/${a.id}`} className="min-w-0 text-[15px] font-bold text-ink no-underline hover:underline">
-                      {a.title}
+                      {title}
                     </Link>
                   )}
                   {later ? (
@@ -189,7 +191,7 @@ export default function Annonces() {
                         <PinOff className="size-3.5" /> Retirer l'épingle
                       </button>
                     ) : null}
-                    <button type="button" onClick={() => setRemoving({ id: a.id, title: a.title })} className="flex items-center gap-1 text-danger hover:underline">
+                    <button type="button" onClick={() => setRemoving({ id: a.id, title })} className="flex items-center gap-1 text-danger hover:underline">
                       <Trash2 className="size-3.5" /> Supprimer
                     </button>
                   </div>
@@ -209,7 +211,7 @@ export default function Annonces() {
   return (
     <BureauPage
       title="Annonces officielles"
-      subtitle="Publiées au nom du bureau. Elles passent en tête du fil avec le badge Officiel."
+      subtitle="Publiées au nom du bureau. Elles passent en tête du fil avec la pastille Bureau."
       actions={scheduled ? <Pill tone="safran" icon={<Clock className="size-3.5" />} className="h-10 px-4 text-[14px]">Programmées · {scheduled}</Pill> : null}
     >
       <div className="flex flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-start lg:gap-6">
@@ -222,7 +224,7 @@ export default function Annonces() {
                 post={preview}
                 preview
                 pinned={pin}
-                className="rounded-[22px]"
+                className="rounded-[12px]"
                 mediaSlot={
                   media.list.length ? (
                     <div className="px-4 pb-2">

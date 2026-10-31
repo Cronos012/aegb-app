@@ -14,7 +14,7 @@ export function StatusBox({ state, extra }: { state: DuesState; extra?: string }
   const s = duesSummary(state)
   const pending = state.status === 'a_jour' && !state.paid_until
   return (
-    <div className="flex items-center gap-3.5 rounded-[18px] border border-white/18 bg-white/10 px-4 py-3.5">
+    <div className="flex items-center gap-3.5 rounded-[12px] border border-white/18 bg-white/10 px-4 py-3.5">
       <span className={`grid size-12 shrink-0 place-items-center rounded-full ${ICONS[s.tone].box}`} aria-hidden="true">
         {pending ? <Clock className="size-6" strokeWidth={2.6} /> : ICONS[s.tone].icon}
       </span>

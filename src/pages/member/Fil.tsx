@@ -47,7 +47,7 @@ function PhotoPicker({ children, className }: { children: React.ReactNode; class
 
 function Skeleton() {
   return (
-    <div className="bg-surface p-4 lg:rounded-[22px]" aria-hidden="true">
+    <div className="bg-surface p-4 lg:rounded-[12px]" aria-hidden="true">
       <div className="flex items-center gap-3">
         <span className="size-11 animate-pulse rounded-full bg-surface-2" />
         <span className="flex flex-1 flex-col gap-2">
@@ -87,22 +87,22 @@ export function Fil() {
   const first = me.profile.first_name
 
   return (
-    <div className="flex flex-1 flex-col lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start lg:gap-6 lg:px-10 lg:py-8">
-      <header className="sticky top-0 z-20 flex h-[calc(64px+env(safe-area-inset-top))] items-center gap-3 border-b border-line-soft bg-surface px-4 pt-[env(safe-area-inset-top)] lg:hidden">
-        <Logo size={38} />
-        <span className="titre flex-1 text-[24px]">AEGB</span>
-        <Link to="/app/recherche" aria-label="Rechercher un membre ou une publication" className="grid size-11 place-items-center rounded-full bg-surface-2 text-ink">
+    <div className="flex flex-1 flex-col lg:grid lg:grid-cols-[minmax(0,680px)_320px] lg:items-start lg:justify-center lg:gap-6 lg:px-10 lg:py-8">
+      <header className="sticky top-0 z-20 flex h-[calc(56px+env(safe-area-inset-top))] items-center gap-3 border-b border-line-soft bg-surface px-4 pt-[env(safe-area-inset-top)] lg:hidden">
+        <Logo size={34} />
+        <span className="flex-1 text-[26px] font-extrabold tracking-[-0.03em] text-primary">aegb</span>
+        <Link to="/app/recherche" aria-label="Rechercher un membre ou une publication" className="grid size-10 place-items-center rounded-full bg-line-soft text-ink">
           <Search className="size-[22px]" />
         </Link>
         <Bell />
-        <Link to="/app/menu" aria-label="Menu" className="grid size-11 place-items-center rounded-full bg-surface-2 text-ink">
+        <Link to="/app/menu" aria-label="Menu" className="grid size-10 place-items-center rounded-full bg-line-soft text-ink">
           <LayoutGrid className="size-[22px]" />
         </Link>
       </header>
 
       <div className="flex min-w-0 flex-col gap-2 pb-6 lg:gap-4 lg:pb-0">
         <div className="hidden items-center justify-between gap-6 lg:flex">
-          <h1 className="titre m-0 text-[34px]">Fil d'actu</h1>
+          <h1 className="titre m-0 text-[28px]">Accueil</h1>
           <div className="flex items-center gap-3">
             <form
               className="w-[380px]"
@@ -119,7 +119,7 @@ export function Fil() {
 
         <ActivateCard className="mx-3 mt-3 lg:mx-0 lg:mt-0" />
         <NextEventBand />
-        <div className="flex items-center gap-3 bg-surface px-4 py-3 lg:rounded-[22px] lg:p-4">
+        <div className="flex items-center gap-3 bg-surface px-4 py-3 lg:rounded-[12px] lg:p-4">
           <Avatar person={me.profile} size={44} />
           <Link to="/app/publier" className="flex h-12 min-w-0 flex-1 items-center rounded-full border-[1.5px] border-line px-5 text-[16px] text-muted no-underline hover:bg-surface-2 lg:border-0 lg:bg-surface-2">
             <span className="truncate">Quoi de neuf, {first} ?</span>
@@ -144,7 +144,7 @@ export function Fil() {
         ) : posts.length ? (
           posts.map((p) => <PostCard key={p.id} post={p} />)
         ) : !pin && !feed.isError ? (
-          <div className="bg-surface lg:rounded-[22px]">
+          <div className="bg-surface lg:rounded-[12px]">
             <EmptyState title="Le fil est encore vide" icon={<Newspaper className="size-6" />}>
               Lance la conversation : une photo de la soirée, une bonne adresse, un bonjour aux nouveaux.
             </EmptyState>

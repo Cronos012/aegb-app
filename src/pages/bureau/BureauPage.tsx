@@ -44,7 +44,7 @@ export function BureauPage({ title, subtitle, back = '/bureau', kicker, actions,
 }
 
 export function Card({ children, className = '' }: { children: ReactNode; className?: string }) {
-  return <div className={`rounded-[22px] bg-surface ${className}`}>{children}</div>
+  return <div className={`rounded-[12px] bg-surface ${className}`}>{children}</div>
 }
 
 type Chip<T extends string> = { value: T; label: string; count?: number }
@@ -57,7 +57,7 @@ export function Chips<T extends string>({ options, value, onChange, onDark = fal
         const active = o.value === value
         const tone = onDark
           ? active
-            ? 'bg-safran text-nuit'
+            ? 'bg-safran text-white'
             : 'bg-white/12 text-white hover:bg-white/18'
           : active
             ? 'bg-primary text-primary-ink'

@@ -318,12 +318,12 @@ function Editor({ event }: { event: AdminEvent | undefined }) {
   const preview = (
     <Card className="flex flex-col gap-3 px-[18px] py-[18px]">
       <span className="text-[12px] font-extrabold tracking-[0.8px] text-muted uppercase">Aperçu dans le fil</span>
-      <div className="flex flex-col overflow-hidden rounded-[20px] border-[1.5px] border-line-soft">
+      <div className="flex flex-col overflow-hidden rounded-[12px] border-[1.5px] border-line-soft">
         <div className="flex items-center gap-2.5 px-3.5 py-3">
           <Logo size={36} />
           <span className="flex flex-col gap-0.5">
             <span className="flex items-center gap-1.5 text-[14px] font-extrabold">
-              Bureau de l’AEGB <OfficialBadge />
+              AEGB <OfficialBadge />
             </span>
             <span className="flex items-center gap-1.5 text-[12px] text-muted">
               À l’instant · <EventBadge />

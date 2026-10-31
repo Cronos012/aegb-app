@@ -106,7 +106,7 @@ export function Frise({ a }: { a: Assembly }) {
 export function RightCard({ right, lateCents, lateMonths, voteOpen }: { right: VoteRight; lateCents: number | null; lateMonths: string | null; voteOpen: boolean }) {
   if (right === 'actif') {
     return (
-      <div className="flex items-center gap-3.5 rounded-[22px] bg-ok-soft px-4 py-3.5">
+      <div className="flex items-center gap-3.5 rounded-[12px] bg-ok-soft px-4 py-3.5">
         <span className="grid size-10 shrink-0 place-items-center rounded-full bg-ok text-white">
           <Check className="size-5" strokeWidth={2.8} />
         </span>
@@ -119,7 +119,7 @@ export function RightCard({ right, lateCents, lateMonths, voteOpen }: { right: V
   }
   if (right === 'suspendu') {
     return (
-      <div className="flex flex-col gap-3.5 rounded-[22px] border-2 border-danger/30 bg-danger-soft/60 p-4">
+      <div className="flex flex-col gap-3.5 rounded-[12px] border-2 border-danger/30 bg-danger-soft/60 p-4">
         <div className="flex items-start gap-3">
           <span className="grid size-10 shrink-0 place-items-center rounded-full bg-danger-soft text-danger">
             <Ban className="size-5" />
@@ -139,7 +139,7 @@ export function RightCard({ right, lateCents, lateMonths, voteOpen }: { right: V
   }
   if (right === 'consultatif') {
     return (
-      <div className="flex items-center gap-3.5 rounded-[22px] bg-surface-2 px-4 py-3.5">
+      <div className="flex items-center gap-3.5 rounded-[12px] bg-surface-2 px-4 py-3.5">
         <span className="grid size-10 shrink-0 place-items-center rounded-full bg-select text-ink">
           <MessageCircle className="size-5" />
         </span>
@@ -206,7 +206,7 @@ export function CandidatesList({ a, onRead }: { a: Assembly; onRead: (c: Candida
           <h3 className="m-0 text-xs font-extrabold tracking-[0.08em] text-muted uppercase">{s.label}</h3>
           {s.candidates.length ? (
             s.candidates.map((c) => (
-              <button key={c.id} type="button" onClick={() => onRead(c)} className="flex flex-col gap-2 rounded-[18px] border-[1.5px] border-line-soft bg-surface p-3.5 text-left hover:bg-surface-2">
+              <button key={c.id} type="button" onClick={() => onRead(c)} className="flex flex-col gap-2 rounded-[12px] border-[1.5px] border-line-soft bg-surface p-3.5 text-left hover:bg-surface-2">
                 <CandidateHead c={c} />
                 <span className="line-clamp-2 text-sm leading-[1.45] text-ink/85">« {c.statement} »</span>
               </button>
@@ -240,10 +240,10 @@ export function AgendaLinks({ a }: { a: Assembly }) {
   const labels = new Map(a.seats.map((s) => [s.role, s.label]))
   return (
     <>
-      <div className="overflow-hidden rounded-[22px] bg-surface shadow-[0_1px_0_rgba(18,24,61,0.04)]">
+      <div className="overflow-hidden rounded-[12px] bg-surface shadow-[0_1px_0_rgba(18,24,61,0.04)]">
         <LinkRow icon={<ListOrdered className="size-5" />} tone="bg-select text-ink" title="Ordre du jour" detail={agendaLine(a)} onClick={() => setOpen('agenda')} />
         {a.seats.length ? (
-          <LinkRow icon={<Users className="size-5" />} tone="bg-safran-pale text-[#6B4A00]" title="Les candidats" detail={candidatesLine(a)} onClick={() => setOpen('candidats')} />
+          <LinkRow icon={<Users className="size-5" />} tone="bg-safran-pale text-[#163F93]" title="Les candidats" detail={candidatesLine(a)} onClick={() => setOpen('candidats')} />
         ) : null}
       </div>
       <Dialog open={open === 'agenda'} onClose={() => setOpen(null)} title="Ordre du jour" description="Seuls ces points peuvent être votés (article 12).">
@@ -278,7 +278,7 @@ function LinkRow({ icon, tone, title, detail, onClick }: { icon: ReactNode; tone
 export function ChoiceCard({ selected, onSelect, dashed = false, children, name, after }: { selected: boolean; onSelect: () => void; dashed?: boolean; children: ReactNode; name: string; after?: ReactNode }) {
   return (
     <div
-      className={`rounded-[20px] transition-colors ${
+      className={`rounded-[12px] transition-colors ${
         selected ? 'border-2 border-leppi bg-select ring-4 ring-safran/45' : dashed ? 'border-[1.5px] border-dashed border-line bg-surface hover:bg-surface-2' : 'border-[1.5px] border-line bg-surface hover:bg-surface-2'
       }`}
     >
@@ -330,7 +330,7 @@ export function ForAgainst({ value, onChange, name, single }: { value: string | 
 /** Le lien « Voter » ou « Voir l'assemblée générale ». */
 export function VoteLink({ to = '/app/votes/isoloir', children }: { to?: string; children: ReactNode }) {
   return (
-    <Link to={to} className="flex h-12 items-center justify-center gap-2 rounded-[14px] bg-safran text-[16px] font-extrabold text-nuit no-underline hover:brightness-95">
+    <Link to={to} className="flex h-12 items-center justify-center gap-2 rounded-[14px] bg-safran text-[16px] font-extrabold text-white no-underline hover:brightness-95">
       {children}
     </Link>
   )

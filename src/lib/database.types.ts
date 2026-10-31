@@ -268,37 +268,73 @@ export type Database = {
         }
         Relationships: []
       }
+      comment_authors: {
+        Row: {
+          comment_id: string
+          written_by: string | null
+          written_by_name: string
+        }
+        Insert: {
+          comment_id: string
+          written_by?: string | null
+          written_by_name: string
+        }
+        Update: {
+          comment_id?: string
+          written_by?: string | null
+          written_by_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comment_authors_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: true
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comment_authors_written_by_fkey"
+            columns: ["written_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comments: {
         Row: {
-          author_id: string
+          author_id: string | null
           body: string
           created_at: string
           edited_at: string | null
           hidden_at: string | null
           hidden_reason: string | null
           id: string
+          official: boolean
           parent_id: string | null
           post_id: string
         }
         Insert: {
-          author_id: string
+          author_id?: string | null
           body: string
           created_at?: string
           edited_at?: string | null
           hidden_at?: string | null
           hidden_reason?: string | null
           id?: string
+          official?: boolean
           parent_id?: string | null
           post_id: string
         }
         Update: {
-          author_id?: string
+          author_id?: string | null
           body?: string
           created_at?: string
           edited_at?: string | null
           hidden_at?: string | null
           hidden_reason?: string | null
           id?: string
+          official?: boolean
           parent_id?: string | null
           post_id?: string
         }
@@ -1374,7 +1410,8 @@ export type Database = {
           created_at: string
           id: number
           kind: Database["public"]["Enums"]["reaction_kind"]
-          member_id: string
+          member_id: string | null
+          official: boolean
           post_id: string | null
         }
         Insert: {
@@ -1382,7 +1419,8 @@ export type Database = {
           created_at?: string
           id?: never
           kind: Database["public"]["Enums"]["reaction_kind"]
-          member_id: string
+          member_id?: string | null
+          official?: boolean
           post_id?: string | null
         }
         Update: {
@@ -1390,7 +1428,8 @@ export type Database = {
           created_at?: string
           id?: never
           kind?: Database["public"]["Enums"]["reaction_kind"]
-          member_id?: string
+          member_id?: string | null
+          official?: boolean
           post_id?: string | null
         }
         Relationships: [
@@ -1625,6 +1664,10 @@ export type Database = {
       clear_role: { Args: { p_role: string }; Returns: undefined }
       close_vote: { Args: { p_ballot: string }; Returns: string }
       confirm_handover: { Args: { p_assembly: string }; Returns: number }
+      comment_as_aegb: {
+        Args: { p_body: string; p_parent?: string; p_post: string }
+        Returns: string
+      }
       convene_second_assembly: {
         Args: {
           p_first: string
@@ -1876,6 +1919,10 @@ export type Database = {
       }
       public_documents: { Args: never; Returns: Json }
       public_events: { Args: never; Returns: Json }
+      publish_as_aegb: {
+        Args: { p_body: string; p_id: string; p_media?: Json }
+        Returns: undefined
+      }
       publish_announcement: {
         Args: {
           p_audience: Database["public"]["Enums"]["post_audience"]
@@ -1891,6 +1938,14 @@ export type Database = {
       publish_results: { Args: { p_assembly: string }; Returns: string }
       reachable_members: { Args: never; Returns: Json }
       react: {
+        Args: {
+          p_comment: string
+          p_kind: Database["public"]["Enums"]["reaction_kind"]
+          p_post: string
+        }
+        Returns: undefined
+      }
+      react_as_aegb: {
         Args: {
           p_comment: string
           p_kind: Database["public"]["Enums"]["reaction_kind"]
@@ -2077,6 +2132,7 @@ export type Database = {
       transfer_guarantor: { Args: { p_member: string }; Returns: undefined }
       unblock_member: { Args: { p_member: string }; Returns: undefined }
       unpin_announcement: { Args: { p_id: string }; Returns: undefined }
+      update_aegb_post: { Args: { p_body: string; p_id: string }; Returns: undefined }
       update_comment: {
         Args: { p_body: string; p_id: string }
         Returns: undefined

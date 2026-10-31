@@ -45,7 +45,7 @@ function MemberPicker({ roles, except, hide, selected, onSelect }: { roles: Role
                   <span className="block truncate text-[15px] font-bold">{fullName(m)}</span>
                   <span className="block truncate text-[13px] text-muted">{other ? `Déjà au poste ${other}` : TYPE_LABELS[m.member_type]}</span>
                 </span>
-                <input type="radio" name="titulaire" checked={active} disabled={!!other} onChange={() => onSelect(m.id)} className="size-5 accent-[#1A2352]" />
+                <input type="radio" name="titulaire" checked={active} disabled={!!other} onChange={() => onSelect(m.id)} className="size-5 accent-[#1B4DB1]" />
               </label>
             </li>
           )
@@ -256,7 +256,7 @@ export default function Postes() {
   }
 
   const vacantNote = vacant.length ? (
-    <div className="flex items-start gap-2.5 rounded-[18px] bg-warn-soft px-4 py-3 text-[14px]">
+    <div className="flex items-start gap-2.5 rounded-[12px] bg-warn-soft px-4 py-3 text-[14px]">
       <TriangleAlert className="mt-0.5 size-[18px] shrink-0 text-warn" />
       <p className="m-0">
         <strong>
@@ -324,7 +324,7 @@ export default function Postes() {
                     >
                       {r.holder ? <Avatar person={r.holder} size={30} /> : <EmptyAvatar size={30} />}
                       <span className="text-[13px] leading-tight font-bold text-ink">{r.label}</span>
-                      <span className={`text-[12px] leading-tight font-normal ${r.holder ? 'text-muted' : 'font-semibold text-[#A67000]'}`}>{r.holder ? fullName(r.holder) : 'À attribuer'}</span>
+                      <span className={`text-[12px] leading-tight font-normal ${r.holder ? 'text-muted' : 'font-semibold text-[#163F93]'}`}>{r.holder ? fullName(r.holder) : 'À attribuer'}</span>
                     </button>
                   </th>
                 ))}

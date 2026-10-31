@@ -39,7 +39,7 @@ export function VerifierEmail() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col items-center bg-surface px-5 pt-[max(env(safe-area-inset-top),24px)] pb-[max(env(safe-area-inset-bottom),24px)]">
+    <div className="flex min-h-app flex-col items-center bg-surface px-5 pt-[max(env(safe-area-inset-top),24px)] pb-[max(env(safe-area-inset-bottom),24px)]">
       <div className="flex w-full max-w-[440px] flex-1 flex-col">
         <div className="flex flex-1 flex-col items-center justify-center gap-5 py-8 text-center">
           <div className="bg-anneau relative rounded-full p-[6px]">
@@ -48,7 +48,7 @@ export function VerifierEmail() {
                 <Mail className="size-12" strokeWidth={1.8} />
               </div>
             </div>
-            <span className="absolute top-2 -right-1 grid size-10 place-items-center rounded-full border-4 border-surface bg-safran text-nuit">
+            <span className="absolute top-2 -right-1 grid size-10 place-items-center rounded-full border-4 border-surface bg-safran text-white">
               <Send className="size-4" />
             </span>
           </div>

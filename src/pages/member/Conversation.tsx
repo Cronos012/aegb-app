@@ -78,7 +78,7 @@ export function Conversation() {
 
   if (info.isPending) {
     return (
-      <div className="flex h-dvh flex-col bg-page lg:h-full">
+      <div className="flex h-app flex-col bg-page lg:h-full">
         <header className="flex h-[calc(64px+env(safe-area-inset-top))] shrink-0 items-center border-b border-line-soft bg-surface px-2 pt-[env(safe-area-inset-top)]">{back}</header>
         <PageLoader />
       </div>
@@ -88,7 +88,7 @@ export function Conversation() {
   const c = info.data
   if (!c || !id) {
     return (
-      <div className="flex h-dvh flex-col bg-page lg:h-full">
+      <div className="flex h-app flex-col bg-page lg:h-full">
         <header className="flex h-[calc(64px+env(safe-area-inset-top))] shrink-0 items-center border-b border-line-soft bg-surface px-2 pt-[env(safe-area-inset-top)]">{back}</header>
         <div className="grid flex-1 place-items-center">
           <div>
@@ -130,7 +130,7 @@ export function Conversation() {
   )
 
   return (
-    <div className="flex h-dvh flex-col bg-page lg:h-full">
+    <div className="flex h-app flex-col bg-page lg:h-full">
       <header className="flex h-[calc(64px+env(safe-area-inset-top))] shrink-0 items-center gap-1 border-b border-line-soft bg-surface px-2 pt-[env(safe-area-inset-top)] lg:h-[76px] lg:px-6">
         {back}
         {infosLink ? (

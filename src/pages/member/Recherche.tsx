@@ -48,7 +48,7 @@ export function Recherche() {
             <section aria-label="Membres">
               <h2 className="m-0 mb-2 px-5 text-[13px] font-bold tracking-[0.06em] text-muted uppercase lg:px-1">Membres</h2>
               {people.length ? (
-                <ul className="m-0 list-none divide-y divide-line-soft overflow-hidden bg-surface p-0 lg:rounded-[22px]">
+                <ul className="m-0 list-none divide-y divide-line-soft overflow-hidden bg-surface p-0 lg:rounded-[12px]">
                   {people.map((m) => (
                     <li key={m.id}>
                       <MemberRow m={m} />
@@ -70,7 +70,7 @@ export function Recherche() {
               ) : posts.data?.length ? (
                 posts.data.map((p) => <PostCard key={p.id} post={p} />)
               ) : (
-                <div className="bg-surface lg:rounded-[22px]">
+                <div className="bg-surface lg:rounded-[12px]">
                   <EmptyState title="Aucune publication ne correspond">Essaie avec un autre mot.</EmptyState>
                 </div>
               )}

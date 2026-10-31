@@ -84,7 +84,7 @@ export function VoteEnCours({ view, full }: { view: AdminView; full: boolean }) 
           }
         />
         <div className="relative -mt-6 flex flex-1 flex-col gap-3 px-3 pb-6">
-          <section className="flex flex-col gap-3 rounded-[22px] bg-surface p-5 shadow-[0_1px_0_rgba(18,24,61,0.04)]">
+          <section className="flex flex-col gap-3 rounded-[12px] bg-surface p-5 shadow-[0_1px_0_rgba(18,24,61,0.04)]">
             <div className="flex items-end justify-between gap-3">
               <span className="flex items-baseline gap-2">
                 <span className="titre text-[52px] leading-none">{b.voters}</span>
@@ -95,15 +95,15 @@ export function VoteEnCours({ view, full }: { view: AdminView; full: boolean }) 
             <Bar b={b} />
             <div className="flex flex-wrap items-center justify-between gap-2 text-sm font-bold">
               <QuorumLine b={b} />
-              <span className="inline-flex items-center gap-1.5 text-[#6B4A00]">
+              <span className="inline-flex items-center gap-1.5 text-[#163F93]">
                 <Clock className="size-4" /> Encore {remaining(b.closes_at, now)}
               </span>
             </div>
           </section>
           {missing > 0 ? (
-            <section className="flex flex-col gap-3 rounded-[22px] bg-surface p-4">
+            <section className="flex flex-col gap-3 rounded-[12px] bg-surface p-4">
               <div className="flex items-start gap-3">
-                <span className="grid size-11 shrink-0 place-items-center rounded-[14px] bg-safran-pale text-[#6B4A00]">
+                <span className="grid size-11 shrink-0 place-items-center rounded-[14px] bg-safran-pale text-[#163F93]">
                   <Users className="size-5" />
                 </span>
                 <span className="flex flex-col">
@@ -120,7 +120,7 @@ export function VoteEnCours({ view, full }: { view: AdminView; full: boolean }) 
               ) : null}
             </section>
           ) : null}
-          <section className="overflow-hidden rounded-[22px] bg-surface">
+          <section className="overflow-hidden rounded-[12px] bg-surface">
             <button type="button" onClick={() => setList(true)} className="flex w-full items-center gap-3.5 px-4 py-3.5 text-left hover:bg-surface-2">
               <span className="grid size-11 shrink-0 place-items-center rounded-[14px] bg-select">
                 <List className="size-5" />
@@ -196,7 +196,7 @@ export function VoteEnCours({ view, full }: { view: AdminView; full: boolean }) 
       <div className="grid grid-cols-4 gap-4">
         <Tile icon={<Users className="size-4" />} tone="bg-ok-soft text-ok" label="Votants" value={`${b.voters} sur ${b.electors}`} detail={`${percent(b.voters, b.electors)} % de la liste électorale`} />
         {quorumTile}
-        <Tile icon={<Clock className="size-4" />} tone="bg-safran-pale text-[#6B4A00]" label="Temps restant" value={remaining(b.closes_at, now)} detail={`Le vote ferme tout seul à ${hour(b.closes_at)}`} />
+        <Tile icon={<Clock className="size-4" />} tone="bg-safran-pale text-[#163F93]" label="Temps restant" value={remaining(b.closes_at, now)} detail={`Le vote ferme tout seul à ${hour(b.closes_at)}`} />
         <Tile icon={<Lock className="size-4" />} tone="bg-select text-ink" label="Résultats" value="Scellés" detail="Personne ne les voit avant la fin" />
       </div>
       <div className="grid grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] items-start gap-4">
@@ -208,7 +208,7 @@ export function VoteEnCours({ view, full }: { view: AdminView; full: boolean }) 
             <Participation ballot={b} compact />
             <Timeline b={b} />
           </Panel>
-          <section className="flex flex-col gap-2 rounded-[22px] bg-select/60 p-5">
+          <section className="flex flex-col gap-2 rounded-[12px] bg-select/60 p-5">
             <strong className="flex items-center gap-2 text-[15px]">
               <ShieldCheck className="size-5" /> Ce que voit le bureau
             </strong>
@@ -251,7 +251,7 @@ function Timeline({ b }: { b: Ballot }) {
   ]
   if (b.quorum_reached_at && b.quorum) events.push({ at: b.quorum_reached_at, icon: <Check className="size-4" strokeWidth={2.6} />, tone: 'bg-ok-soft text-ok', text: `Quorum atteint : ${votants(b.quorum)}` })
   for (const r of b.reminders ?? [])
-    events.push({ at: r.sent_at, icon: <Send className="size-4" />, tone: 'bg-safran-pale text-[#6B4A00]', text: `Rappel envoyé aux ${r.recipients} qui n’avaient pas voté` })
+    events.push({ at: r.sent_at, icon: <Send className="size-4" />, tone: 'bg-safran-pale text-[#163F93]', text: `Rappel envoyé aux ${r.recipients} qui n’avaient pas voté` })
   events.sort((x, y) => x.at.localeCompare(y.at))
   return (
     <ol className="m-0 flex list-none flex-col gap-3 p-0">

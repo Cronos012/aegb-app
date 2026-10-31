@@ -31,7 +31,7 @@ export function Bienvenue({ me }: { me: Me }) {
   }
 
   return (
-    <div className="bg-tisse relative flex min-h-dvh justify-center overflow-hidden text-white">
+    <div className="bg-tisse relative flex min-h-app justify-center overflow-hidden text-white">
       <div className="pointer-events-none absolute inset-x-0 top-0 mx-auto h-[230px] max-w-[480px]" aria-hidden="true">
         {CONFETTI.map((c, i) => (
           <span key={i} className="absolute h-3.5 w-2 rounded-[2px]" style={{ left: c.left, top: c.top, background: c.color, transform: `rotate(${c.rotate}deg)` }} />
@@ -45,7 +45,7 @@ export function Bienvenue({ me }: { me: Me }) {
               <Check className="size-5" strokeWidth={3} />
             </span>
           </div>
-          <p className="mt-6 mb-0 text-xs font-extrabold tracking-[0.14em] text-safran uppercase">Compte validé</p>
+          <p className="mt-6 mb-0 text-xs font-extrabold tracking-[0.14em] text-ciel uppercase">Compte validé</p>
           <h1 className="titre mt-2 mb-0 text-[34px] leading-[1.05]">Bienvenue dans la famille, {me.profile.first_name} !</h1>
           <p className="mt-4 mb-0 text-[16px] leading-[1.5] text-white/85">
             Le bureau a validé ton compte. Prends une minute pour compléter ton profil, ça aide les autres à te reconnaître.
@@ -54,7 +54,7 @@ export function Bienvenue({ me }: { me: Me }) {
         <div className="mt-auto flex flex-col gap-3 pt-10 lg:mt-0">
           <div className="overflow-hidden rounded-2xl bg-surface text-ink">
             <button type="button" onClick={() => go('/app/profil/modifier')} className="flex w-full items-center gap-3 px-4 py-3.5 text-left">
-              <span className="grid size-9 place-items-center rounded-xl bg-safran-pale text-[#7A5200]">
+              <span className="grid size-9 place-items-center rounded-xl bg-safran-pale text-[#163F93]">
                 <Camera className="size-[18px]" />
               </span>
               <span className="flex-1 text-[15px] font-semibold">Ajoute une photo de profil</span>
@@ -69,7 +69,7 @@ export function Bienvenue({ me }: { me: Me }) {
               <ChevronRight className="size-5 text-muted" />
             </button>
           </div>
-          <Button variant="accent" busy={leaving === '/app/profil/modifier'} onClick={() => go('/app/profil/modifier')}>
+          <Button variant="onblue" busy={leaving === '/app/profil/modifier'} onClick={() => go('/app/profil/modifier')}>
             Compléter mon profil
           </Button>
           <button type="button" onClick={() => go('/app/profil')} className="h-12 text-[15px] font-bold text-white" disabled={!!leaving}>

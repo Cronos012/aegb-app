@@ -16,14 +16,14 @@ function PersonRow({ p, position }: { p: EventPerson; position?: number }) {
   return (
     <li className="border-t border-line-soft first:border-0">
       <Link to={p.me ? '/app/profil' : `/app/membres/${p.id}`} className="flex items-center gap-3 px-3.5 py-[9px] text-ink no-underline hover:bg-surface-2">
-        {position ? <span className="w-[26px] shrink-0 text-center text-[14px] font-extrabold text-[#6B5200]">{rank(position)}</span> : null}
+        {position ? <span className="w-[26px] shrink-0 text-center text-[14px] font-extrabold text-[#163F93]">{rank(position)}</span> : null}
         <Avatar person={p} size={42} />
         <span className="flex min-w-0 flex-1 flex-col gap-px">
           <span className="flex items-center gap-1.5 text-[15px] font-bold">
             <span className="truncate">
               {p.first_name} {p.last_name}
             </span>
-            {p.me ? <span className="rounded-full bg-safran-pale px-2 py-0.5 text-[11px] font-extrabold text-[#6B5200]">Toi</span> : null}
+            {p.me ? <span className="rounded-full bg-safran-pale px-2 py-0.5 text-[11px] font-extrabold text-[#163F93]">Toi</span> : null}
           </span>
           <span className="truncate text-[13px] text-muted">{personLine(p) || ' '}</span>
         </span>
@@ -48,7 +48,7 @@ export function Participants() {
 
   return (
     <div className="flex flex-1 flex-col bg-page lg:mx-auto lg:w-full lg:max-w-[640px] lg:py-8">
-      <header className="sticky top-0 z-10 flex items-center gap-2.5 border-b border-line-soft bg-surface py-2 pr-4 pl-2 pt-[max(env(safe-area-inset-top),8px)] lg:static lg:rounded-t-[22px] lg:px-5 lg:py-4">
+      <header className="sticky top-0 z-10 flex items-center gap-2.5 border-b border-line-soft bg-surface py-2 pr-4 pl-2 pt-[max(env(safe-area-inset-top),8px)] lg:static lg:rounded-t-[12px] lg:px-5 lg:py-4">
         <Link to={`/app/evenements/${id}`} aria-label="Retour à l’événement" className="grid size-11 place-items-center rounded-xl text-ink hover:bg-surface-2">
           <ChevronLeft className="size-6" strokeWidth={2.2} />
         </Link>
@@ -62,7 +62,7 @@ export function Participants() {
         </div>
       </header>
 
-      <div className="flex flex-1 flex-col gap-3 py-3.5 lg:rounded-b-[22px] lg:bg-surface-2 lg:px-4">
+      <div className="flex flex-1 flex-col gap-3 py-3.5 lg:rounded-b-[12px] lg:bg-surface-2 lg:px-4">
         <div role="tablist" className="mx-4 flex gap-1.5 rounded-[14px] bg-[#ECEEF5] p-1 lg:mx-0">
           {(
             [
@@ -94,13 +94,13 @@ export function Participants() {
         ) : people.error ? (
           <ErrorNote error={people.error} className="mx-4" />
         ) : list.length ? (
-          <ul className="mx-4 my-0 flex list-none flex-col overflow-hidden rounded-[20px] bg-surface p-0 py-1 lg:mx-0">
+          <ul className="mx-4 my-0 flex list-none flex-col overflow-hidden rounded-[12px] bg-surface p-0 py-1 lg:mx-0">
             {list.map((p) => (
               <PersonRow key={p.id} p={p} position={tab === 'waiting' ? waiting.indexOf(p) + 1 : undefined} />
             ))}
           </ul>
         ) : (
-          <div className="mx-4 rounded-[20px] bg-surface lg:mx-0">
+          <div className="mx-4 rounded-[12px] bg-surface lg:mx-0">
             <EmptyState title={query ? 'Personne à ce nom' : tab === 'going' ? 'Personne pour l’instant' : 'La liste d’attente est vide'} />
           </div>
         )}

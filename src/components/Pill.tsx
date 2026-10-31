@@ -8,7 +8,7 @@ const TONES: Record<Tone, string> = {
   ok: 'bg-ok-soft text-ok',
   warn: 'bg-warn-soft text-warn',
   danger: 'bg-danger-soft text-danger',
-  safran: 'bg-safran-pale text-[#6B4A00]',
+  safran: 'bg-safran-pale text-[#163F93]',
 }
 
 export function Pill({ tone = 'neutral', icon, children, className = '' }: { tone?: Tone; icon?: ReactNode; children: ReactNode; className?: string }) {

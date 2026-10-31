@@ -28,7 +28,7 @@ function serviceWorker(): Plugin {
         }
       }
       if (entry) visit(entry.fileName)
-      const precache = ['index.html', 'manifest.webmanifest', 'logo.svg', 'icons/icon-192.png', 'icons/badge-96.png', ...[...files].sort()]
+      const precache = ['index.html', 'manifest.webmanifest', 'logo-rond.webp', 'favicon.png', 'icons/icon-192.png', 'icons/badge-96.png', ...[...files].sort()]
       const version = createHash('sha256').update(Object.keys(bundle).sort().join('\n')).digest('hex').slice(0, 12)
       const source = readFileSync(new URL('./sw/sw.js', import.meta.url), 'utf8')
         .replace("'__VERSION__'", JSON.stringify(version))

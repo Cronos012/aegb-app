@@ -184,7 +184,7 @@ function MemberLine({ m, me, onMenu }: { m: GroupMember; me: boolean; onMenu: (m
         <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <span className="truncate text-[16px] font-bold">{me ? 'Toi' : `${m.first_name} ${m.last_name}`}</span>
           {m.is_manager ? (
-            <span className="inline-flex h-6 items-center gap-1 rounded-full bg-safran-pale px-2 text-[12px] font-bold text-[#6B4A00]">
+            <span className="inline-flex h-6 items-center gap-1 rounded-full bg-safran-pale px-2 text-[12px] font-bold text-[#163F93]">
               <Star className="size-3" /> Gère le groupe
             </span>
           ) : null}
@@ -225,7 +225,7 @@ export function InfosGroupe() {
 
   if (info.isPending) {
     return (
-      <div className="flex h-dvh flex-col bg-page lg:h-full">
+      <div className="flex h-app flex-col bg-page lg:h-full">
         {header}
         <PageLoader />
       </div>
@@ -235,7 +235,7 @@ export function InfosGroupe() {
   const c = info.data
   if (!c || !id || (c.kind !== 'groupe' && c.kind !== 'grand_groupe')) {
     return (
-      <div className="flex h-dvh flex-col bg-page lg:h-full">
+      <div className="flex h-app flex-col bg-page lg:h-full">
         {header}
         <EmptyState title="Ce groupe n’est plus disponible" icon={<Users className="size-6" />}>
           Tu as peut-être quitté ce groupe.
@@ -262,7 +262,7 @@ export function InfosGroupe() {
 
   if (c.kind === 'grand_groupe') {
     return (
-      <div className="flex h-dvh flex-col bg-page lg:h-full">
+      <div className="flex h-app flex-col bg-page lg:h-full">
         {header}
         <div className="flex flex-1 flex-col items-center gap-3 overflow-y-auto px-5 py-8 text-center">
           <ConversationAvatar kind="grand_groupe" title={c.title} size={112} />
@@ -292,7 +292,7 @@ export function InfosGroupe() {
         : 'Tu es la dernière personne du groupe : il restera vide.'
 
   return (
-    <div className="flex h-dvh flex-col bg-page lg:h-full">
+    <div className="flex h-app flex-col bg-page lg:h-full">
       {header}
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
         <section className="flex flex-col items-center gap-2 bg-surface px-5 pt-6 pb-5 text-center">

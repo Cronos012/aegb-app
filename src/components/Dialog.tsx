@@ -37,7 +37,7 @@ export function Dialog({ open, onClose, title, description, children, footer, wi
       className={`m-0 mt-auto w-full max-w-none bg-transparent p-0 text-ink backdrop:bg-nuit/55 backdrop:backdrop-blur-[2px] open:flex lg:m-auto ${wide ? 'lg:max-w-[640px]' : 'lg:max-w-[480px]'}`}
     >
       {open ? (
-        <div className="flex max-h-[88dvh] w-full flex-col rounded-t-[26px] bg-surface shadow-2xl lg:rounded-[22px]">
+        <div className="flex max-h-[calc(88dvh/var(--zoom,1))] w-full flex-col rounded-t-[12px] bg-surface shadow-2xl lg:rounded-[12px]">
           <div className="mx-auto mt-2.5 h-1 w-10 rounded-full bg-line lg:hidden" aria-hidden="true" />
           <div className="flex items-start justify-between gap-4 px-5 pt-4 lg:px-6 lg:pt-6">
             <div className="flex min-w-0 flex-col gap-1">

@@ -17,7 +17,7 @@ function authorName(post: FeedPost) {
 function Summary({ post, onOpen }: { post: FeedPost; onOpen: () => void }) {
   const media = post.post_media[0]
   return (
-    <button type="button" onClick={onOpen} className="flex w-full items-center gap-3.5 rounded-[18px] bg-surface-2 p-3 text-left hover:bg-select" aria-label="Voir la publication en entier">
+    <button type="button" onClick={onOpen} className="flex w-full items-center gap-3.5 rounded-[12px] bg-surface-2 p-3 text-left hover:bg-select" aria-label="Voir la publication en entier">
       {media ? <MediaThumb media={media} className="size-16 shrink-0 rounded-xl" /> : null}
       <span className="min-w-0">
         <span className="block text-[15px] font-bold">{authorName(post)}</span>
@@ -79,10 +79,10 @@ export function Publication() {
   const closed = !!p.hidden_at
 
   return (
-    <div className="flex min-h-dvh flex-1 flex-col bg-surface lg:min-h-0 lg:bg-transparent lg:px-10 lg:py-8">
+    <div className="flex min-h-app flex-1 flex-col bg-surface lg:min-h-0 lg:bg-transparent lg:px-10 lg:py-8">
       <div className="mx-auto flex w-full max-w-[680px] flex-1 flex-col">
         {header}
-        <div className="flex flex-1 flex-col lg:overflow-hidden lg:rounded-[22px] lg:bg-surface">
+        <div className="flex flex-1 flex-col lg:overflow-hidden lg:rounded-[12px] lg:bg-surface">
           {compact ? (
             <div className="px-4 pt-4">
               <Summary post={p} onOpen={() => setCompact(false)} />

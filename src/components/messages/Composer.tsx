@@ -314,7 +314,7 @@ export function Composer({ placeholder, replyTo, onCancelReply, onSend, note, la
             </button>
           </>
         ) : null}
-        <label className="flex min-h-12 min-w-0 flex-1 items-center rounded-[24px] bg-surface-2 px-4 py-2 focus-within:ring-[3px] focus-within:ring-safran/45">
+        <label className="flex min-h-12 min-w-0 flex-1 items-center rounded-[12px] bg-surface-2 px-4 py-2 focus-within:ring-[3px] focus-within:ring-safran/45">
           <span className="sr-only">{placeholder}</span>
           <textarea
             ref={area}

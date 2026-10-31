@@ -43,7 +43,7 @@ export function Hero({ back, right, kicker, title, subtitle, children, className
 }
 
 export function Sheet({ children, className = '' }: { children: ReactNode; className?: string }) {
-  return <div className={`relative -mt-6 flex flex-1 flex-col rounded-t-[26px] bg-surface px-5 pt-[26px] pb-7 ${className}`}>{children}</div>
+  return <div className={`relative -mt-6 flex flex-1 flex-col rounded-t-[12px] bg-surface px-5 pt-[26px] pb-7 ${className}`}>{children}</div>
 }
 
 export function StepHeader({ back, step, total, title, subtitle }: { back: () => void; step: number; total: number; title: string; subtitle: string }) {
@@ -59,7 +59,7 @@ export function StepHeader({ back, step, total, title, subtitle }: { back: () =>
       </div>
       <div className="mt-3.5 grid gap-1.5" style={{ gridTemplateColumns: `repeat(${total}, minmax(0, 1fr))` }} aria-hidden="true">
         {Array.from({ length: total }, (_, k) => (
-          <div key={k} className={`h-[5px] rounded-full ${k < step ? 'bg-safran' : 'bg-white/20'}`} />
+          <div key={k} className={`h-[5px] rounded-full ${k < step ? 'bg-white' : 'bg-white/25'}`} />
         ))}
       </div>
       <div className="mt-3.5 flex flex-col gap-1.5">
