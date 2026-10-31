@@ -41,5 +41,6 @@ function serviceWorker(): Plugin {
 // BASE_PATH permet de publier l'appli dans un sous-dossier (GitHub Pages : /aegb-app/).
 export default defineConfig({
   base: process.env.BASE_PATH ?? '/',
+  define: { __BUILD_DATE__: JSON.stringify(new Date().toISOString()) },
   plugins: [react(), tailwindcss(), serviceWorker()],
 })

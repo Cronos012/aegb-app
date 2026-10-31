@@ -22,6 +22,11 @@ function remember(): boolean {
   return quietly(() => localStorage.getItem(REMEMBER_KEY) !== '0', true)
 }
 
+/** Faux sur un ordinateur partagé (« Rester connecté » décoché) : rien n'y est gardé. */
+export function isRemembered(): boolean {
+  return remember()
+}
+
 /** « Rester connecté sur cet ordinateur » : sinon la session s'arrête à la fermeture du navigateur. */
 export function setRememberMe(value: boolean) {
   quietly(() => localStorage.setItem(REMEMBER_KEY, value ? '1' : '0'), undefined)
