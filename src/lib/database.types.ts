@@ -1072,6 +1072,59 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          actors: string[]
+          category: string
+          chip: string | null
+          created_at: string
+          group_key: string | null
+          icon: string
+          id: number
+          link: string
+          member_id: string
+          official: boolean
+          read_at: string | null
+          text: string
+        }
+        Insert: {
+          actors?: string[]
+          category: string
+          chip?: string | null
+          created_at?: string
+          group_key?: string | null
+          icon: string
+          id?: never
+          link: string
+          member_id: string
+          official?: boolean
+          read_at?: string | null
+          text: string
+        }
+        Update: {
+          actors?: string[]
+          category?: string
+          chip?: string | null
+          created_at?: string
+          group_key?: string | null
+          icon?: string
+          id?: never
+          link?: string
+          member_id?: string
+          official?: boolean
+          read_at?: string | null
+          text?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       post_media: {
         Row: {
           height: number | null
@@ -1208,6 +1261,7 @@ export type Database = {
           city: string | null
           cover_path: string | null
           created_at: string
+          deletion_requested_at: string | null
           email_confirmed_at: string | null
           first_name: string
           formation: string | null
@@ -1235,6 +1289,7 @@ export type Database = {
           city?: string | null
           cover_path?: string | null
           created_at?: string
+          deletion_requested_at?: string | null
           email_confirmed_at?: string | null
           first_name: string
           formation?: string | null
@@ -1262,6 +1317,7 @@ export type Database = {
           city?: string | null
           cover_path?: string | null
           created_at?: string
+          deletion_requested_at?: string | null
           email_confirmed_at?: string | null
           first_name?: string
           formation?: string | null
@@ -1544,6 +1600,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      cancel_account_deletion: { Args: never; Returns: boolean }
       cancel_assembly: { Args: { p_id: string; p_reason?: string }; Returns: undefined }
       cancel_event: {
         Args: {
@@ -1654,6 +1711,7 @@ export type Database = {
       event_view: { Args: { p_id: string }; Returns: Json }
       events_admin: { Args: never; Returns: Json }
       events_list: { Args: never; Returns: Json }
+      forget_device: { Args: { p_id: string }; Returns: undefined }
       helloasso_attach: {
         Args: { p_intent: number; p_payment: string }
         Returns: undefined
@@ -1672,9 +1730,12 @@ export type Database = {
       leave_event: { Args: { p_id: string }; Returns: undefined }
       leave_group: { Args: { p_conversation: string }; Returns: undefined }
       lock_journal: { Args: never; Returns: undefined }
+      mark_link_read: { Args: { p_link: string }; Returns: number }
+      mark_notifications_read: { Args: { p_ids?: number[] }; Returns: number }
       mark_read: { Args: { p_conversation: string }; Returns: undefined }
       mark_seen: { Args: { p_ids: string[] }; Returns: undefined }
       mark_welcomed: { Args: never; Returns: undefined }
+      member_contact: { Args: { p_member: string }; Returns: Json }
       member_dues: { Args: { p_member: string }; Returns: Json }
       member_history: {
         Args: { p_member: string }
@@ -1767,6 +1828,7 @@ export type Database = {
         Returns: Database["public"]["Enums"]["access_level"]
       }
       my_aegb: { Args: never; Returns: string }
+      my_badge: { Args: never; Returns: Json }
       my_bureau: { Args: never; Returns: Json }
       my_conversations: {
         Args: never
@@ -1791,7 +1853,13 @@ export type Database = {
           unread: number
         }[]
       }
+      my_devices: { Args: never; Returns: Json }
       my_dues: { Args: never; Returns: Json }
+      my_notifications: {
+        Args: { p_before?: string; p_limit?: number }
+        Returns: Json
+      }
+      my_settings: { Args: never; Returns: Json }
       open_private: { Args: { p_member: string }; Returns: string }
       open_second_round: { Args: { p_assembly: string }; Returns: string }
       open_vote: { Args: { p_assembly: string }; Returns: string }
@@ -1821,6 +1889,7 @@ export type Database = {
         Returns: undefined
       }
       publish_results: { Args: { p_assembly: string }; Returns: string }
+      reachable_members: { Args: never; Returns: Json }
       react: {
         Args: {
           p_comment: string
@@ -1880,6 +1949,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      request_account_deletion: { Args: never; Returns: Json }
       reverse_ledger_entry: {
         Args: {
           p_entry: number
@@ -1889,6 +1959,7 @@ export type Database = {
         }
         Returns: number
       }
+      revoke_device: { Args: { p_id: string }; Returns: undefined }
       save_assembly: {
         Args: {
           p_candidacy_until: string | null
@@ -1940,6 +2011,17 @@ export type Database = {
         }
         Returns: Json
       }
+      save_notification_settings: { Args: { p_settings: Json }; Returns: undefined }
+      save_privacy: { Args: { p_privacy: Json }; Returns: undefined }
+      save_push_device: {
+        Args: {
+          p_auth: string | null
+          p_endpoint: string | null
+          p_id: string
+          p_p256dh: string | null
+        }
+        Returns: undefined
+      }
       save_welcome: {
         Args: { p_actions: string[]; p_announce: boolean; p_text: string }
         Returns: undefined
@@ -1986,6 +2068,11 @@ export type Database = {
       suspend_member: {
         Args: { p_member: string; p_reason: string }
         Returns: undefined
+      }
+      test_push: { Args: { p_device: string }; Returns: boolean }
+      touch_device: {
+        Args: { p_id: string; p_label: string; p_platform: string }
+        Returns: Json
       }
       transfer_guarantor: { Args: { p_member: string }; Returns: undefined }
       unblock_member: { Args: { p_member: string }; Returns: undefined }

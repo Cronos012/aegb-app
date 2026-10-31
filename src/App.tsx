@@ -1,12 +1,14 @@
-import { lazy, Suspense } from 'react'
-import { Navigate, Route, Routes } from 'react-router'
+import { lazy, Suspense, useEffect } from 'react'
+import { Navigate, Route, Routes, useNavigate } from 'react-router'
 import { BureauGate, MemberGate, ScreenGate } from './auth/gates'
 import { useSession } from './auth/session'
 import { FullScreenLoader, PageLoader } from './components/Feedback'
 import { BureauLayout } from './layouts/BureauLayout'
 import { MemberLayout } from './layouts/MemberLayout'
 import { useIsDesktop } from './lib/media'
+import { onOpenLink } from './lib/pwa'
 import { Annuaire } from './pages/member/Annuaire'
+import { Confidentialite } from './pages/member/Confidentialite'
 import { Candidature } from './pages/member/Candidature'
 import { Conversation } from './pages/member/Conversation'
 import { Cotisation } from './pages/member/Cotisation'
@@ -18,12 +20,14 @@ import { Evenements } from './pages/member/Evenements'
 import { Fil } from './pages/member/Fil'
 import { Historique } from './pages/member/Historique'
 import { InfosGroupe } from './pages/member/InfosGroupe'
+import { Installer } from './pages/member/Installer'
 import { Isoloir } from './pages/member/Isoloir'
 import { MembreProfil } from './pages/member/MembreProfil'
 import { Menu } from './pages/member/Menu'
 import { Messages } from './pages/member/Messages'
 import { ModifierProfil } from './pages/member/ModifierProfil'
 import { NouveauMessage } from './pages/member/NouveauMessage'
+import { Notifications } from './pages/member/Notifications'
 import { Participants } from './pages/member/Participants'
 import { PaiementRetour } from './pages/member/PaiementRetour'
 import { Payer } from './pages/member/Payer'
@@ -32,10 +36,14 @@ import { Publication } from './pages/member/Publication'
 import { Publier } from './pages/member/Publier'
 import { Quittance } from './pages/member/Quittance'
 import { Recherche } from './pages/member/Recherche'
+import { ReglagesCompte, ReglagesLayout, ReglagesMenu } from './pages/member/Reglages'
+import { ReglagesNotifications } from './pages/member/ReglagesNotifications'
+import { SupprimerCompte } from './pages/member/SupprimerCompte'
 import { Votes } from './pages/member/Votes'
 import { Accueil } from './pages/public/Accueil'
 import { AuthRetour } from './pages/public/AuthRetour'
 import { Charte } from './pages/public/Charte'
+import { CompteFerme } from './pages/public/CompteFerme'
 import { Connexion } from './pages/public/Connexion'
 import { Inscription } from './pages/public/Inscription'
 import { MotDePasseOublie } from './pages/public/MotDePasseOublie'
@@ -44,6 +52,7 @@ import { NouveauMotDePasse } from './pages/public/NouveauMotDePasse'
 import { VerifierEmail } from './pages/public/VerifierEmail'
 
 const Site = lazy(() => import('./pages/public/Site'))
+const PageConfidentialite = lazy(() => import('./pages/public/Confidentialite'))
 const Dashboard = lazy(() => import('./pages/bureau/Dashboard'))
 const Comptes = lazy(() => import('./pages/bureau/Comptes'))
 const Membres = lazy(() => import('./pages/bureau/Membres'))
@@ -73,6 +82,10 @@ function Home() {
 }
 
 export function App() {
+  const navigate = useNavigate()
+  // Un appui sur une notification, l'appli déjà ouverte : on va au bon endroit.
+  useEffect(() => onOpenLink((link) => navigate(link)), [navigate])
+
   return (
     <Suspense fallback={<FullScreenLoader />}>
       <Routes>
@@ -85,6 +98,9 @@ export function App() {
         <Route path="/mot-de-passe-oublie" element={<MotDePasseOublie />} />
         <Route path="/nouveau-mot-de-passe" element={<NouveauMotDePasse />} />
         <Route path="/charte" element={<Charte />} />
+        <Route path="/confidentialite" element={<PageConfidentialite />} />
+        <Route path="/compte-ferme" element={<CompteFerme />} />
+        <Route path="/installer" element={<Installer open />} />
 
         <Route element={<MemberGate />}>
           <Route path="/app" element={<MemberLayout />}>
@@ -117,6 +133,15 @@ export function App() {
             <Route path="documents/:id" element={<Document />} />
             <Route path="profil" element={<Profil />} />
             <Route path="profil/modifier" element={<ModifierProfil />} />
+            <Route path="notifications" element={<Notifications />} />
+            <Route path="reglages" element={<ReglagesLayout />}>
+              <Route index element={<ReglagesMenu />} />
+              <Route path="notifications" element={<ReglagesNotifications />} />
+              <Route path="confidentialite" element={<Confidentialite />} />
+              <Route path="installer" element={<Installer />} />
+              <Route path="compte" element={<ReglagesCompte />} />
+              <Route path="supprimer" element={<SupprimerCompte />} />
+            </Route>
           </Route>
 
           <Route element={<BureauGate />}>

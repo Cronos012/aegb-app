@@ -1,7 +1,8 @@
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { useState } from 'react'
 import {
   ArrowRight,
+  Bell,
   BookOpen,
   Calendar,
   CreditCard,
@@ -10,21 +11,27 @@ import {
   MapPin,
   Flag,
   House,
+  Laptop,
   MessageSquare,
   Music,
+  Play,
   Search,
+  Share,
+  ShieldCheck,
+  Smartphone,
   SquareCheckBig,
   Trophy,
   User,
   Users,
-  Vote,
 } from 'lucide-react'
 import { ButtonLink } from '../../components/Button'
 import { Brand, Logo } from '../../components/Logo'
 import { docKind, downloadDocument, sizeLabel, usePublicDocuments, type Doc } from '../../lib/documents'
 import { badgeParts, usePublicEvents, whenLong, type PublicEvent } from '../../lib/events'
 import { usePhotoUrl } from '../../lib/photos'
+import { promptInstall, usePwa } from '../../lib/pwa'
 import { usePublicBureau } from '../../lib/queries'
+import { QrCode } from '../../components/install/QrCode'
 
 function academicYear(now = new Date()) {
   const y = now.getFullYear()
@@ -217,12 +224,47 @@ const STATS = [
   { value: '1', label: 'grande famille', color: '#1A2352' },
 ]
 
-const FEATURES = [
-  { icon: House, title: "Le fil d'actu", text: 'Photos, vidéos et annonces du bureau, avec réactions et commentaires.' },
-  { icon: MessageSquare, title: 'Les messages', text: 'Discute en privé ou dans le grand groupe de l’association.' },
-  { icon: CreditCard, title: 'La cotisation', text: 'Paie par carte avec HelloAsso et vois tout de suite si tu es à jour.' },
-  { icon: Vote, title: 'Les votes', text: 'Vote en ligne quand le bureau ouvre une élection.' },
+const APP_PERKS = [
+  { icon: Bell, title: 'Notifications réglables', text: 'Un interrupteur par type, des heures calmes, et un texte caché sur l’écran verrouillé si tu préfères.', tone: 'bg-[#FFF1C2] text-[#7A5200]' },
+  { icon: Smartphone, title: 'Une seule appli, partout', text: 'Android, iPhone et ordinateur : ton compte et tes messages te suivent.', tone: 'bg-[#E7EAFB] text-[#253070]' },
+  { icon: ShieldCheck, title: 'Tes données restent à l’AEGB', text: 'Pas de publicité, rien n’est revendu. Tu peux supprimer ton compte quand tu veux.', tone: 'bg-[#E3F4EC] text-[#0B6B43]' },
 ]
+
+function StoreButton({ to, kicker, label, icon, primary = false }: { to: string; kicker: string; label: string; icon: React.ReactNode; primary?: boolean }) {
+  return (
+    <Link
+      to={to}
+      className={`flex h-[60px] items-center gap-3 rounded-[14px] px-4 no-underline ${primary ? 'bg-white text-[#12162B] hover:bg-white/92' : 'border-[1.5px] border-white/35 text-white hover:bg-white/8'}`}
+    >
+      {icon}
+      <span className="leading-tight">
+        <span className={`block text-[12px] font-semibold ${primary ? 'text-[#5A6075]' : 'text-white/75'}`}>{kicker}</span>
+        <span className="block text-[17px] font-extrabold">{label}</span>
+      </span>
+    </Link>
+  )
+}
+
+/** Sur ordinateur : le bouton ouvre directement la question « Installer » du navigateur quand elle existe. */
+function PcInstallButton() {
+  const { canInstall } = usePwa()
+  const navigate = useNavigate()
+  return (
+    <button
+      type="button"
+      onClick={async () => {
+        if (!canInstall || !(await promptInstall())) navigate('/installer?appareil=ordinateur')
+      }}
+      className="flex h-[60px] items-center gap-3 rounded-[14px] border-[1.5px] border-white/35 px-4 text-left text-white hover:bg-white/8"
+    >
+      <Laptop className="size-6" />
+      <span className="leading-tight">
+        <span className="block text-[12px] font-semibold text-white/75">Sur ordinateur</span>
+        <span className="block text-[17px] font-extrabold">Installer sur PC</span>
+      </span>
+    </button>
+  )
+}
 
 const WHO = [
   { title: 'Étudiant', text: 'Tu es étudiant guinéen dans la région brestoise.', color: '#CE1126' },
@@ -448,32 +490,61 @@ export default function Site() {
         <div className="mx-auto grid max-w-[1200px] items-center gap-12 px-5 py-20 lg:grid-cols-[minmax(0,1fr)_auto] lg:px-10 lg:py-24">
           <div>
             <Kicker light>L'appli des membres</Kicker>
-            <h2 className="titre mt-3 mb-0 text-[36px] leading-tight lg:text-[44px]">Tout l'AEGB dans ta poche.</h2>
-            <ul className="m-0 mt-10 grid list-none gap-7 p-0 sm:grid-cols-2">
-              {FEATURES.map(({ icon: Icon, title, text }) => (
-                <li key={title}>
-                  <span className="grid size-10 place-items-center rounded-xl bg-safran text-nuit">
-                    <Icon className="size-5" />
-                  </span>
-                  <h3 className="mt-3 mb-0 text-[16px] font-bold">{title}</h3>
-                  <p className="mt-1 mb-0 text-[14px] leading-[1.5] text-white/80">{text}</p>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-10 flex flex-wrap gap-3">
-              <ButtonLink to="/connexion" variant="accent" size="md" className="h-12 px-5">
-                Ouvrir l'appli <ArrowRight className="size-4" />
-              </ButtonLink>
-              <span className="inline-flex h-12 items-center rounded-xl border-[1.5px] border-white/30 px-5 text-[14px] font-semibold text-white/75">Android et iPhone : bientôt</span>
-            </div>
-            <p className="mt-4 mb-0 max-w-[520px] text-[13px] leading-[1.5] text-white/70">
-              L'appli marche déjà dans le navigateur, sur téléphone comme sur ordinateur. Elle arrivera ensuite sur le Play Store, et s'installera sur iPhone depuis Safari.
+            <h2 className="titre mt-4 mb-0 text-[44px] leading-[1.02] tracking-[-0.01em] lg:text-[60px]">
+              Installe l’appli.
+              <br />
+              <span className="text-safran">Ne rate plus rien.</span>
+            </h2>
+            <p className="mt-6 mb-0 max-w-[560px] text-[17px] leading-[1.6] text-white/85">
+              Messages, votes, rappels d’événements et annonces du bureau arrivent sur ton téléphone, même appli fermée. Tu choisis ce que tu reçois, et rien ne sonne la nuit.
             </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <StoreButton to="/installer?appareil=android" kicker="Sur Android" label="Depuis Chrome" icon={<Play className="size-6" />} primary />
+              <StoreButton to="/installer?appareil=iphone" kicker="Sur iPhone" label="Guide Safari" icon={<Share className="size-6" />} />
+              <PcInstallButton />
+            </div>
+            <div className="mt-8 hidden max-w-[440px] items-center gap-5 rounded-[20px] border border-white/12 bg-white/6 p-4 lg:flex">
+              <span className="rounded-xl bg-white p-1.5">
+                <QrCode value={new URL(`${import.meta.env.BASE_URL}installer`, window.location.origin).href} size={96} />
+              </span>
+              <span>
+                <span className="block text-[16px] font-bold">Tu es sur ordinateur ?</span>
+                <span className="mt-1 block text-[14px] leading-[1.45] text-white/80">Scanne ce code avec ton téléphone pour ouvrir la bonne page d’installation.</span>
+              </span>
+            </div>
           </div>
-          <div className="hidden justify-center lg:flex">
+          <div className="relative hidden justify-center lg:flex">
             <PhoneMock screen="messages" />
+            <div className="absolute top-[58%] -left-28 w-[300px] rounded-2xl bg-white px-3.5 py-3 text-[#12162B] shadow-2xl">
+              <div className="flex items-start gap-3">
+                <span className="grid size-9 shrink-0 place-items-center rounded-[10px] bg-leppi">
+                  <Logo size={26} />
+                </span>
+                <p className="m-0 min-w-0 flex-1 text-[13px] leading-[1.35]">
+                  <span className="flex justify-between gap-2">
+                    <strong>Vote ouvert</strong>
+                    <span className="text-[12px] text-[#5A6075]">maintenant</span>
+                  </span>
+                  Élection du bureau : tu peux voter jusqu’à samedi, 18 h.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
+        <div className="barre-tricolore h-2" aria-hidden="true" />
+      </section>
+      <section className="mx-auto grid max-w-[1200px] gap-8 px-5 py-12 lg:grid-cols-3 lg:px-10">
+        {APP_PERKS.map(({ icon: Icon, title, text, tone }) => (
+          <div key={title} className="flex items-start gap-4">
+            <span className={`grid size-12 shrink-0 place-items-center rounded-2xl ${tone}`}>
+              <Icon className="size-6" />
+            </span>
+            <span>
+              <span className="block text-[17px] font-bold">{title}</span>
+              <span className="mt-1 block text-[15px] leading-[1.5] text-[#5A6075]">{text}</span>
+            </span>
+          </div>
+        ))}
       </section>
 
       {/* Adhérer */}
@@ -550,6 +621,8 @@ export default function Site() {
               <li><Link to="/connexion" className="text-white/75 no-underline hover:text-white">Se connecter</Link></li>
               <li><Link to="/inscription" className="text-white/75 no-underline hover:text-white">Créer un compte</Link></li>
               <li><Link to="/charte" className="text-white/75 no-underline hover:text-white">Charte des membres</Link></li>
+              <li><Link to="/installer" className="text-white/75 no-underline hover:text-white">Installer l’appli</Link></li>
+              <li><Link to="/confidentialite" className="text-white/75 no-underline hover:text-white">Confidentialité</Link></li>
             </ul>
           </nav>
         </div>
