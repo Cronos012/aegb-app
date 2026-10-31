@@ -1,9 +1,13 @@
 import { Link } from 'react-router'
+import { useState } from 'react'
 import {
   ArrowRight,
   BookOpen,
+  Calendar,
   CreditCard,
+  Download,
   FileText,
+  MapPin,
   Flag,
   House,
   MessageSquare,
@@ -17,6 +21,9 @@ import {
 } from 'lucide-react'
 import { ButtonLink } from '../../components/Button'
 import { Brand, Logo } from '../../components/Logo'
+import { docKind, downloadDocument, sizeLabel, usePublicDocuments, type Doc } from '../../lib/documents'
+import { badgeParts, usePublicEvents, whenLong, type PublicEvent } from '../../lib/events'
+import { usePhotoUrl } from '../../lib/photos'
 import { usePublicBureau } from '../../lib/queries'
 
 function academicYear(now = new Date()) {
@@ -128,6 +135,75 @@ function PhoneMock({ screen }: { screen: 'fil' | 'messages' }) {
   )
 }
 
+/** Un événement que le bureau a choisi de montrer : titre, date, lieu et photo. */
+function SiteEvent({ e }: { e: PublicEvent }) {
+  const photo = usePhotoUrl(e.photo_path, 'publications')
+  const { day, month } = badgeParts(e.starts_at)
+  return (
+    <li className="flex flex-col overflow-hidden rounded-[22px] border border-[#E8EAF1] bg-white">
+      <div className="bg-tisse relative h-[150px]">
+        {photo ? <img src={photo} alt="" className="absolute inset-0 size-full object-cover" /> : null}
+        <span className="absolute top-3.5 left-3.5 flex h-[54px] w-[50px] flex-col items-center justify-center rounded-[14px] bg-white shadow-[0_2px_8px_rgba(18,22,43,0.18)]" aria-hidden="true">
+          <span className="titre text-[21px] leading-none text-[#12162B]">{day}</span>
+          <span className="text-[11px] font-extrabold tracking-[0.4px] text-[#CE1126]">{month}</span>
+        </span>
+      </div>
+      <div className="flex flex-1 flex-col gap-1.5 p-5">
+        <h3 className="titre m-0 text-[20px] leading-tight">{e.title}</h3>
+        <p className="m-0 flex items-start gap-2 text-[14px] text-[#3D4357]">
+          <Calendar className="mt-0.5 size-4 shrink-0 text-[#1A2352]" /> {whenLong(e)}
+        </p>
+        <p className="m-0 flex items-start gap-2 text-[14px] text-[#3D4357]">
+          <MapPin className="mt-0.5 size-4 shrink-0 text-[#1A2352]" /> {e.online ? 'En ligne' : e.place}
+        </p>
+      </div>
+    </li>
+  )
+}
+
+const KIND_SITE_TONES: Record<string, string> = {
+  PDF: 'bg-[#FDE7EA] text-[#8A0C20]',
+  DOC: 'bg-[#E7F1FB] text-[#1D4F86]',
+  XLS: 'bg-[#E3F4EC] text-[#075C2C]',
+  PPT: 'bg-[#FFF1C2] text-[#6B5200]',
+  IMG: 'bg-[#EFEDFF] text-[#3C2E8F]',
+  TXT: 'bg-[#F5F6FB] text-[#5A6075]',
+}
+
+/** Un document public (statuts, règlement…), téléchargeable sans compte. */
+function SiteDocument({ d }: { d: Doc }) {
+  const [busy, setBusy] = useState(false)
+  const [failed, setFailed] = useState(false)
+  const kind = docKind(d.file)
+  return (
+    <li>
+      <button
+        type="button"
+        disabled={busy}
+        onClick={() => {
+          setBusy(true)
+          setFailed(false)
+          downloadDocument(d)
+            .catch(() => setFailed(true))
+            .finally(() => setBusy(false))
+        }}
+        className="flex w-full items-center gap-3.5 rounded-[18px] border border-[#E8EAF1] bg-white px-4 py-3 text-left text-[#12162B] hover:bg-[#F5F6FB] disabled:opacity-70"
+      >
+        <span className={`grid h-[46px] w-[38px] shrink-0 place-items-center rounded-[7px] text-[10px] font-extrabold ${KIND_SITE_TONES[kind]}`} aria-hidden="true">
+          {kind}
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-[15px] font-bold">{d.title}</span>
+          <span className={`block text-[13px] ${failed ? 'text-[#B3122A]' : 'text-[#5A6075]'}`}>
+            {failed ? 'Le téléchargement n’a pas marché, réessaie.' : [d.category, d.file ? sizeLabel(d.file.size_bytes) : null].filter(Boolean).join(' · ')}
+          </span>
+        </span>
+        <Download className="size-5 shrink-0 text-[#1A2352]" />
+      </button>
+    </li>
+  )
+}
+
 const PILLARS = [
   { icon: House, title: 'Accueillir', text: 'Logement, démarches, premiers jours : un parrain ou une marraine t’accompagne dès ton arrivée.', tone: 'bg-[#FDE7EA] text-[#B3122A]' },
   { icon: BookOpen, title: 'Accompagner', text: 'Entraide pour les cours, conseils pour les stages et l’emploi, partage d’expérience avec les anciens.', tone: 'bg-[#FFF1C2] text-[#7A5200]' },
@@ -164,6 +240,8 @@ const NAV = [
 
 export default function Site() {
   const bureau = usePublicBureau()
+  const events = usePublicEvents().data ?? []
+  const docs = usePublicDocuments().data ?? []
 
   return (
     <div className="bg-[#FFFFFF] text-[#12162B] [color-scheme:light]">
@@ -310,6 +388,22 @@ export default function Site() {
             </article>
           ))}
         </div>
+        {events.length ? (
+          <div className="mt-14">
+            <h3 className="titre m-0 text-[24px]">Prochains rendez-vous</h3>
+            <ul className="m-0 mt-5 grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3">
+              {events.slice(0, 6).map((e) => (
+                <SiteEvent key={e.id} e={e} />
+              ))}
+            </ul>
+            <p className="mt-4 mb-0 text-[14px] text-[#5A6075]">
+              Les inscriptions se font dans l'appli.{' '}
+              <Link to="/connexion" className="font-bold text-[#1A2352]">
+                Se connecter
+              </Link>
+            </p>
+          </div>
+        ) : null}
       </section>
 
       {/* Le bureau */}
@@ -421,6 +515,16 @@ export default function Site() {
                 </li>
               ))}
             </ul>
+            {docs.length ? (
+              <>
+                <h3 className="mt-9 mb-0 text-[15px] font-bold">À lire avant d'adhérer</h3>
+                <ul className="m-0 mt-4 flex list-none flex-col gap-2.5 p-0">
+                  {docs.map((d) => (
+                    <SiteDocument key={d.id} d={d} />
+                  ))}
+                </ul>
+              </>
+            ) : null}
           </div>
         </div>
       </section>

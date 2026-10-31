@@ -7,10 +7,14 @@ import { BureauLayout } from './layouts/BureauLayout'
 import { MemberLayout } from './layouts/MemberLayout'
 import { useIsDesktop } from './lib/media'
 import { Annuaire } from './pages/member/Annuaire'
-import { Bientot } from './pages/member/Bientot'
 import { Candidature } from './pages/member/Candidature'
 import { Conversation } from './pages/member/Conversation'
 import { Cotisation } from './pages/member/Cotisation'
+import { Document } from './pages/member/Document'
+import { Documents } from './pages/member/Documents'
+import { Evenement } from './pages/member/Evenement'
+import { EvenementPaiement } from './pages/member/EvenementPaiement'
+import { Evenements } from './pages/member/Evenements'
 import { Fil } from './pages/member/Fil'
 import { Historique } from './pages/member/Historique'
 import { InfosGroupe } from './pages/member/InfosGroupe'
@@ -20,6 +24,7 @@ import { Menu } from './pages/member/Menu'
 import { Messages } from './pages/member/Messages'
 import { ModifierProfil } from './pages/member/ModifierProfil'
 import { NouveauMessage } from './pages/member/NouveauMessage'
+import { Participants } from './pages/member/Participants'
 import { PaiementRetour } from './pages/member/PaiementRetour'
 import { Payer } from './pages/member/Payer'
 import { Profil } from './pages/member/Profil'
@@ -53,6 +58,10 @@ const Encaisser = lazy(() => import('./pages/bureau/Encaisser'))
 const ReglagesCotisation = lazy(() => import('./pages/bureau/ReglagesCotisation'))
 const JournalFinancier = lazy(() => import('./pages/bureau/JournalFinancier'))
 const Elections = lazy(() => import('./pages/bureau/Elections'))
+const EvenementsBureau = lazy(() => import('./pages/bureau/Evenements'))
+const EvenementForm = lazy(() => import('./pages/bureau/EvenementForm'))
+const Pointage = lazy(() => import('./pages/bureau/Pointage'))
+const DocumentsBureau = lazy(() => import('./pages/bureau/Documents'))
 
 /** Sur téléphone, l'accueil de l'appli ; sur ordinateur, le site de l'association. */
 function Home() {
@@ -97,11 +106,15 @@ export function App() {
             <Route path="cotisation/retour/:id" element={<PaiementRetour />} />
             <Route path="cotisation/historique" element={<Historique />} />
             <Route path="cotisation/quittances/:numero" element={<Quittance />} />
-            <Route path="evenements" element={<Bientot page="evenements" />} />
+            <Route path="evenements" element={<Evenements />} />
+            <Route path="evenements/:id" element={<Evenement />} />
+            <Route path="evenements/:id/participants" element={<Participants />} />
+            <Route path="evenements/paiement/:id" element={<EvenementPaiement />} />
             <Route path="votes" element={<Votes />} />
             <Route path="votes/candidature" element={<Candidature />} />
             <Route path="votes/isoloir" element={<Isoloir />} />
-            <Route path="documents" element={<Bientot page="documents" />} />
+            <Route path="documents" element={<Documents />} />
+            <Route path="documents/:id" element={<Document />} />
             <Route path="profil" element={<Profil />} />
             <Route path="profil/modifier" element={<ModifierProfil />} />
           </Route>
@@ -127,6 +140,16 @@ export function App() {
               </Route>
               <Route element={<ScreenGate screen="elections" />}>
                 <Route path="elections" element={<Suspense fallback={<PageLoader />}><Elections /></Suspense>} />
+              </Route>
+              <Route element={<ScreenGate screen="evenements" />}>
+                <Route path="evenements" element={<Suspense fallback={<PageLoader />}><EvenementsBureau /></Suspense>} />
+                <Route path="evenements/nouveau" element={<Suspense fallback={<PageLoader />}><EvenementForm /></Suspense>} />
+                <Route path="evenements/:id" element={<Suspense fallback={<PageLoader />}><EvenementsBureau /></Suspense>} />
+                <Route path="evenements/:id/modifier" element={<Suspense fallback={<PageLoader />}><EvenementForm /></Suspense>} />
+                <Route path="evenements/:id/pointage" element={<Suspense fallback={<PageLoader />}><Pointage /></Suspense>} />
+              </Route>
+              <Route element={<ScreenGate screen="documents" />}>
+                <Route path="documents" element={<Suspense fallback={<PageLoader />}><DocumentsBureau /></Suspense>} />
               </Route>
               <Route element={<ScreenGate screen="moderation" />}>
                 <Route path="moderation" element={<Suspense fallback={<PageLoader />}><Moderation /></Suspense>} />

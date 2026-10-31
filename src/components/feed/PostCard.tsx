@@ -17,6 +17,10 @@ import { Lightbox, MediaGrid } from './Media'
 import { ReactionButton, ReactionCount, ReactorsDialog } from './Reactions'
 import { RichText } from './RichText'
 import { ShareDialog } from '../messages/ShareDialog'
+import { FeedDocument } from '../documents/DocParts'
+import { EventBadge, FeedEvent } from '../events/EventParts'
+import { useLibrary } from '../../lib/documents'
+import { useEvents } from '../../lib/events'
 
 export function OfficialBadge() {
   return (
@@ -37,9 +41,16 @@ function Header({ post, menu }: { post: FeedPost; menu: React.ReactNode }) {
           <p className="m-0 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[16px] font-bold">
             {OFFICIAL_NAME} <OfficialBadge />
           </p>
-          <p className="m-0 text-[13px] text-muted">
-            {relative(post.published_at)}
-            {audience}
+          <p className="m-0 flex flex-wrap items-center gap-x-1.5 text-[13px] text-muted">
+            <span>
+              {relative(post.published_at)}
+              {audience}
+            </span>
+            {post.event_id ? (
+              <>
+                · <EventBadge />
+              </>
+            ) : null}
           </p>
         </div>
         {menu}
@@ -101,6 +112,8 @@ export function PostCard({ post, pinned = false, preview = false, onComment, med
   const root = useRef<HTMLElement>(null)
   const summary = summarize(post.reactions, uid, pending)
   const comments = post.comments[0]?.count ?? 0
+  const events = useEvents(!!post.event_id && !preview).data
+  const library = useLibrary(!!post.document_id && !preview).data
 
   // Une annonce compte comme vue quand elle s'affiche vraiment à l'écran.
   useEffect(() => {
@@ -157,9 +170,12 @@ export function PostCard({ post, pinned = false, preview = false, onComment, med
       ) : null}
 
       <div className="flex flex-col gap-2 px-4 pt-3 pb-3">
-        {post.title ? <h2 className="m-0 text-[18px] leading-snug font-extrabold">{post.title}</h2> : null}
+        {post.title && !post.event_id ? <h2 className="m-0 text-[18px] leading-snug font-extrabold">{post.title}</h2> : null}
         {post.body ? <RichText text={post.body} className="text-[15px] leading-[1.5]" /> : null}
       </div>
+
+      {post.event_id && !preview ? <FeedEvent id={post.event_id} events={events} /> : null}
+      {post.document_id && !preview ? <FeedDocument id={post.document_id} docs={library?.documents} /> : null}
 
       {mediaSlot ?? <MediaGrid media={post.post_media} onOpen={setLightbox} />}
       {lightbox !== null ? <Lightbox media={post.post_media} start={lightbox} onClose={() => setLightbox(null)} /> : null}

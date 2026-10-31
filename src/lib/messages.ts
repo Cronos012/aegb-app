@@ -14,7 +14,10 @@ import { supabase } from './supabase'
 */
 
 export type ConversationKind = Enums<'conversation_kind'>
-export type MessageKind = 'message' | 'bienvenue' | 'arrivee' | 'systeme' | 'cotisation' | 'assemblee'
+export type MessageKind = 'message' | 'bienvenue' | 'arrivee' | 'systeme' | 'cotisation' | 'assemblee' | 'evenement'
+
+/** Les cartes « evenement » du compte AEGB (lot 6). */
+export type EventMessageType = 'place' | 'desinscription' | 'paiement' | 'changement' | 'annulation' | 'rappel' | 'rembourse' | 'paiement_annule'
 export type FileKind = 'photo' | 'vocal' | 'document'
 export type AssemblyMessageType =
   | 'convocation' | 'seconde' | 'ouverture' | 'second_tour' | 'relance' | 'annulation'
@@ -72,7 +75,7 @@ export type MessageRow = {
     member?: string
     publication?: boolean
     /** Cartes « cotisation » (relance, recu, annule) et « assemblee » (convocation, ouverture…) du compte AEGB. */
-    type?: 'relance' | 'recu' | 'annule' | AssemblyMessageType
+    type?: 'relance' | 'recu' | 'annule' | AssemblyMessageType | EventMessageType
     receipt?: string
     amount_cents?: number
     months?: string[]
@@ -89,6 +92,16 @@ export type MessageRow = {
     label?: string
     labels?: string[]
     reason?: string
+    // Cartes « evenement » :
+    event?: string
+    title?: string
+    starts_at?: string
+    ends_at?: string | null
+    online?: boolean
+    price_cents?: number
+    method?: string
+    paid_on?: string
+    changes?: { label: string; before: string; after: string }[]
   }
   files: MessageFile[]
   post_id: string | null

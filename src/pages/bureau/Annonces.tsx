@@ -108,6 +108,8 @@ export default function Annonces() {
     edited_at: null,
     hidden_at: null,
     hidden_reason: null,
+    document_id: null,
+    event_id: null,
     created_at: now.toISOString(),
     author: null,
     post_media: [],
