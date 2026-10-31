@@ -4,6 +4,31 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
+    <script>
+      // Sur un téléphone réglé en « version pour ordinateur » ou avec un zoom réduit
+      // dans Chrome, la page se met en page sur ~1000 px et tout devient minuscule.
+      // On remet l'appli à la taille d'un téléphone. Un téléphone se reconnaît à son
+      // écran tactile très allongé (une tablette ne l'est pas).
+      ;(function () {
+        var root = document.documentElement
+        function fit() {
+          var s = window.screen
+          var ratio = Math.max(s.width, s.height) / Math.min(s.width, s.height)
+          var phone = window.matchMedia('(pointer: coarse)').matches && ratio > 1.8
+          root.style.zoom = ''
+          root.style.removeProperty('--zoom')
+          var width = root.clientWidth
+          if (phone && width > 600) {
+            var zoom = width / 420
+            root.style.zoom = String(zoom)
+            root.style.setProperty('--zoom', String(zoom))
+          }
+        }
+        fit()
+        window.addEventListener('resize', fit)
+        window.addEventListener('orientationchange', fit)
+      })()
+    </script>
     <meta name="theme-color" content="#FFFFFF" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
@@ -13,41 +38,41 @@
     <meta name="apple-mobile-web-app-title" content="AEGB" />
     <meta name="description" content="L'appli des membres de l'AEGB, l'Association des Étudiants Guinéens de Brest." />
     <title>AEGB</title>
-    <script type="module" crossorigin src="/assets/index-DySqNrT-.js"></script>
+    <script type="module" crossorigin src="/assets/index-DkNiQCVR.js"></script>
     <link rel="modulepreload" crossorigin href="/assets/rolldown-runtime-WkwZ5CU-.js">
     <link rel="modulepreload" crossorigin href="/assets/loader-circle-B1rd45Qi.js">
-    <link rel="modulepreload" crossorigin href="/assets/format-cTHbaXLO.js">
-    <link rel="modulepreload" crossorigin href="/assets/photos-B_pT1LCK.js">
-    <link rel="modulepreload" crossorigin href="/assets/feed-CLoK381y.js">
+    <link rel="modulepreload" crossorigin href="/assets/format-DyRzx_xT.js">
+    <link rel="modulepreload" crossorigin href="/assets/photos-Bu5k_jQ9.js">
+    <link rel="modulepreload" crossorigin href="/assets/feed-CL01tq8D.js">
     <link rel="modulepreload" crossorigin href="/assets/ban-D48343Ik.js">
     <link rel="modulepreload" crossorigin href="/assets/bell-ring-CFy2HFLP.js">
     <link rel="modulepreload" crossorigin href="/assets/calendar-days-Do_b-uNj.js">
     <link rel="modulepreload" crossorigin href="/assets/check-BBNSNJyS.js">
-    <link rel="modulepreload" crossorigin href="/assets/Hero-RPKy79ob.js">
+    <link rel="modulepreload" crossorigin href="/assets/Hero-CRFCvRCa.js">
     <link rel="modulepreload" crossorigin href="/assets/chevron-right-Bi3rUTW0.js">
-    <link rel="modulepreload" crossorigin href="/assets/Toast-CDNvCei1.js">
+    <link rel="modulepreload" crossorigin href="/assets/Toast-DemVNF43.js">
     <link rel="modulepreload" crossorigin href="/assets/circle-dollar-sign-CXBwBihZ.js">
-    <link rel="modulepreload" crossorigin href="/assets/Field-Bez0o2c3.js">
+    <link rel="modulepreload" crossorigin href="/assets/Field-D1c1ug1B.js">
     <link rel="modulepreload" crossorigin href="/assets/file-text-CggSDmhx.js">
     <link rel="modulepreload" crossorigin href="/assets/vote-C9Ynaexk.js">
     <link rel="modulepreload" crossorigin href="/assets/Button-CwYls6lH.js">
     <link rel="modulepreload" crossorigin href="/assets/x-8_CaRfC3.js">
-    <link rel="modulepreload" crossorigin href="/assets/Dialog-ohFcniJL.js">
-    <link rel="modulepreload" crossorigin href="/assets/elections-gL7pnUBA.js">
+    <link rel="modulepreload" crossorigin href="/assets/Dialog-C25MfrtI.js">
+    <link rel="modulepreload" crossorigin href="/assets/elections-CsKFN-an.js">
     <link rel="modulepreload" crossorigin href="/assets/preload-helper-BLdHbfdN.js">
-    <link rel="modulepreload" crossorigin href="/assets/pvPdf-DQ6eKjF5.js">
-    <link rel="modulepreload" crossorigin href="/assets/documents-fO2JvYXC.js">
-    <link rel="modulepreload" crossorigin href="/assets/DocParts-DRaI6UE9.js">
+    <link rel="modulepreload" crossorigin href="/assets/pvPdf-CBzDJIQZ.js">
+    <link rel="modulepreload" crossorigin href="/assets/documents-gzLIo6_B.js">
+    <link rel="modulepreload" crossorigin href="/assets/DocParts-B1iXyUVG.js">
     <link rel="modulepreload" crossorigin href="/assets/user-Czwqt4rL.js">
-    <link rel="modulepreload" crossorigin href="/assets/Avatar-NDDREF4C.js">
+    <link rel="modulepreload" crossorigin href="/assets/Avatar-DCK4obJZ.js">
     <link rel="modulepreload" crossorigin href="/assets/Logo-I-hkVf7a.js">
-    <link rel="modulepreload" crossorigin href="/assets/dues-CKQWedYA.js">
-    <link rel="modulepreload" crossorigin href="/assets/events-2YgDu_aE.js">
+    <link rel="modulepreload" crossorigin href="/assets/dues-mNR-DThj.js">
+    <link rel="modulepreload" crossorigin href="/assets/events-DNp9AnBk.js">
     <link rel="modulepreload" crossorigin href="/assets/Pill-D9irJrRW.js">
-    <link rel="modulepreload" crossorigin href="/assets/EventParts-8VHImokp.js">
+    <link rel="modulepreload" crossorigin href="/assets/EventParts-ClKD3J-d.js">
     <link rel="modulepreload" crossorigin href="/assets/message-circle-iI-EfFW0.js">
     <link rel="modulepreload" crossorigin href="/assets/message-square-CZ4PqD-_.js">
-    <link rel="stylesheet" crossorigin href="/assets/index-DASTJmr5.css">
+    <link rel="stylesheet" crossorigin href="/assets/index-DTF_ItkC.css">
   </head>
   <body>
     <div id="root"></div>
